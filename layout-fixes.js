@@ -35,6 +35,12 @@
     const s=getComputedStyle(safeProbe);
     return{top:toPx(s.top),right:toPx(s.right),bottom:toPx(s.bottom),left:toPx(s.left)};
   }
+  function physicalShortSide(p){
+    const sw=Number(window.screen?.width)||0;
+    const sh=Number(window.screen?.height)||0;
+    if(sw>0&&sh>0)return Math.min(sw,sh);
+    return Math.min(p.w,p.h);
+  }
   function fitLives(){
     const lives=[...document.querySelectorAll('#app .p:not(.hide) .life')];
     lives.forEach(el=>el.style.setProperty('--life-fit','1'));
@@ -50,9 +56,12 @@
     const p=viewport();
     const safe=safeInsets();
     const rotated=p.h>p.w;
-    const displayW=rotated?BOARD_H:BOARD_W;
-    const displayH=rotated?BOARD_W:BOARD_H;
-    const scale=Math.min(p.w/displayW,p.h/displayH);
+
+    /* One scale for both orientations: only the device's physical short side matters.
+       The long side is reserved for symmetric gutters, so browser/status-bar differences
+       on that axis can no longer make portrait and landscape render at different sizes. */
+    const shortSide=physicalShortSide(p);
+    const scale=shortSide/BOARD_H;
     const cx=p.x+p.w/2,cy=p.y+p.h/2;
 
     const longStart=rotated?safe.top:safe.left;
@@ -67,7 +76,7 @@
     root.style.setProperty('--board-left',cx+'px');
     root.style.setProperty('--board-top',cy+'px');
     root.style.setProperty('--gutter-w',gutter+'px');
-    window.EDHStage={state:{...p,safe,rotated,boardW:BOARD_W,boardH:BOARD_H,scale,cx,cy,gutter},update:applyBoard};
+    window.EDHStage={state:{...p,safe,rotated,boardW:BOARD_W,boardH:BOARD_H,shortSide,scale,cx,cy,gutter},update:applyBoard};
     settleLayout();
   }
   const app=document.getElementById('app');
