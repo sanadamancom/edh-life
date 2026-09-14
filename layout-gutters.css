@@ -19,6 +19,48 @@
   right:var(--gutter-w)!important;
 }
 
+/* Tablet / square-ish viewport: the board still fills the short side exactly.
+   The logical long axis becomes shorter, so horizontal controls compact instead
+   of shrinking the complete board and leaving large top/bottom margins. */
+html.stage-compact #stage .pc{
+  padding-left:5px!important;
+  padding-right:5px!important;
+  gap:3px!important;
+}
+html.stage-compact #stage .name{font-size:14px!important}
+html.stage-compact #stage .lifeRow{
+  width:98%!important;
+  grid-template-columns:34px 40px minmax(64px,1fr) 40px 34px!important;
+  gap:3px!important;
+}
+html.stage-compact #stage .life{font-size:calc(84px * var(--life-fit,1))!important}
+html.stage-compact #stage .delta,
+html.stage-compact #stage .quick5{height:60px!important;border-radius:15px!important}
+html.stage-compact #stage .delta .mi{width:32px!important;height:32px!important}
+html.stage-compact #stage .quick5{font-size:18px!important}
+html.stage-compact #stage .cmd{width:97%!important;padding:3px!important}
+html.stage-compact #stage .cg{gap:3px!important}
+html.stage-compact #stage .cc{padding:2px!important;border-radius:8px!important}
+html.stage-compact #stage .cw{font-size:8px!important}
+html.stage-compact #stage .cv{font-size:19px!important;margin:1px 0 2px!important}
+html.stage-compact #stage .cb{gap:2px!important}
+html.stage-compact #stage .cb button{min-height:23px!important;font-size:12px!important}
+
+/* Typical 4:3 tablets land here at full short-side scale. */
+html.stage-narrow #stage .lifeRow{
+  grid-template-columns:28px 34px minmax(58px,1fr) 34px 28px!important;
+  gap:2px!important;
+}
+html.stage-narrow #stage .life{font-size:calc(76px * var(--life-fit,1))!important}
+html.stage-narrow #stage .delta,
+html.stage-narrow #stage .quick5{height:56px!important;border-radius:13px!important}
+html.stage-narrow #stage .delta .mi{width:29px!important;height:29px!important}
+html.stage-narrow #stage .quick5{font-size:16px!important}
+html.stage-narrow #stage .name{font-size:13px!important}
+html.stage-narrow #stage .cw{font-size:7px!important}
+html.stage-narrow #stage .cv{font-size:18px!important}
+html.stage-narrow #stage .cb button{min-height:22px!important;font-size:11px!important}
+
 @media (orientation:portrait), (orientation:landscape){
   #stage #tools{
     left:auto!important;
