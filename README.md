@@ -22,6 +22,7 @@ EDH（Commander）用の卓上ライフカウンターWebアプリです。
 - Fullscreen API対応ブラウザではフルスクリーン表示
 - PWA対応 / オフライン起動
 - iPhone横向き向けのdynamic viewport / safe area対応
+- UIアイコンはMaterial Symbols RoundedのSVGをアプリ内へ埋め込み
 
 ## GitHub Pages
 
@@ -46,13 +47,21 @@ manifestでは横向きを指定しています。iOS側の制限により向き
 
 ## オフライン
 
-Service Workerでアプリ本体・manifest・アイコンをキャッシュします。一度オンラインで起動した後は、通信できない場所でも起動可能です。
+Service Workerでアプリ本体・CSS・JavaScript・manifest・アイコンをキャッシュします。一度オンラインで起動した後は、通信できない場所でも起動可能です。
 
 更新時はナビゲーションだけネットワーク優先にしているため、GitHub Pagesへ新しい版が反映された後に再度開けば更新を取得できます。
 
+## UIアイコン
+
+Undo / ダイス / 設定 / フルスクリーン / メインの ±1 は Google Material Symbols Rounded のSVGパスをインラインで使用しています。外部Webフォントへ依存しないため、PWAのオフライン状態でも同じ表示になります。
+
+Material Symbols は Apache License 2.0 で提供されています。
+
 ## 構成
 
-- `index.html` — アプリ本体
+- `index.html` — HTML / Material Symbols SVG sprite
+- `styles.css` — レイアウト・UIスタイル
+- `app.js` — ライフ管理・Commander Damage・ダイス等のロジック
 - `manifest.webmanifest` — PWA設定
 - `sw.js` — オフラインキャッシュ
 - `icon.svg` — アプリアイコン
