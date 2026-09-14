@@ -6,28 +6,34 @@
   --speed:#7fc8ff;
 }
 
-/* The progress ring follows the digits themselves instead of the whole life slot. */
+/* The progress ring follows the visible life digits, including on rotated iPhone layouts. */
 .life.holding::after{display:none!important}
+.life{
+  display:grid;
+  place-items:center;
+}
 .lifeValue{
   position:relative;
-  display:inline-block;
+  display:block;
+  width:max-content;
+  margin:auto;
   padding:0 8px;
   line-height:1;
 }
 .life.holding .lifeValue::after{
   content:"";
   position:absolute;
-  inset:0;
+  inset:14% -4px 3%;
   z-index:2;
   padding:3px;
   pointer-events:none;
-  border-radius:16px;
+  border-radius:15px;
   background:conic-gradient(from -90deg,var(--warn) var(--hold-angle),rgba(255,255,255,.16) 0deg);
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;
   mask-composite:exclude;
   filter:drop-shadow(0 0 5px rgba(255,204,102,.45));
-  animation:life-hold-progress 600ms linear forwards;
+  animation:life-hold-progress 300ms linear forwards;
 }
 
 /* Active special counters stay out of the life number and remain readable on phones. */
@@ -164,7 +170,7 @@
 .counterPanel .acts{margin-top:10px}
 .counter-flipped .counterPanel{transform:rotate(180deg)}
 
-/* The toolbar reset is intentionally hold-only. */
+/* The toolbar reset is intentionally hold-only and remains longer to avoid accidents. */
 #quickReset{
   position:relative;
   overflow:hidden;
