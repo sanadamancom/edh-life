@@ -324,7 +324,7 @@ app.addEventListener('pointerdown',event=>{
     const index=Number(life.dataset.life);
     clearHold();
     openCounters(index);
-  },600);
+  },300);
 });
 
 document.addEventListener('pointerup',clearHold,true);
