@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v30-refactor';
+const CACHE_NAME='edh-life-v31-name-spacing';
 const APP_SHELL=[
   './',
   './index.html',
