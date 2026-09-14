@@ -36,12 +36,7 @@
   function apply(){
     const p=viewport(),s=safe(),rotated=p.h>p.w;
     const short=Math.min(p.w,p.h),long=Math.max(p.w,p.h);
-
-    /* The short edge always fills the actual layout viewport exactly. */
     const scale=short/BOARD_H;
-
-    /* Keep the long edge inside the viewport by shortening only the logical board width.
-       This preserves full short-edge usage on tablets without letterboxing. */
     const boardW=Math.min(DESIGN_W,long/Math.max(scale,.001));
 
     const longStart=rotated?s.top:s.left;
@@ -51,8 +46,6 @@
     const gutterCap=Math.max(minGutter,boardW*.14);
     const gutter=Math.min(gutterCap,Math.max(minGutter,safeGutter));
     const gameW=Math.max(1,boardW-gutter*2);
-
-    /* UI sizing is stable for a given viewport. It never depends on life digits/content. */
     const ui=Math.max(.48,Math.min(1,gameW/BASE_GAME_W));
     const tool=Math.max(.68,ui);
     const cx=p.w/2,cy=p.h/2;
@@ -63,9 +56,13 @@
     root.style.setProperty('--board-left',cx+'px');
     root.style.setProperty('--board-top',cy+'px');
     root.style.setProperty('--gutter-w',gutter.toFixed(3)+'px');
-    root.style.setProperty('--ui-scale',ui.toFixed(4));
-    root.style.setProperty('--tool-scale',tool.toFixed(4));
-    root.style.setProperty('--tool-size',(42*tool).toFixed(3)+'px');
+
+    /* Keep responsive control sizing local to #stage. app.js still maintains its
+       legacy root --ui-scale, but it can no longer make the board pulse on resize. */
+    stage.style.setProperty('--ui-scale',ui.toFixed(4));
+    stage.style.setProperty('--tool-scale',tool.toFixed(4));
+    stage.style.setProperty('--tool-size',(42*tool).toFixed(3)+'px');
+
     root.classList.toggle('stage-rotated',rotated);
     root.classList.toggle('stage-native',!rotated);
     root.classList.toggle('stage-compact',ui<.82);
