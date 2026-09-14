@@ -143,6 +143,10 @@
   font-weight:950;
   font-variant-numeric:tabular-nums;
   -moz-appearance:textfield;
+  pointer-events:none;
+  -webkit-user-select:none;
+  user-select:none;
+  caret-color:transparent;
 }
 .counterInput::-webkit-inner-spin-button,
 .counterInput::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
