@@ -57,11 +57,14 @@
     const safe=safeInsets();
     const rotated=p.h>p.w;
 
-    /* One scale for both orientations: only the device's physical short side matters.
-       The long side is reserved for symmetric gutters, so browser/status-bar differences
-       on that axis can no longer make portrait and landscape render at different sizes. */
+    /* Prefer the device short side so phone portrait/landscape keep the same size.
+       Only reduce that scale when the completed 844px long edge would not fit inside
+       the currently visible long side (tablets, split-screen, browser chrome, etc.). */
     const shortSide=physicalShortSide(p);
-    const scale=shortSide/BOARD_H;
+    const visibleLong=Math.max(p.w,p.h);
+    const shortScale=shortSide/BOARD_H;
+    const longFitScale=visibleLong/BOARD_W;
+    const scale=Math.min(shortScale,longFitScale);
     const cx=p.x+p.w/2,cy=p.y+p.h/2;
 
     const longStart=rotated?safe.top:safe.left;
@@ -76,7 +79,7 @@
     root.style.setProperty('--board-left',cx+'px');
     root.style.setProperty('--board-top',cy+'px');
     root.style.setProperty('--gutter-w',gutter+'px');
-    window.EDHStage={state:{...p,safe,rotated,boardW:BOARD_W,boardH:BOARD_H,shortSide,scale,cx,cy,gutter},update:applyBoard};
+    window.EDHStage={state:{...p,safe,rotated,boardW:BOARD_W,boardH:BOARD_H,shortSide,visibleLong,shortScale,longFitScale,scale,cx,cy,gutter},update:applyBoard};
     settleLayout();
   }
   const app=document.getElementById('app');
