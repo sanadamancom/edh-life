@@ -1,7 +1,11 @@
 const D=[['Player 1','#d35a5a'],['Player 2','#4d79d8'],['Player 3','#4da66a'],['Player 4','#c2923f']];
 let S=load()||{count:4,players:D.map(x=>({name:x[0],color:x[1],life:40,cmd:[0,0,0,0]})),hist:[]};
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const icon=n=>`<svg class="mi" viewBox="0 -960 960 960" aria-hidden="true"><use href="#i-${n}"></use></svg>`;
+const ICON_PATHS={
+  add:'M440-440H240q-17 0-28.5-11.5T200-480q0-17 11.5-28.5T240-520h200v-200q0-17 11.5-28.5T480-760q17 0 28.5 11.5T520-720v200h200q17 0 28.5 11.5T760-480q0 17-11.5 28.5T720-440H520v200q0 17-11.5 28.5T480-200q-17 0-28.5-11.5T440-240v-200Z',
+  remove:'M240-440q-17 0-28.5-11.5T200-480q0-17 11.5-28.5T240-520h480q17 0 28.5 11.5T760-480q0 17-11.5 28.5T720-440H240Z'
+};
+const icon=n=>`<svg class="mi" viewBox="0 -960 960 960" aria-hidden="true"><path d="${ICON_PATHS[n]}"></path></svg>`;
 function syncViewport(){const v=window.visualViewport;const w=Math.round(v?v.width:window.innerWidth),h=Math.round(v?v.height:window.innerHeight);document.documentElement.style.setProperty('--app-w',w+'px');document.documentElement.style.setProperty('--app-h',h+'px')}
 syncViewport();window.addEventListener('resize',syncViewport);window.addEventListener('orientationchange',()=>setTimeout(syncViewport,60));window.addEventListener('pageshow',()=>{syncViewport();setTimeout(syncViewport,120)});window.visualViewport?.addEventListener('resize',syncViewport);
 function load(){try{return JSON.parse(localStorage.getItem('edh-life'))}catch{return null}}
