@@ -11,8 +11,8 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="./icon.svg">
-  <link rel="stylesheet" href="./styles.css?v=32">
-  <link rel="stylesheet" href="./counters.css?v=32">
+  <link rel="stylesheet" href="./styles.css?v=33">
+  <link rel="stylesheet" href="./counters.css?v=33">
   <title>EDH Life Counter</title>
 </head>
 <body>
@@ -34,6 +34,10 @@
         </div>
       </div>
 
+      <button type="button" id="quickReset" title="長押しで全リセット" aria-label="長押しで全リセット">
+        <svg class="mi" viewBox="0 -960 960 960" aria-hidden="true"><path d="M393-132q-103-29-168-113.5T160-440q0-57 19-108.5t54-94.5q11-12 27-12.5t29 12.5q11 11 11.5 27T290-586q-24 31-37 68t-13 78q0 81 47.5 144.5T410-209q13 4 21.5 15t8.5 24q0 20-14 31.5t-33 6.5Zm174 0q-19 5-33-7t-14-32q0-12 8.5-23t21.5-15q75-24 122.5-87T720-440q0-100-70-170t-170-70h-3l16 16q11 11 11 28t-11 28q-11 11-28 11t-28-11l-84-84q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l84-84q11-11 28-11t28 11q11 11 11 28t-11 28l-16 16h3q134 0 227 93t93 227q0 109-65 194T567-132Z"/></svg>
+      </button>
+
       <button type="button" id="fs" title="フルスクリーン" aria-label="フルスクリーン">
         <svg class="mi fs-enter" viewBox="0 -960 960 960" aria-hidden="true"><path d="M200-200h80q17 0 28.5 11.5T320-160q0 17-11.5 28.5T280-120H160q-17 0-28.5-11.5T120-160v-120q0-17 11.5-28.5T160-320q17 0 28.5 11.5T200-280v80Zm560 0v-80q0-17 11.5-28.5T800-320q17 0 28.5 11.5T840-280v120q0 17-11.5 28.5T800-120H680q-17 0-28.5-11.5T640-160q0-17 11.5-28.5T680-200h80ZM200-760v80q0 17-11.5 28.5T160-640q-17 0-28.5-11.5T120-680v-120q0-17 11.5-28.5T160-840h120q17 0 28.5 11.5T320-800q0 17-11.5 28.5T280-760h-80Zm560 0h-80q-17 0-28.5-11.5T640-800q0-17 11.5-28.5T680-840h120q17 0 28.5 11.5T840-800v120q0 17-11.5 28.5T800-640q-17 0-28.5-11.5T760-680v-80Z"/></svg>
         <svg class="mi fs-exit" viewBox="0 -960 960 960" aria-hidden="true"><path d="M240-240h-80q-17 0-28.5-11.5T120-280q0-17 11.5-28.5T160-320h120q17 0 28.5 11.5T320-280v120q0 17-11.5 28.5T280-120q-17 0-28.5-11.5T240-160v-80Zm480 0v80q0 17-11.5 28.5T680-120q-17 0-28.5-11.5T640-160v-120q0-17 11.5-28.5T680-320h120q17 0 28.5 11.5T840-280q0 17-11.5 28.5T800-240h-80ZM240-720v-80q0-17 11.5-28.5T280-840q17 0 28.5 11.5T320-800v120q0 17-11.5 28.5T280-640H160q-17 0-28.5-11.5T120-680q0-17 11.5-28.5T160-720h80Zm480 0h80q17 0 28.5 11.5T840-680q0 17-11.5 28.5T800-640H680q-17 0-28.5-11.5T640-680v-120q0-17 11.5-28.5T680-840q17 0 28.5 11.5T720-800v80Z"/></svg>
@@ -50,14 +54,45 @@
       <div class="modal counterPanel" role="dialog" aria-modal="true" aria-labelledby="counterTitle">
         <h2 id="counterTitle">特殊カウンター</h2>
         <div id="counterPlayer" class="counterPlayer"></div>
-        <div class="specialCounterCard">
-          <div class="specialCounterLabel">毒カウンター</div>
-          <div class="specialCounterControls">
-            <button type="button" id="poisonMinus" aria-label="毒カウンターを1減らす">−1</button>
-            <input id="poisonInput" type="number" min="0" step="1" inputmode="numeric" aria-label="毒カウンター">
-            <button type="button" id="poisonPlus" aria-label="毒カウンターを1増やす">＋1</button>
+        <div class="counterGrid">
+          <div class="specialCounterCard poison">
+            <div class="specialCounterLabel">
+              <svg class="counterIcon" viewBox="0 -960 960 960" aria-hidden="true"><path d="M240-80v-170q-39-17-68.5-45.5t-50-64.5q-20.5-36-31-77T80-520q0-158 112-259t288-101q176 0 288 101t112 259q0 42-10.5 83t-31 77q-20.5 36-50 64.5T720-250v170H240Zm80-80h40v-80h80v80h80v-80h80v80h40v-142q38-9 67.5-30t50-50q20.5-29 31.5-64t11-74q0-125-88.5-202.5T480-800q-143 0-231.5 77.5T160-520q0 39 11 74t31.5 64q20.5 29 50.5 50t67 30v142Zm100-200h120l-60-120-60 120Zm-80-80q33 0 56.5-23.5T420-520q0-33-23.5-56.5T340-600q-33 0-56.5 23.5T260-520q0 33 23.5 56.5T340-440Zm280 0q33 0 56.5-23.5T700-520q0-33-23.5-56.5T620-600q-33 0-56.5 23.5T540-520q0 33 23.5 56.5T620-440Z"/></svg>
+              毒
+            </div>
+            <div class="specialCounterControls">
+              <button type="button" data-counter-minus="poison" aria-label="毒カウンターを1減らす">−1</button>
+              <input id="poisonInput" class="counterInput" type="number" min="0" step="1" inputmode="numeric" aria-label="毒カウンター">
+              <button type="button" data-counter-plus="poison" aria-label="毒カウンターを1増やす">＋1</button>
+            </div>
+            <div class="counterHint">10個で敗北</div>
           </div>
-          <div class="counterHint">10個で敗北</div>
+
+          <div class="specialCounterCard experience">
+            <div class="specialCounterLabel">
+              <svg class="counterIcon" viewBox="0 -960 960 960" aria-hidden="true"><path d="m480-174-74 56q-12 9-24 .5t-7-22.5l29-92-73-52q-12-8-7-22t19-14h89l28-92-142-84q-18-11-28-29t-10-41v-234q0-33 23.5-56.5T360-880h240q33 0 56.5 23.5T680-800v234q0 23-10 41t-28 29l-142 84 28 92h89q14 0 19 14t-7 22l-73 52 29 92q5 14-7 22.5t-24-.5l-74-56ZM360-800v234l80 48v-282h-80Zm240 0h-80v282l80-48v-234Z"/></svg>
+              経験
+            </div>
+            <div class="specialCounterControls">
+              <button type="button" data-counter-minus="experience" aria-label="経験カウンターを1減らす">−1</button>
+              <input id="experienceInput" class="counterInput" type="number" min="0" step="1" inputmode="numeric" aria-label="経験カウンター">
+              <button type="button" data-counter-plus="experience" aria-label="経験カウンターを1増やす">＋1</button>
+            </div>
+            <div class="counterHint">プレイヤーに蓄積</div>
+          </div>
+
+          <div class="specialCounterCard speed">
+            <div class="specialCounterLabel">
+              <svg class="counterIcon" viewBox="0 -960 960 960" aria-hidden="true"><path d="M418-340q24 24 62 23.5t56-27.5l169-253q9-14-2.5-25.5T677-625L424-456q-27 18-28.5 55t22.5 61Zm62-460q36 0 71 6t68 19q16 6 34 22.5t10 31.5q-8 15-36 20t-45-1q-25-9-50.5-13.5T480-720q-133 0-226.5 93.5T160-400q0 42 11.5 83t32.5 77h552q23-38 33.5-79t10.5-85q0-26-4.5-51T782-504q-6-17-2-33t18-27q13-10 28.5-6t21.5 18q15 35 23 71.5t9 74.5q1 57-13 109t-41 99q-11 18-30 28t-40 10H204q-21 0-40-10t-30-28q-26-45-40-95.5T80-400q0-83 31.5-155.5t86-127Q252-737 325-768.5T480-800Z"/></svg>
+              速度
+            </div>
+            <div class="specialCounterControls">
+              <button type="button" data-counter-minus="speed" aria-label="速度を1減らす">−1</button>
+              <input id="speedInput" class="counterInput" type="number" min="0" max="4" step="1" inputmode="numeric" aria-label="速度">
+              <button type="button" data-counter-plus="speed" aria-label="速度を1増やす">＋1</button>
+            </div>
+            <div class="counterHint">最大4</div>
+          </div>
         </div>
         <div class="acts"><button type="button" id="counterClose">閉じる</button></div>
       </div>
@@ -85,6 +120,6 @@
   </div>
 
   <script src="./layout.js?v=30"></script>
-  <script src="./app.js?v=32"></script>
+  <script src="./app.js?v=33"></script>
 </body>
 </html>
