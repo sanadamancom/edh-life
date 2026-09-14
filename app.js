@@ -6,8 +6,19 @@ const ICON_PATHS={
   remove:'M240-440q-17 0-28.5-11.5T200-480q0-17 11.5-28.5T240-520h480q17 0 28.5 11.5T760-480q0 17-11.5 28.5T720-440H240Z'
 };
 const icon=n=>`<svg class="mi" viewBox="0 -960 960 960" aria-hidden="true"><path d="${ICON_PATHS[n]}"></path></svg>`;
-function syncViewport(){const v=window.visualViewport;const w=Math.round(v?v.width:window.innerWidth),h=Math.round(v?v.height:window.innerHeight);document.documentElement.style.setProperty('--app-w',w+'px');document.documentElement.style.setProperty('--app-h',h+'px')}
-syncViewport();window.addEventListener('resize',syncViewport);window.addEventListener('orientationchange',()=>setTimeout(syncViewport,60));window.addEventListener('pageshow',()=>{syncViewport();setTimeout(syncViewport,120)});window.visualViewport?.addEventListener('resize',syncViewport);
+function syncViewport(){
+  const v=window.visualViewport;
+  const w=Math.round(v?v.width:window.innerWidth),h=Math.round(v?v.height:window.innerHeight);
+  const scale=Math.max(.72,Math.min(2.1,Math.min(w/844,h/390)));
+  document.documentElement.style.setProperty('--app-w',w+'px');
+  document.documentElement.style.setProperty('--app-h',h+'px');
+  document.documentElement.style.setProperty('--ui-scale',scale.toFixed(3));
+}
+syncViewport();
+window.addEventListener('resize',syncViewport);
+window.addEventListener('orientationchange',()=>setTimeout(syncViewport,60));
+window.addEventListener('pageshow',()=>{syncViewport();setTimeout(syncViewport,120)});
+window.visualViewport?.addEventListener('resize',syncViewport);
 function load(){try{return JSON.parse(localStorage.getItem('edh-life'))}catch{return null}}
 function save(){localStorage.setItem('edh-life',JSON.stringify({...S,hist:S.hist.slice(-40)}))}
 function snap(){return JSON.stringify({count:S.count,players:S.players})}
@@ -15,7 +26,7 @@ function push(){S.hist.push(snap());if(S.hist.length>40)S.hist.shift()}
 function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function dead(p,i){if(p.life<=0)return'ライフ0以下';for(let j=0;j<S.count;j++)if(i!==j&&(p.cmd[j]||0)>=21)return'統率者ダメージ21+';return''}
 function cards(i){let a=[];for(let j=0;j<S.count;j++){if(i===j)continue;let v=S.players[i].cmd[j]||0;a.push(`<div class="cc ${v>=18?'hot':''}" style="--c:${S.players[j].color}"><div class="cw">${esc(S.players[j].name)}</div><div class="cv">${v}</div><div class="cb"><button data-cmd="-1" data-t="${i}" data-s="${j}">−1</button><button data-cmd="1" data-t="${i}" data-s="${j}">＋1</button></div></div>`)}return a.join('')}
-function render(){let app=$('#app');app.className='c'+S.count;app.innerHTML='';S.players.forEach((p,i)=>{let e=document.createElement('section');e.className='p'+(i>=S.count?' hide':'');e.style.setProperty('--pc',p.color);let d=dead(p,i);e.innerHTML=`<div class="pc"><div class="name">${esc(p.name)}</div><div class="lifeRow"><button class="delta" aria-label="${esc(p.name)}のライフを1減らす" data-life="${i}" data-d="-1">${icon('remove')}</button><button class="life" aria-label="${esc(p.name)}のライフを直接入力" data-life="${i}" data-d="0">${p.life}</button><button class="delta" aria-label="${esc(p.name)}のライフを1増やす" data-life="${i}" data-d="1">${icon('add')}</button></div><div class="q"><button data-life="${i}" data-d="-10">−10</button><button data-life="${i}" data-d="-5">−5</button><button data-life="${i}" data-d="5">＋5</button><button data-life="${i}" data-d="10">＋10</button></div><div class="cmd"><div class="ct">COMMANDER DAMAGE</div><div class="cg">${cards(i)}</div></div><div class="dead">${d}</div></div>`;app.appendChild(e)});bind();renderSettings()}
+function render(){let app=$('#app');app.className='c'+S.count;app.innerHTML='';S.players.forEach((p,i)=>{let e=document.createElement('section');e.className='p'+(i>=S.count?' hide':'');e.style.setProperty('--pc',p.color);let d=dead(p,i);e.innerHTML=`<div class="pc"><div class="name">${esc(p.name)}</div><div class="lifeRow"><button class="quick5" aria-label="${esc(p.name)}のライフを5減らす" data-life="${i}" data-d="-5">−5</button><button class="delta" aria-label="${esc(p.name)}のライフを1減らす" data-life="${i}" data-d="-1">${icon('remove')}</button><button class="life" aria-label="${esc(p.name)}のライフを直接入力" data-life="${i}" data-d="0">${p.life}</button><button class="delta" aria-label="${esc(p.name)}のライフを1増やす" data-life="${i}" data-d="1">${icon('add')}</button><button class="quick5" aria-label="${esc(p.name)}のライフを5増やす" data-life="${i}" data-d="5">＋5</button></div><div class="cmd"><div class="cg">${cards(i)}</div></div><div class="dead">${d}</div></div>`;app.appendChild(e)});bind();renderSettings()}
 function bind(){$$('[data-life]').forEach(b=>b.onclick=()=>{let i=+b.dataset.life,d=+b.dataset.d;if(!d){let v=prompt(`${S.players[i].name} のライフ`,S.players[i].life);if(v===null||Number.isNaN(+v))return;push();S.players[i].life=parseInt(v,10)}else{push();S.players[i].life+=d}save();render()});$$('[data-cmd]').forEach(b=>b.onclick=()=>{let t=+b.dataset.t,s=+b.dataset.s,d=+b.dataset.cmd,c=S.players[t].cmd[s]||0,n=Math.max(0,c+d),a=n-c;if(!a)return;push();S.players[t].cmd[s]=n;S.players[t].life-=a;save();render()})}
 function renderSettings(){let x=$('#ps');x.innerHTML='';S.players.forEach((p,i)=>{let r=document.createElement('div');r.className='row';r.innerHTML=`<b>Player ${i+1}</b><div style="display:flex;gap:8px"><input type="text" data-n="${i}" value="${esc(p.name)}"><input type="color" data-c="${i}" value="${p.color}"></div>`;x.appendChild(r)});$$('[data-n]').forEach(x=>x.onchange=()=>{if(!x.value.trim())return;push();S.players[+x.dataset.n].name=x.value.trim();save();render()});$$('[data-c]').forEach(x=>x.onchange=()=>{push();S.players[+x.dataset.c].color=x.value;save();render()})}
 $$('[data-count]').forEach(b=>b.onclick=()=>{let n=+b.dataset.count;if(n===S.count)return;push();S.count=n;save();render()});
