@@ -1,5 +1,6 @@
 (()=>{
   const root=document.documentElement;
+  const BOARD_W=844, BOARD_H=390;
   const ids=['app','tools','dl','settings'];
   let stage=document.getElementById('stage');
   if(!stage){
@@ -7,78 +8,24 @@
     stage.id='stage';
     const first=document.getElementById('app');
     first.parentNode.insertBefore(stage,first);
-    ids.forEach(id=>{
-      const el=document.getElementById(id);
-      if(el)stage.appendChild(el);
-    });
+    ids.forEach(id=>{const el=document.getElementById(id);if(el)stage.appendChild(el)});
   }
 
   let raf=0;
-
   function viewport(){
-    const de=document.documentElement;
-    let w=Math.round(Math.max(de.clientWidth||0,window.innerWidth||0));
-    let h=Math.round(Math.max(de.clientHeight||0,window.innerHeight||0));
-
-    /* In iOS standalone mode clientHeight can exclude part of the home-indicator area even
-       with viewport-fit=cover. Use the full screen dimensions so portrait and landscape use
-       the same physical canvas and therefore the same logical landscape geometry. */
-    const standalone=(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
-    if(standalone&&window.screen){
-      const sw=Math.round(window.screen.width||0);
-      const sh=Math.round(window.screen.height||0);
-      if(sw>0&&sh>0){
-        const shortSide=Math.min(sw,sh);
-        const longSide=Math.max(sw,sh);
-        const portrait=h>=w;
-        const fullW=portrait?shortSide:longSide;
-        const fullH=portrait?longSide:shortSide;
-        w=Math.max(w,fullW);
-        h=Math.max(h,fullH);
-      }
-    }
-
-    return {w,h,x:0,y:0};
-  }
-
-  function applyStage(){
-    const p=viewport();
-    const rotated=p.h>p.w;
-    const lw=Math.max(p.w,p.h);
-    const lh=Math.min(p.w,p.h);
-    const scale=Math.max(.72,Math.min(1.85,Math.min(lw/844,lh/390)));
-    const cx=p.x+p.w/2;
-    const cy=p.y+p.h/2;
-
-    window.EDHStage={
-      state:{...p,rotated,lw,lh,cx,cy,scale},
-      update:applyStage
-    };
-
-    root.classList.toggle('stage-rotated',rotated);
-    root.classList.toggle('stage-native',!rotated);
-    root.style.setProperty('--stage-w',lw+'px');
-    root.style.setProperty('--stage-h',lh+'px');
-    root.style.setProperty('--stage-left',cx+'px');
-    root.style.setProperty('--stage-top',cy+'px');
-    root.style.setProperty('--stage-rot',rotated?'90deg':'0deg');
-    root.style.setProperty('--logical-scale',scale.toFixed(4));
-
-    settleLayout();
+    const v=window.visualViewport;
+    if(v)return {w:Math.max(1,Math.round(v.width)),h:Math.max(1,Math.round(v.height)),x:Math.round(v.offsetLeft||0),y:Math.round(v.offsetTop||0)};
+    return {w:Math.max(1,Math.round(window.innerWidth||document.documentElement.clientWidth||1)),h:Math.max(1,Math.round(window.innerHeight||document.documentElement.clientHeight||1)),x:0,y:0};
   }
 
   function fitLives(){
     const lives=[...document.querySelectorAll('#app .p:not(.hide) .life')];
-    for(const el of lives)el.style.setProperty('--life-fit','1');
+    lives.forEach(el=>el.style.setProperty('--life-fit','1'));
     requestAnimationFrame(()=>{
-      for(const el of lives){
-        const available=Math.max(1,el.clientWidth*.94);
-        const needed=Math.max(1,el.scrollWidth);
-        if(needed>available){
-          const fit=Math.max(.52,Math.min(1,available/needed));
-          el.style.setProperty('--life-fit',fit.toFixed(3));
-        }
-      }
+      lives.forEach(el=>{
+        const available=Math.max(1,el.clientWidth*.94), needed=Math.max(1,el.scrollWidth);
+        if(needed>available)el.style.setProperty('--life-fit',Math.max(.5,Math.min(1,available/needed)).toFixed(3));
+      });
     });
   }
 
@@ -87,19 +34,30 @@
     raf=requestAnimationFrame(()=>requestAnimationFrame(fitLives));
   }
 
+  function applyBoard(){
+    const p=viewport();
+    const rotated=p.h>p.w;
+    const displayW=rotated?BOARD_H:BOARD_W;
+    const displayH=rotated?BOARD_W:BOARD_H;
+    const scale=Math.min(p.w/displayW,p.h/displayH);
+    const cx=p.x+p.w/2, cy=p.y+p.h/2;
+
+    root.classList.toggle('stage-rotated',rotated);
+    root.classList.toggle('stage-native',!rotated);
+    root.style.setProperty('--board-scale',scale.toFixed(6));
+    root.style.setProperty('--board-rot',rotated?'90deg':'0deg');
+    root.style.setProperty('--board-left',cx+'px');
+    root.style.setProperty('--board-top',cy+'px');
+    window.EDHStage={state:{...p,rotated,boardW:BOARD_W,boardH:BOARD_H,scale,cx,cy},update:applyBoard};
+    settleLayout();
+  }
+
   const app=document.getElementById('app');
   if(app)new MutationObserver(settleLayout).observe(app,{childList:true,subtree:true,characterData:true});
-
-  window.addEventListener('resize',applyStage,{passive:true});
-  window.addEventListener('orientationchange',()=>{
-    setTimeout(applyStage,80);
-    setTimeout(applyStage,260);
-  },{passive:true});
-  window.addEventListener('pageshow',()=>{
-    applyStage();
-    setTimeout(applyStage,180);
-  });
+  window.addEventListener('resize',applyBoard,{passive:true});
+  window.visualViewport?.addEventListener('resize',applyBoard,{passive:true});
+  window.addEventListener('orientationchange',()=>{setTimeout(applyBoard,60);setTimeout(applyBoard,240)},{passive:true});
+  window.addEventListener('pageshow',()=>{applyBoard();setTimeout(applyBoard,160)});
   document.fonts?.ready?.then(settleLayout).catch(()=>{});
-
-  applyStage();
+  applyBoard();
 })();
