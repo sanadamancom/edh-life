@@ -20,22 +20,28 @@ const settings=$('#settings');
 const settingsPlayers=$('#ps');
 const diceLayer=$('#dl');
 const diceMenu=$('#dm');
+const counterOverlay=$('#counters');
+const counterPlayer=$('#counterPlayer');
+const poisonInput=$('#poisonInput');
 
 function createPlayer(index){
   const [name,color]=PLAYER_DEFAULTS[index];
-  return {name,color,life:40,cmd:[0,0,0,0]};
+  return {name,color,life:40,cmd:[0,0,0,0],poison:0};
 }
 
 function normalizePlayer(player,index){
   const base=createPlayer(index);
+  const life=Number(player?.life);
+  const poison=Number(player?.poison);
   return {
     name:typeof player?.name==='string'&&player.name.trim()?player.name:base.name,
     color:typeof player?.color==='string'?player.color:base.color,
-    life:Number.isFinite(Number(player?.life))?Number(player.life):40,
+    life:Number.isFinite(life)?life:40,
     cmd:Array.from({length:4},(_,i)=>{
       const value=Number(player?.cmd?.[i]);
       return Number.isFinite(value)?Math.max(0,value):0;
-    })
+    }),
+    poison:Number.isFinite(poison)?Math.max(0,Math.trunc(poison)):0
   };
 }
 
@@ -90,13 +96,17 @@ function icon(name){
 }
 
 function defeatState(player,index){
-  if(player.life<=0)return {defeated:true,life:true,label:'DEFEAT'};
   for(let source=0;source<state.count;source++){
     if(source!==index&&(player.cmd[source]||0)>=21){
-      return {defeated:true,life:false,label:'統率者ダメージ21+'};
+      return {
+        defeated:true,
+        reason:`COMMANDER DAMAGE 21 — ${state.players[source].name}`
+      };
     }
   }
-  return {defeated:false,life:false,label:''};
+  if(player.poison>=10)return {defeated:true,reason:'POISON 10'};
+  if(player.life<=0)return {defeated:true,reason:'LIFE 0'};
+  return {defeated:false,reason:''};
 }
 
 function commanderCards(playerIndex){
@@ -118,6 +128,11 @@ function commanderCards(playerIndex){
   return cards.join('');
 }
 
+function poisonBadge(player){
+  if(player.poison<=0)return '';
+  return `<span class="poisonBadge ${player.poison>=8?'hot':''}" aria-label="毒カウンター ${player.poison}">☠︎ ${player.poison}</span>`;
+}
+
 function renderPlayers(){
   app.className=`c${state.count}`;
   app.innerHTML='';
@@ -128,8 +143,7 @@ function renderPlayers(){
     section.className=[
       'p',
       index>=state.count?'hide':'',
-      defeat.defeated?'defeated':'',
-      defeat.life?'life-defeat':''
+      defeat.defeated?'defeated':''
     ].filter(Boolean).join(' ');
     section.style.setProperty('--pc',player.color);
     section.innerHTML=`
@@ -138,12 +152,12 @@ function renderPlayers(){
         <div class="lifeRow">
           <button type="button" class="quick5" aria-label="${escapeHtml(player.name)}のライフを5減らす" data-life="${index}" data-d="-5">−5</button>
           <button type="button" class="delta" aria-label="${escapeHtml(player.name)}のライフを1減らす" data-life="${index}" data-d="-1">${icon('remove')}</button>
-          <button type="button" class="life" aria-label="${escapeHtml(player.name)}のライフを長押しして直接入力" data-life="${index}" data-d="0">${player.life}</button>
+          <button type="button" class="life" aria-label="${escapeHtml(player.name)}の特殊カウンターを長押しして開く" data-life="${index}" data-d="0"><span class="lifeValue">${player.life}</span>${poisonBadge(player)}</button>
           <button type="button" class="delta" aria-label="${escapeHtml(player.name)}のライフを1増やす" data-life="${index}" data-d="1">${icon('add')}</button>
           <button type="button" class="quick5" aria-label="${escapeHtml(player.name)}のライフを5増やす" data-life="${index}" data-d="5">＋5</button>
         </div>
         <div class="cmd"><div class="cg">${commanderCards(index)}</div></div>
-        <div class="dead">${defeat.label}</div>
+        <div class="dead">${escapeHtml(defeat.reason)}</div>
       </div>`;
     app.appendChild(section);
   });
@@ -170,15 +184,6 @@ function mutate(action){
   action();
   saveState();
   render();
-}
-
-function editLife(index){
-  const player=state.players[index];
-  const input=prompt(`${player.name} のライフ`,player.life);
-  if(input===null)return;
-  const value=Number.parseInt(input,10);
-  if(!Number.isFinite(value))return;
-  mutate(()=>{player.life=value});
 }
 
 app.addEventListener('click',event=>{
@@ -209,6 +214,51 @@ app.addEventListener('click',event=>{
   });
 });
 
+let counterIndex=null;
+
+function playerFacesOpposite(index){
+  if(state.count===4)return index===0||index===1;
+  if(state.count===3)return index===0;
+  return index===0;
+}
+
+function openCounters(index){
+  counterIndex=index;
+  const player=state.players[index];
+  counterPlayer.textContent=player.name;
+  poisonInput.value=String(player.poison);
+  counterOverlay.classList.toggle('counter-flipped',playerFacesOpposite(index));
+  counterOverlay.classList.add('show');
+}
+
+function closeCounters(){
+  counterOverlay.classList.remove('show','counter-flipped');
+  counterIndex=null;
+}
+
+function setPoison(next){
+  if(counterIndex===null)return;
+  const value=Math.max(0,Math.trunc(Number(next)||0));
+  if(value===state.players[counterIndex].poison){
+    poisonInput.value=String(value);
+    return;
+  }
+  mutate(()=>{state.players[counterIndex].poison=value});
+  poisonInput.value=String(value);
+}
+
+$('#poisonMinus').addEventListener('click',()=>{
+  if(counterIndex!==null)setPoison(state.players[counterIndex].poison-1);
+});
+$('#poisonPlus').addEventListener('click',()=>{
+  if(counterIndex!==null)setPoison(state.players[counterIndex].poison+1);
+});
+poisonInput.addEventListener('change',()=>setPoison(poisonInput.value));
+$('#counterClose').addEventListener('click',closeCounters);
+counterOverlay.addEventListener('click',event=>{
+  if(event.target===counterOverlay)closeCounters();
+});
+
 let holdTarget=null;
 let holdTimer=null;
 
@@ -236,7 +286,7 @@ app.addEventListener('pointerdown',event=>{
   holdTimer=setTimeout(()=>{
     const index=Number(life.dataset.life);
     clearHold();
-    editLife(index);
+    openCounters(index);
   },600);
 });
 
@@ -312,6 +362,7 @@ resetButton.addEventListener('click',()=>{
     state.players.forEach(player=>{
       player.life=40;
       player.cmd=[0,0,0,0];
+      player.poison=0;
     });
   });
   settings.classList.remove('show');

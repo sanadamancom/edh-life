@@ -1,10 +1,11 @@
-const CACHE_NAME='edh-life-v31-name-spacing';
+const CACHE_NAME='edh-life-v32-counters';
 const APP_SHELL=[
   './',
   './index.html',
-  './styles.css',
-  './layout.js',
-  './app.js',
+  './styles.css?v=32',
+  './counters.css?v=32',
+  './layout.js?v=30',
+  './app.js?v=32',
   './manifest.webmanifest',
   './icon.svg'
 ];

@@ -11,7 +11,8 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="./icon.svg">
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./styles.css?v=32">
+  <link rel="stylesheet" href="./counters.css?v=32">
   <title>EDH Life Counter</title>
 </head>
 <body>
@@ -45,6 +46,23 @@
 
     <div id="dl" class="diceLayer"></div>
 
+    <div id="counters" class="ov">
+      <div class="modal counterPanel" role="dialog" aria-modal="true" aria-labelledby="counterTitle">
+        <h2 id="counterTitle">特殊カウンター</h2>
+        <div id="counterPlayer" class="counterPlayer"></div>
+        <div class="specialCounterCard">
+          <div class="specialCounterLabel">毒カウンター</div>
+          <div class="specialCounterControls">
+            <button type="button" id="poisonMinus" aria-label="毒カウンターを1減らす">−1</button>
+            <input id="poisonInput" type="number" min="0" step="1" inputmode="numeric" aria-label="毒カウンター">
+            <button type="button" id="poisonPlus" aria-label="毒カウンターを1増やす">＋1</button>
+          </div>
+          <div class="counterHint">10個で敗北</div>
+        </div>
+        <div class="acts"><button type="button" id="counterClose">閉じる</button></div>
+      </div>
+    </div>
+
     <div id="settings" class="ov">
       <div class="modal">
         <h2>ゲーム設定</h2>
@@ -66,7 +84,7 @@
     </div>
   </div>
 
-  <script src="./layout.js"></script>
-  <script src="./app.js"></script>
+  <script src="./layout.js?v=30"></script>
+  <script src="./app.js?v=32"></script>
 </body>
 </html>

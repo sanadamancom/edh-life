@@ -1,0 +1,121 @@
+/* Special counters + long-press feedback. Loaded after styles.css. */
+
+:root{--poison:#9ee66f}
+
+/* The progress ring follows the digits themselves instead of the whole life slot. */
+.life.holding::after{display:none!important}
+.lifeValue{
+  position:relative;
+  display:inline-block;
+  padding:0 8px;
+  line-height:1;
+}
+.life.holding .lifeValue::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:2;
+  padding:3px;
+  pointer-events:none;
+  border-radius:16px;
+  background:conic-gradient(from -90deg,var(--warn) var(--hold-angle),rgba(255,255,255,.16) 0deg);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  filter:drop-shadow(0 0 5px rgba(255,204,102,.45));
+  animation:life-hold-progress 600ms linear forwards;
+}
+
+.poisonBadge{
+  position:absolute;
+  right:2px;
+  bottom:1px;
+  padding:2px 5px;
+  border:1px solid color-mix(in srgb,var(--poison) 38%,transparent);
+  border-radius:999px;
+  background:#071008b8;
+  color:var(--poison);
+  font-size:calc(11px * var(--ui-scale));
+  font-weight:900;
+  line-height:1;
+  letter-spacing:0;
+  text-shadow:none;
+}
+.poisonBadge.hot{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 42%,transparent)}
+
+/* Defeat reason sits directly under the central DEFEATED label. */
+.dead{
+  left:50%!important;
+  right:auto!important;
+  top:calc(50% + 26px)!important;
+  bottom:auto!important;
+  transform:translateX(-50%);
+  min-width:max-content;
+  text-align:center;
+  font-size:11px!important;
+  letter-spacing:.04em;
+  color:var(--danger)!important;
+  text-shadow:0 2px 8px #000b;
+}
+.p.life-defeat .dead{display:block!important}
+
+.counterPanel{
+  width:min(360px,82%);
+  padding:18px 20px;
+}
+.counterPanel h2{text-align:center;margin-bottom:4px}
+.counterPlayer{
+  margin-bottom:14px;
+  text-align:center;
+  color:var(--mut);
+  font-size:14px;
+  font-weight:800;
+}
+.specialCounterCard{
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#0d1118;
+}
+.specialCounterLabel{
+  margin-bottom:10px;
+  text-align:center;
+  font-size:16px;
+  font-weight:950;
+}
+.specialCounterControls{
+  display:grid;
+  grid-template-columns:64px minmax(88px,1fr) 64px;
+  gap:10px;
+  align-items:center;
+}
+.specialCounterControls button{
+  min-height:52px;
+  padding:0;
+  font-size:24px;
+}
+#poisonInput{
+  width:100%;
+  height:52px;
+  padding:0 8px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  outline:none;
+  background:#090c11;
+  color:var(--poison);
+  text-align:center;
+  font-size:30px;
+  font-weight:950;
+  font-variant-numeric:tabular-nums;
+  -moz-appearance:textfield;
+}
+#poisonInput::-webkit-inner-spin-button,
+#poisonInput::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.counterHint{
+  margin-top:8px;
+  text-align:center;
+  color:var(--mut);
+  font-size:12px;
+  font-weight:700;
+}
+.counter-flipped .counterPanel{transform:rotate(180deg)}

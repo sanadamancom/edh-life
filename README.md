@@ -10,8 +10,10 @@ EDH（Commander）用の卓上ライフカウンターWebアプリです。
 - ライフ数字・Commander Damage・各種ボタンを表示領域に合わせて自動調整
 - 相手統率者ごとのCommander Damage管理
 - Commander Damageの増減をライフへ自動反映
-- Life 0以下 / Commander Damage 21以上の敗北表示
-- ライフ数字長押しで直接入力
+- Life 0以下 / Commander Damage 21以上 / Poison 10以上の敗北判定
+- 敗北時は `DEFEATED` の下に敗北理由を表示
+- ライフ数字長押しで特殊カウンター画面を開く
+- 毒カウンターは特殊カウンター画面で管理し、1以上なら通常画面にも小さく表示
 - Undo
 - 2段階確認の全リセット
 - プレイヤー名・カラー変更
@@ -61,9 +63,10 @@ Service Workerでアプリ本体・CSS・JavaScript・manifest・アイコンを
 ## 構成
 
 - `index.html` — ページ構造とツールバー
-- `styles.css` — UI・レイアウト・アニメーション
+- `styles.css` — 基本UI・レイアウト・アニメーション
+- `counters.css` — 特殊カウンター・敗北理由・長押しフィードバック
 - `layout.js` — viewport / safe area / 縦横表示 / 自動サイズ計算
-- `app.js` — 状態管理・ライフ・Commander Damage・設定・ダイス・PWA補助
+- `app.js` — 状態管理・ライフ・Commander Damage・毒・設定・ダイス・PWA補助
 - `manifest.webmanifest` — PWA設定
 - `sw.js` — オフラインキャッシュ
 - `icon.svg` — アプリアイコン
