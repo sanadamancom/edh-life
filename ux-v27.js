@@ -8,6 +8,14 @@
     if(target===active)active=null;
   }
 
+  function syncLifeDefeatFlags(){
+    document.querySelectorAll('#app .p').forEach(p=>{
+      const life=p.querySelector('.life');
+      const value=Number(life?.textContent?.trim());
+      p.classList.toggle('life-defeat',Number.isFinite(value)&&value<=0);
+    });
+  }
+
   document.addEventListener('pointerdown',e=>{
     const life=e.target.closest?.('.life[data-life]');
     if(!life)return;
@@ -23,7 +31,7 @@
     clearTimer=setTimeout(()=>clearHold(life),630);
   },true);
 
-  document.addEventListener('pointerup',e=>{
+  document.addEventListener('pointerup',()=>{
     if(active)clearHold(active);
   },true);
 
@@ -32,4 +40,8 @@
   document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState!=='visible')clearHold();
   });
+
+  const app=document.getElementById('app');
+  if(app)new MutationObserver(syncLifeDefeatFlags).observe(app,{childList:true,subtree:true,characterData:true});
+  syncLifeDefeatFlags();
 })();
