@@ -17,12 +17,13 @@
   let raf=0;
 
   function viewport(){
-    const v=window.visualViewport;
+    /* Use the stable layout viewport. visualViewport can change when browser chrome or
+       the keyboard animates, which would make the game board jump. */
     return {
-      w:Math.round(v?.width||window.innerWidth),
-      h:Math.round(v?.height||window.innerHeight),
-      x:Math.round(v?.offsetLeft||0),
-      y:Math.round(v?.offsetTop||0)
+      w:Math.round(document.documentElement.clientWidth||window.innerWidth),
+      h:Math.round(document.documentElement.clientHeight||window.innerHeight),
+      x:0,
+      y:0
     };
   }
 
@@ -104,8 +105,6 @@
   window.addEventListener('resize',applyStage,{passive:true});
   window.addEventListener('orientationchange',()=>setTimeout(applyStage,100),{passive:true});
   window.addEventListener('pageshow',()=>{applyStage();setTimeout(applyStage,180)});
-  window.visualViewport?.addEventListener('resize',applyStage,{passive:true});
-  window.visualViewport?.addEventListener('scroll',applyStage,{passive:true});
   document.fonts?.ready?.then(settleLayout).catch(()=>{});
 
   applyStage();
