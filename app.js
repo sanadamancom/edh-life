@@ -12,7 +12,10 @@ const $$=selector=>[...document.querySelectorAll(selector)];
 
 const ICON_PATHS={
   add:'M440-440H240q-17 0-28.5-11.5T200-480q0-17 11.5-28.5T240-520h200v-200q0-17 11.5-28.5T480-760q17 0 28.5 11.5T520-720v200h200q17 0 28.5 11.5T760-480q0 17-11.5 28.5T720-440H520v200q0 17-11.5 28.5T480-200q-17 0-28.5-11.5T440-240v-200Z',
-  remove:'M240-440q-17 0-28.5-11.5T200-480q0-17 11.5-28.5T240-520h480q17 0 28.5 11.5T760-480q0 17-11.5 28.5T720-440H240Z'
+  remove:'M240-440q-17 0-28.5-11.5T200-480q0-17 11.5-28.5T240-520h480q17 0 28.5 11.5T760-480q0 17-11.5 28.5T720-440H240Z',
+  skull:'M240-80v-170q-39-17-68.5-45.5t-50-64.5q-20.5-36-31-77T80-520q0-158 112-259t288-101q176 0 288 101t112 259q0 42-10.5 83t-31 77q-20.5 36-50 64.5T720-250v170H240Zm80-80h40v-80h80v80h80v-80h80v80h40v-142q38-9 67.5-30t50-50q20.5-29 31.5-64t11-74q0-125-88.5-202.5T480-800q-143 0-231.5 77.5T160-520q0 39 11 74t31.5 64q20.5 29 50.5 50t67 30v142Zm100-200h120l-60-120-60 120Zm-80-80q33 0 56.5-23.5T420-520q0-33-23.5-56.5T340-600q-33 0-56.5 23.5T260-520q0 33 23.5 56.5T340-440Zm280 0q33 0 56.5-23.5T700-520q0-33-23.5-56.5T620-600q-33 0-56.5 23.5T540-520q0 33 23.5 56.5T620-440ZM480-160Z',
+  experience:'m480-174-74 56q-12 9-24 .5t-7-22.5l29-92-73-52q-12-8-7-22t19-14h89l28-92-142-84q-18-11-28-29t-10-41v-234q0-33 23.5-56.5T360-880h240q33 0 56.5 23.5T680-800v234q0 23-10 41t-28 29l-142 84 28 92h89q14 0 19 14t-7 22l-73 52 29 92q5 14-7 22.5t-24-.5l-74-56ZM360-800v234l80 48v-282h-80Zm240 0h-80v282l80-48v-234Z',
+  speed:'M418-340q24 24 62 23.5t56-27.5l169-253q9-14-2.5-25.5T677-625L424-456q-27 18-28.5 55t22.5 61Zm62-460q36 0 71 6t68 19q16 6 34 22.5t10 31.5q-8 15-36 20t-45-1q-25-9-50.5-13.5T480-720q-133 0-226.5 93.5T160-400q0 42 11.5 83t32.5 77h552q23-38 33.5-79t10.5-85q0-26-4.5-51T782-504q-6-17-2-33t18-27q13-10 28.5-6t21.5 18q15 35 23 71.5t9 74.5q1 57-13 109t-41 99q-11 18-30 28t-40 10H204q-21 0-40-10t-30-28q-26-45-40-95.5T80-400q0-83 31.5-155.5t86-127Q252-737 325-768.5T480-800Z'
 };
 
 const app=$('#app');
@@ -22,26 +25,34 @@ const diceLayer=$('#dl');
 const diceMenu=$('#dm');
 const counterOverlay=$('#counters');
 const counterPlayer=$('#counterPlayer');
-const poisonInput=$('#poisonInput');
+const counterInputs={
+  poison:$('#poisonInput'),
+  experience:$('#experienceInput'),
+  speed:$('#speedInput')
+};
 
 function createPlayer(index){
   const [name,color]=PLAYER_DEFAULTS[index];
-  return {name,color,life:40,cmd:[0,0,0,0],poison:0};
+  return {name,color,life:40,cmd:[0,0,0,0],poison:0,experience:0,speed:0};
+}
+
+function normalizeCounter(value,max=Infinity){
+  const number=Number(value);
+  if(!Number.isFinite(number))return 0;
+  return Math.min(max,Math.max(0,Math.trunc(number)));
 }
 
 function normalizePlayer(player,index){
   const base=createPlayer(index);
   const life=Number(player?.life);
-  const poison=Number(player?.poison);
   return {
     name:typeof player?.name==='string'&&player.name.trim()?player.name:base.name,
     color:typeof player?.color==='string'?player.color:base.color,
     life:Number.isFinite(life)?life:40,
-    cmd:Array.from({length:4},(_,i)=>{
-      const value=Number(player?.cmd?.[i]);
-      return Number.isFinite(value)?Math.max(0,value):0;
-    }),
-    poison:Number.isFinite(poison)?Math.max(0,Math.trunc(poison)):0
+    cmd:Array.from({length:4},(_,i)=>normalizeCounter(player?.cmd?.[i])),
+    poison:normalizeCounter(player?.poison),
+    experience:normalizeCounter(player?.experience),
+    speed:normalizeCounter(player?.speed,4)
   };
 }
 
@@ -91,17 +102,14 @@ function escapeHtml(value){
   }[char]));
 }
 
-function icon(name){
-  return `<svg class="mi" viewBox="0 -960 960 960" aria-hidden="true"><path d="${ICON_PATHS[name]}"></path></svg>`;
+function icon(name,className='mi'){
+  return `<svg class="${className}" viewBox="0 -960 960 960" aria-hidden="true"><path d="${ICON_PATHS[name]}"></path></svg>`;
 }
 
 function defeatState(player,index){
   for(let source=0;source<state.count;source++){
     if(source!==index&&(player.cmd[source]||0)>=21){
-      return {
-        defeated:true,
-        reason:`COMMANDER DAMAGE 21 — ${state.players[source].name}`
-      };
+      return {defeated:true,reason:`COMMANDER DAMAGE 21 — ${state.players[source].name}`};
     }
   }
   if(player.poison>=10)return {defeated:true,reason:'POISON 10'};
@@ -128,9 +136,18 @@ function commanderCards(playerIndex){
   return cards.join('');
 }
 
-function poisonBadge(player){
-  if(player.poison<=0)return '';
-  return `<span class="poisonBadge ${player.poison>=8?'hot':''}" aria-label="毒カウンター ${player.poison}">☠︎ ${player.poison}</span>`;
+function counterBadges(player){
+  const badges=[];
+  if(player.poison>0){
+    badges.push(`<span class="counterBadge poison ${player.poison>=8?'hot':''}" aria-label="毒カウンター ${player.poison}">${icon('skull','counterIcon')}<b>${player.poison}</b></span>`);
+  }
+  if(player.experience>0){
+    badges.push(`<span class="counterBadge experience" aria-label="経験カウンター ${player.experience}">${icon('experience','counterIcon')}<b>${player.experience}</b></span>`);
+  }
+  if(player.speed>0){
+    badges.push(`<span class="counterBadge speed" aria-label="速度 ${player.speed}">${icon('speed','counterIcon')}<b>${player.speed}</b></span>`);
+  }
+  return badges.length?`<div class="counterBadges">${badges.join('')}</div>`:'';
 }
 
 function renderPlayers(){
@@ -149,10 +166,11 @@ function renderPlayers(){
     section.innerHTML=`
       <div class="pc">
         <div class="name">${escapeHtml(player.name)}</div>
+        ${counterBadges(player)}
         <div class="lifeRow">
           <button type="button" class="quick5" aria-label="${escapeHtml(player.name)}のライフを5減らす" data-life="${index}" data-d="-5">−5</button>
           <button type="button" class="delta" aria-label="${escapeHtml(player.name)}のライフを1減らす" data-life="${index}" data-d="-1">${icon('remove')}</button>
-          <button type="button" class="life" aria-label="${escapeHtml(player.name)}の特殊カウンターを長押しして開く" data-life="${index}" data-d="0"><span class="lifeValue">${player.life}</span>${poisonBadge(player)}</button>
+          <button type="button" class="life" aria-label="${escapeHtml(player.name)}の特殊カウンターを長押しして開く" data-life="${index}" data-d="0"><span class="lifeValue">${player.life}</span></button>
           <button type="button" class="delta" aria-label="${escapeHtml(player.name)}のライフを1増やす" data-life="${index}" data-d="1">${icon('add')}</button>
           <button type="button" class="quick5" aria-label="${escapeHtml(player.name)}のライフを5増やす" data-life="${index}" data-d="5">＋5</button>
         </div>
@@ -222,11 +240,19 @@ function playerFacesOpposite(index){
   return index===0;
 }
 
+function syncCounterInputs(){
+  if(counterIndex===null)return;
+  const player=state.players[counterIndex];
+  counterInputs.poison.value=String(player.poison);
+  counterInputs.experience.value=String(player.experience);
+  counterInputs.speed.value=String(player.speed);
+}
+
 function openCounters(index){
   counterIndex=index;
   const player=state.players[index];
   counterPlayer.textContent=player.name;
-  poisonInput.value=String(player.poison);
+  syncCounterInputs();
   counterOverlay.classList.toggle('counter-flipped',playerFacesOpposite(index));
   counterOverlay.classList.add('show');
 }
@@ -236,24 +262,35 @@ function closeCounters(){
   counterIndex=null;
 }
 
-function setPoison(next){
+function setCounter(type,next){
   if(counterIndex===null)return;
-  const value=Math.max(0,Math.trunc(Number(next)||0));
-  if(value===state.players[counterIndex].poison){
-    poisonInput.value=String(value);
+  const max=type==='speed'?4:Infinity;
+  const value=normalizeCounter(next,max);
+  if(value===state.players[counterIndex][type]){
+    counterInputs[type].value=String(value);
     return;
   }
-  mutate(()=>{state.players[counterIndex].poison=value});
-  poisonInput.value=String(value);
+  mutate(()=>{state.players[counterIndex][type]=value});
+  syncCounterInputs();
 }
 
-$('#poisonMinus').addEventListener('click',()=>{
-  if(counterIndex!==null)setPoison(state.players[counterIndex].poison-1);
+$$('[data-counter-minus]').forEach(button=>{
+  button.addEventListener('click',()=>{
+    if(counterIndex===null)return;
+    const type=button.dataset.counterMinus;
+    setCounter(type,state.players[counterIndex][type]-1);
+  });
 });
-$('#poisonPlus').addEventListener('click',()=>{
-  if(counterIndex!==null)setPoison(state.players[counterIndex].poison+1);
+$$('[data-counter-plus]').forEach(button=>{
+  button.addEventListener('click',()=>{
+    if(counterIndex===null)return;
+    const type=button.dataset.counterPlus;
+    setCounter(type,state.players[counterIndex][type]+1);
+  });
 });
-poisonInput.addEventListener('change',()=>setPoison(poisonInput.value));
+Object.entries(counterInputs).forEach(([type,input])=>{
+  input.addEventListener('change',()=>setCounter(type,input.value));
+});
 $('#counterClose').addEventListener('click',closeCounters);
 counterOverlay.addEventListener('click',event=>{
   if(event.target===counterOverlay)closeCounters();
@@ -341,6 +378,18 @@ settings.addEventListener('click',event=>{
   if(event.target===settings)settings.classList.remove('show');
 });
 
+function resetGame(){
+  mutate(()=>{
+    state.players.forEach(player=>{
+      player.life=40;
+      player.cmd=[0,0,0,0];
+      player.poison=0;
+      player.experience=0;
+      player.speed=0;
+    });
+  });
+}
+
 let resetArmed=false;
 let resetTimer=null;
 const resetButton=$('#reset');
@@ -358,16 +407,42 @@ resetButton.addEventListener('click',()=>{
 
   resetArmed=false;
   clearTimeout(resetTimer);
-  mutate(()=>{
-    state.players.forEach(player=>{
-      player.life=40;
-      player.cmd=[0,0,0,0];
-      player.poison=0;
-    });
-  });
+  resetGame();
   settings.classList.remove('show');
   resetButton.textContent='全リセット';
 });
+
+const quickReset=$('#quickReset');
+let quickResetTimer=null;
+
+function clearQuickReset(){
+  if(quickResetTimer){
+    clearTimeout(quickResetTimer);
+    quickResetTimer=null;
+  }
+  quickReset.classList.remove('holding');
+}
+
+quickReset.addEventListener('pointerdown',event=>{
+  if(event.pointerType==='mouse'&&event.button!==0)return;
+  clearQuickReset();
+  quickReset.classList.add('holding');
+  try{quickReset.setPointerCapture?.(event.pointerId)}catch{}
+  quickResetTimer=setTimeout(()=>{
+    quickResetTimer=null;
+    quickReset.classList.remove('holding');
+    resetGame();
+    navigator.vibrate?.(35);
+  },850);
+});
+quickReset.addEventListener('click',event=>{
+  event.preventDefault();
+  event.stopPropagation();
+});
+quickReset.addEventListener('contextmenu',event=>event.preventDefault());
+document.addEventListener('pointerup',clearQuickReset,true);
+document.addEventListener('pointercancel',clearQuickReset,true);
+window.addEventListener('blur',clearQuickReset);
 
 function d6(){
   if(window.crypto?.getRandomValues){
