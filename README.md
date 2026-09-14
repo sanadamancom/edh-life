@@ -6,11 +6,12 @@ EDH（Commander）用の卓上ライフカウンターWebアプリです。
 
 - 2〜4人対応
 - 初期ライフ40
-- ライフ操作は `−5 / −1 / LIFE / +1 / +5` を1段に配置
-- 画面サイズに応じてライフ数字・Commander Damage・各種ボタンを自動拡大縮小
+- ライフ操作は `−5 / −1 / LIFE / +1 / +5`
+- ライフ数字・Commander Damage・各種ボタンを表示領域に合わせて自動調整
 - 相手統率者ごとのCommander Damage管理
 - Commander Damageの増減をライフへ自動反映
-- 21 Commander Damage / Life 0以下の警告
+- Life 0以下 / Commander Damage 21以上の敗北表示
+- ライフ数字長押しで直接入力
 - Undo
 - 2段階確認の全リセット
 - プレイヤー名・カラー変更
@@ -22,8 +23,7 @@ EDH（Commander）用の卓上ライフカウンターWebアプリです。
 - Screen Wake Lock対応ブラウザでは画面スリープ防止
 - Fullscreen API対応ブラウザではフルスクリーン表示
 - PWA対応 / オフライン起動
-- iPhone横向き向けのdynamic viewport / safe area対応
-- UIアイコンはMaterial Symbols RoundedのSVGをアプリ内へ埋め込み
+- iPhone / iPadのsafe areaと縦横表示に対応
 
 ## GitHub Pages
 
@@ -31,38 +31,39 @@ EDH（Commander）用の卓上ライフカウンターWebアプリです。
 
 `https://sanadamancom.github.io/edh-life/`
 
-`.github/workflows/pages.yml` で `main` へのpush時にGitHub Pagesへ自動デプロイする構成です。
+`.github/workflows/pages.yml` で `main` へのpush時にGitHub Pagesへ自動デプロイします。
 
 GitHubの **Settings → Pages → Build and deployment → Source** は **GitHub Actions** に設定してください。
 
-## iPhoneでアプリとして使う
+## ホーム画面から使う
 
-1. Safariで `https://sanadamancom.github.io/edh-life/` を開く
+1. Safariで公開URLを開く
 2. 共有ボタンを押す
 3. **ホーム画面に追加** を選ぶ
 4. 追加された `EDH Life` アイコンから起動する
 
-ホーム画面から起動すると `standalone` モードになり、通常のSafariのアドレスバーやタブUIなしで利用できます。
+manifestの向き指定は `any` です。アプリ側では、横向きはそのまま、縦向きは完成した横長ボード全体を90度回転して表示します。
 
-manifestでは横向きを指定しています。iOS側の制限により向きが完全固定されない場合がありますが、UIは横向きでの利用を前提に最適化しています。
+## レイアウト方針
+
+内部UIは高さ390pxの論理ボードを基準にしています。
+
+- 短辺は表示領域に合わせて拡大縮小
+- 長辺は最大844px
+- 端末のsafe areaと操作ボタン用に長辺側へガターを確保
+- 4人表示は常に2×2の均等分割
+- ライフ数字の大きさは値そのものではなく、プレイヤー領域の実幅から決定
 
 ## オフライン
 
-Service Workerでアプリ本体・CSS・JavaScript・manifest・アイコンをキャッシュします。一度オンラインで起動した後は、通信できない場所でも起動可能です。
-
-更新時はナビゲーションだけネットワーク優先にしているため、GitHub Pagesへ新しい版が反映された後に再度開けば更新を取得できます。
-
-## UIアイコン
-
-Undo / ダイス / 設定 / フルスクリーン / メインの ±1 は Google Material Symbols Rounded のSVGパスを直接埋め込んで使用しています。外部Webフォントへ依存しないため、PWAのオフライン状態でも同じ表示になります。
-
-Material Symbols は Apache License 2.0 で提供されています。
+Service Workerでアプリ本体・CSS・JavaScript・manifest・アイコンをキャッシュします。一度オンラインで起動した後は、通信できない場所でも起動できます。
 
 ## 構成
 
-- `index.html` — ページ構造・ツールバーSVG
-- `styles.css` — レスポンシブレイアウト・UIスタイル
-- `app.js` — ライフ管理・Commander Damage・ダイス等のロジック
+- `index.html` — ページ構造とツールバー
+- `styles.css` — UI・レイアウト・アニメーション
+- `layout.js` — viewport / safe area / 縦横表示 / 自動サイズ計算
+- `app.js` — 状態管理・ライフ・Commander Damage・設定・ダイス・PWA補助
 - `manifest.webmanifest` — PWA設定
 - `sw.js` — オフラインキャッシュ
 - `icon.svg` — アプリアイコン
