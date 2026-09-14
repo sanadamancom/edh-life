@@ -32,3 +32,51 @@
     transform:translate(-50%,-50%)!important;
   }
 }
+
+/* Never let the life text spill into adjacent +/- buttons. */
+.life{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  text-align:center!important;
+}
+
+/* Landscape iPad/tablets: constrain by horizontal room as well as viewport height. */
+@media (orientation:landscape) and (min-width:900px) and (min-height:600px){
+  .lifeRow{
+    width:min(94%,820px)!important;
+    grid-template-columns:minmax(56px,.55fr) minmax(66px,.70fr) minmax(180px,2.20fr) minmax(66px,.70fr) minmax(56px,.55fr)!important;
+    gap:clamp(5px,.7vw,12px)!important;
+  }
+  .life{
+    font-size:clamp(82px,min(17vh,11vw),160px)!important;
+    line-height:.78!important;
+  }
+  .delta,.quick5{
+    height:clamp(58px,10vh,90px)!important;
+  }
+  .delta .mi{
+    width:clamp(34px,6.5vh,56px)!important;
+    height:clamp(34px,6.5vh,56px)!important;
+  }
+  .quick5{
+    font-size:clamp(18px,3.1vh,30px)!important;
+  }
+}
+
+/* Portrait iPad/tablets: each player is much narrower, so cap life text more aggressively. */
+@media (orientation:portrait) and (min-width:700px) and (min-height:900px){
+  .lifeRow{
+    width:min(95%,700px)!important;
+    grid-template-columns:minmax(44px,.55fr) minmax(52px,.70fr) minmax(120px,2.10fr) minmax(52px,.70fr) minmax(44px,.55fr)!important;
+    gap:clamp(4px,.65vw,9px)!important;
+  }
+  .life{
+    font-size:clamp(64px,min(12vh,12vw),124px)!important;
+  }
+  .delta,.quick5{
+    height:clamp(50px,8vh,76px)!important;
+  }
+}
