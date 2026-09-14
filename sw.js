@@ -1,12 +1,14 @@
-const CACHE_NAME = 'edh-life-v18';
+const CACHE_NAME = 'edh-life-v20';
 const APP_SHELL = [
   './',
   './index.html',
+  './index-v20.html',
   './styles.css?v=8',
   './layout-fixes.css?v=13',
-  './layout-gutters.css?v=15',
+  './layout-gutters.css?v=19',
+  './layout-v20.css?v=20',
   './app.js?v=8',
-  './layout-fixes.js?v=17',
+  './layout-runtime-v20.js?v=20',
   './manifest.webmanifest',
   './icon.svg'
 ];
@@ -35,10 +37,10 @@ self.addEventListener('fetch', event => {
       fetch(event.request)
         .then(response => {
           const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy));
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
           return response;
         })
-        .catch(() => caches.match('./index.html'))
+        .catch(() => caches.match(event.request).then(r => r || caches.match('./index-v20.html')))
     );
     return;
   }
