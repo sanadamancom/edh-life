@@ -1,64 +1,57 @@
-const CACHE_NAME = 'edh-life-v29';
-const APP_SHELL = [
+const CACHE_NAME='edh-life-v30-refactor';
+const APP_SHELL=[
   './',
   './index.html',
-  './index-v27.html',
-  './styles.css?v=8',
-  './layout-fixes.css?v=13',
-  './layout-gutters.css?v=26',
-  './layout-v20.css?v=20',
-  './layout-v21.css?v=22',
-  './ux-v27.css?v=27',
-  './app.js?v=8',
-  './layout-runtime-v22.js?v=27',
-  './ux-v27.js?v=27',
-  './manifest.webmanifest?v=26',
+  './styles.css',
+  './layout.js',
+  './app.js',
+  './manifest.webmanifest',
   './icon.svg'
 ];
 
-self.addEventListener('install', event => {
+self.addEventListener('install',event=>{
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => Promise.all(APP_SHELL.map(async url => {
-        const response = await fetch(url, { cache: 'reload' });
-        if (!response.ok) throw new Error(`Failed to cache ${url}: ${response.status}`);
-        await cache.put(url, response);
+      .then(cache=>Promise.all(APP_SHELL.map(async url=>{
+        const response=await fetch(url,{cache:'reload'});
+        if(!response.ok)throw new Error(`Failed to cache ${url}: ${response.status}`);
+        await cache.put(url,response);
       })))
-      .then(() => self.skipWaiting())
+      .then(()=>self.skipWaiting())
   );
 });
 
-self.addEventListener('activate', event => {
+self.addEventListener('activate',event=>{
   event.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))))
-      .then(() => self.clients.claim())
+      .then(keys=>Promise.all(keys.filter(key=>key!==CACHE_NAME).map(key=>caches.delete(key))))
+      .then(()=>self.clients.claim())
   );
 });
 
-self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') return;
+self.addEventListener('fetch',event=>{
+  if(event.request.method!=='GET')return;
 
-  if (event.request.mode === 'navigate') {
+  if(event.request.mode==='navigate'){
     event.respondWith(
       fetch(event.request)
-        .then(response => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+        .then(response=>{
+          const copy=response.clone();
+          caches.open(CACHE_NAME).then(cache=>cache.put('./index.html',copy));
           return response;
         })
-        .catch(() => caches.match(event.request).then(r => r || caches.match('./index-v27.html')))
+        .catch(()=>caches.match('./index.html'))
     );
     return;
   }
 
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).then(response => {
-        if (!response || response.status !== 200 || response.type === 'opaque') return response;
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+    caches.match(event.request).then(cached=>{
+      if(cached)return cached;
+      return fetch(event.request).then(response=>{
+        if(!response||response.status!==200||response.type==='opaque')return response;
+        const copy=response.clone();
+        caches.open(CACHE_NAME).then(cache=>cache.put(event.request,copy));
         return response;
       });
     })
