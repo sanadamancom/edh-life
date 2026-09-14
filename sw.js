@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v36-help';
+const CACHE_NAME='edh-life-v37-material-help';
 const APP_SHELL=[
   './',
   './index.html',
