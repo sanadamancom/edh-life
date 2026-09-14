@@ -1,11 +1,11 @@
-const CACHE_NAME='edh-life-v32-counters';
+const CACHE_NAME='edh-life-v33-special-counters';
 const APP_SHELL=[
   './',
   './index.html',
-  './styles.css?v=32',
-  './counters.css?v=32',
+  './styles.css?v=33',
+  './counters.css?v=33',
   './layout.js?v=30',
-  './app.js?v=32',
+  './app.js?v=33',
   './manifest.webmanifest',
   './icon.svg'
 ];
