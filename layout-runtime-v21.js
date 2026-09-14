@@ -13,24 +13,35 @@
   }
 
   const app=document.getElementById('app');
-  const probe=document.createElement('div');
-  Object.assign(probe.style,{
+
+  /* Measure the exact containing block used by position:fixed.  This avoids the
+     iPad mismatch where innerHeight/clientHeight and the actual fixed viewport
+     can differ and leave a strip at the bottom in landscape. */
+  const viewportProbe=document.createElement('div');
+  Object.assign(viewportProbe.style,{
+    position:'fixed',inset:'0',visibility:'hidden',pointerEvents:'none',
+    margin:'0',padding:'0',border:'0'
+  });
+  document.body.appendChild(viewportProbe);
+
+  const safeProbe=document.createElement('div');
+  Object.assign(safeProbe.style,{
     position:'fixed',visibility:'hidden',pointerEvents:'none',
     top:'env(safe-area-inset-top, 0px)',right:'env(safe-area-inset-right, 0px)',
     bottom:'env(safe-area-inset-bottom, 0px)',left:'env(safe-area-inset-left, 0px)',
     width:'0',height:'0'
   });
-  document.body.appendChild(probe);
+  document.body.appendChild(safeProbe);
 
   const px=v=>{const n=parseFloat(v);return Number.isFinite(n)?Math.max(0,n):0};
   function viewport(){
-    const de=document.documentElement;
-    const w=Math.max(1,Math.round(window.innerWidth||0),Math.round(de.clientWidth||0));
-    const h=Math.max(1,Math.round(window.innerHeight||0),Math.round(de.clientHeight||0));
-    return{w,h,x:0,y:0};
+    const r=viewportProbe.getBoundingClientRect();
+    const w=Math.max(1,r.width);
+    const h=Math.max(1,r.height);
+    return{w,h,x:r.left,y:r.top};
   }
   function safe(){
-    const s=getComputedStyle(probe);
+    const s=getComputedStyle(safeProbe);
     return{top:px(s.top),right:px(s.right),bottom:px(s.bottom),left:px(s.left)};
   }
   function playerCount(){
@@ -43,7 +54,7 @@
     const p=viewport(),s=safe(),rotated=p.h>p.w;
     const short=Math.min(p.w,p.h),long=Math.max(p.w,p.h);
 
-    /* Short edge always fills the real layout viewport. */
+    /* Short edge always fills the exact fixed-position viewport. */
     const scale=short/BOARD_H;
     const boardW=Math.min(DESIGN_W,long/Math.max(scale,.001));
 
@@ -58,25 +69,24 @@
     const ui=Math.max(.48,Math.min(1,gameW/BASE_GAME_W));
     const tool=Math.max(.68,ui);
 
-    /* Life sizing is based only on viewport/player geometry, never the displayed value.
-       Reserve enough width for a normal two-digit EDH life total, and shrink the side
-       controls first when a tablet produces a narrow player cell. */
+    /* Life/control sizing depends only on viewport and player geometry, never on
+       the displayed life value, so this preserves the no-pulsing v21 behavior. */
     const count=playerCount();
     const playerW=count===2?gameW:gameW/2;
     const rowW=Math.max(1,playerW*.96);
     const baseLife=96*ui;
     const textWidthFactor=1.55;
-    const sideBudget=220; // 4 control columns + 4 gaps at scale 1
+    const sideBudget=220;
     const control=Math.max(.38,Math.min(ui,(rowW-baseLife*textWidthFactor)/sideBudget));
     const lifeSlot=Math.max(1,rowW-sideBudget*control);
     const lifeSize=Math.max(22,Math.min(baseLife,lifeSlot/textWidthFactor));
 
-    const cx=p.w/2,cy=p.h/2;
+    const cx=p.x+p.w/2,cy=p.y+p.h/2;
     root.style.setProperty('--board-w',boardW.toFixed(3)+'px');
     root.style.setProperty('--board-scale',scale.toFixed(6));
     root.style.setProperty('--board-rot',rotated?'90deg':'0deg');
-    root.style.setProperty('--board-left',cx+'px');
-    root.style.setProperty('--board-top',cy+'px');
+    root.style.setProperty('--board-left',cx.toFixed(3)+'px');
+    root.style.setProperty('--board-top',cy.toFixed(3)+'px');
     root.style.setProperty('--gutter-w',gutter.toFixed(3)+'px');
 
     stage.style.setProperty('--ui-scale',ui.toFixed(4));
@@ -100,8 +110,9 @@
   }
 
   window.addEventListener('resize',()=>schedule(),{passive:true});
+  window.visualViewport?.addEventListener('resize',()=>schedule(),{passive:true});
   window.addEventListener('orientationchange',()=>schedule(160),{passive:true});
-  window.addEventListener('pageshow',()=>{apply();schedule(160)});
+  window.addEventListener('pageshow',()=>{apply();schedule(160);setTimeout(apply,420)});
   if(app)new MutationObserver(()=>schedule(0)).observe(app,{attributes:true,attributeFilter:['class']});
   apply();
 })();
