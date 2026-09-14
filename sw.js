@@ -1,16 +1,16 @@
-const CACHE_NAME = 'edh-life-v25';
+const CACHE_NAME = 'edh-life-v26';
 const APP_SHELL = [
   './',
   './index.html',
   './index-v21.html',
   './styles.css?v=8',
   './layout-fixes.css?v=13',
-  './layout-gutters.css?v=19',
+  './layout-gutters.css?v=26',
   './layout-v20.css?v=20',
   './layout-v21.css?v=22',
   './app.js?v=8',
-  './layout-runtime-v22.js?v=22',
-  './manifest.webmanifest',
+  './layout-runtime-v22.js?v=26',
+  './manifest.webmanifest?v=26',
   './icon.svg'
 ];
 
