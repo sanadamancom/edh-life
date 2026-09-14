@@ -1,4 +1,4 @@
-const CACHE_NAME = 'edh-life-v28';
+const CACHE_NAME = 'edh-life-v29';
 const APP_SHELL = [
   './',
   './index.html',
@@ -19,7 +19,11 @@ const APP_SHELL = [
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(APP_SHELL))
+      .then(cache => Promise.all(APP_SHELL.map(async url => {
+        const response = await fetch(url, { cache: 'reload' });
+        if (!response.ok) throw new Error(`Failed to cache ${url}: ${response.status}`);
+        await cache.put(url, response);
+      })))
       .then(() => self.skipWaiting())
   );
 });
