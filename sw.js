@@ -1,11 +1,11 @@
-const CACHE_NAME = 'edh-life-v9';
+const CACHE_NAME = 'edh-life-v10';
 const APP_SHELL = [
   './',
   './index.html',
   './styles.css?v=8',
-  './layout-fixes.css?v=8',
+  './layout-fixes.css?v=10',
   './app.js?v=8',
-  './layout-fixes.js?v=8',
+  './layout-fixes.js?v=10',
   './manifest.webmanifest',
   './icon.svg'
 ];
