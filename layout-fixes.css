@@ -6,8 +6,6 @@
   --stage-left:50%;
   --stage-top:50%;
   --stage-rot:0deg;
-  --tools-x:50%;
-  --tools-y:50%;
 }
 
 #stage{
@@ -144,13 +142,15 @@ html.stage-rotated #stage{
   font-size:clamp(8px,calc(10px * var(--logical-scale)),17px)!important;
 }
 
-/* Tools always use logical-landscape coordinates, independent of physical orientation. */
+/* Utility controls live in one fixed logical-landscape rail.
+   The whole stage rotates on portrait devices, so their layout never changes by physical orientation. */
 #stage #tools{
-  left:var(--tools-x)!important;
-  top:var(--tools-y)!important;
-  right:auto!important;
-  transform:translate(-50%,-50%)!important;
-  flex-direction:row!important;
+  left:auto!important;
+  right:calc(var(--safe-r) + clamp(6px,calc(8px * var(--logical-scale)),14px))!important;
+  top:50%!important;
+  bottom:auto!important;
+  transform:translateY(-50%)!important;
+  flex-direction:column!important;
   gap:calc(4px * var(--logical-scale))!important;
 }
 #stage #tools>button,
@@ -160,12 +160,14 @@ html.stage-rotated #stage{
   padding:clamp(7px,calc(10px * var(--logical-scale)),16px)!important;
   border-radius:clamp(10px,calc(12px * var(--logical-scale)),19px)!important;
 }
+
+/* Dice choices open inward (to the left) from the right-side rail. */
 #stage .dm{
-  right:auto!important;
-  left:50%!important;
-  top:auto!important;
-  bottom:calc(49px * var(--logical-scale))!important;
-  transform:translateX(-50%)!important;
+  right:calc(clamp(34px,calc(42px * var(--logical-scale)),72px) + calc(7px * var(--logical-scale)))!important;
+  left:auto!important;
+  top:50%!important;
+  bottom:auto!important;
+  transform:translateY(-50%)!important;
   gap:calc(6px * var(--logical-scale))!important;
   padding:calc(6px * var(--logical-scale))!important;
 }
