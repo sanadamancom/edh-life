@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v35-hold-alignment';
+const CACHE_NAME='edh-life-v36-help';
 const APP_SHELL=[
   './',
   './index.html',
