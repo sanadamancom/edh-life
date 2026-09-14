@@ -6,7 +6,8 @@ EDH（Commander）用の卓上ライフカウンターWebアプリです。
 
 - 2〜4人対応
 - 初期ライフ40
-- メインの ±1 と、-10 / -5 / +5 / +10
+- ライフ操作は `−5 / −1 / LIFE / +1 / +5` を1段に配置
+- 画面サイズに応じてライフ数字・Commander Damage・各種ボタンを自動拡大縮小
 - 相手統率者ごとのCommander Damage管理
 - Commander Damageの増減をライフへ自動反映
 - 21 Commander Damage / Life 0以下の警告
@@ -53,14 +54,14 @@ Service Workerでアプリ本体・CSS・JavaScript・manifest・アイコンを
 
 ## UIアイコン
 
-Undo / ダイス / 設定 / フルスクリーン / メインの ±1 は Google Material Symbols Rounded のSVGパスをインラインで使用しています。外部Webフォントへ依存しないため、PWAのオフライン状態でも同じ表示になります。
+Undo / ダイス / 設定 / フルスクリーン / メインの ±1 は Google Material Symbols Rounded のSVGパスを直接埋め込んで使用しています。外部Webフォントへ依存しないため、PWAのオフライン状態でも同じ表示になります。
 
 Material Symbols は Apache License 2.0 で提供されています。
 
 ## 構成
 
-- `index.html` — HTML / Material Symbols SVG sprite
-- `styles.css` — レイアウト・UIスタイル
+- `index.html` — ページ構造・ツールバーSVG
+- `styles.css` — レスポンシブレイアウト・UIスタイル
 - `app.js` — ライフ管理・Commander Damage・ダイス等のロジック
 - `manifest.webmanifest` — PWA設定
 - `sw.js` — オフラインキャッシュ
