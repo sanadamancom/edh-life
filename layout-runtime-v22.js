@@ -28,13 +28,10 @@
     return clipped?vv:layout;
   }
   function stablePortrait(fallback){
-    let angle=Number(window.screen?.orientation?.angle);
-    if(!Number.isFinite(angle))angle=Number(window.orientation);
-    if(Number.isFinite(angle)){
-      angle=((angle%360)+360)%360;
-      if(angle===0||angle===180)return true;
-      if(angle===90||angle===270)return false;
-    }
+    /* Do not use screen.orientation.angle here. On iPad the natural orientation
+       can make 0deg mean landscape, which inverted our portrait/landscape mode.
+       The fixed layout viewport aspect directly matches how the page is actually
+       being displayed and is unaffected by the visualViewport header clipping. */
     const r=viewportProbe.getBoundingClientRect();
     if(r.width>0&&r.height>0)return r.height>r.width;
     return fallback.h>fallback.w;
