@@ -1,4 +1,4 @@
-const CACHE_NAME = 'edh-life-v10';
+const CACHE_NAME = 'edh-life-v11';
 const APP_SHELL = [
   './',
   './index.html',
