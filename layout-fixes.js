@@ -1,6 +1,7 @@
 (()=>{
   const root=document.documentElement;
   const BOARD_W=844,BOARD_H=390;
+  const MIN_GUTTER=52,MIN_PLAY_W=640,GUTTER_PAD=4;
   const ids=['app','tools','dl','settings'];
   let stage=document.getElementById('stage');
   if(!stage){
@@ -48,19 +49,25 @@
   function applyBoard(){
     const p=viewport();
     const safe=safeInsets();
-    const safeX=p.x+safe.left,safeY=p.y+safe.top;
-    const safeW=Math.max(1,p.w-safe.left-safe.right),safeH=Math.max(1,p.h-safe.top-safe.bottom);
     const rotated=p.h>p.w;
-    const displayW=rotated?BOARD_H:BOARD_W,displayH=rotated?BOARD_W:BOARD_H;
-    const scale=Math.min(safeW/displayW,safeH/displayH);
-    const cx=safeX+safeW/2,cy=safeY+safeH/2;
+    const displayW=rotated?BOARD_H:BOARD_W;
+    const displayH=rotated?BOARD_W:BOARD_H;
+    const scale=Math.min(p.w/displayW,p.h/displayH);
+    const cx=p.x+p.w/2,cy=p.y+p.h/2;
+
+    const longStart=rotated?safe.top:safe.left;
+    const longEnd=rotated?safe.bottom:safe.right;
+    const maxGutter=(BOARD_W-MIN_PLAY_W)/2;
+    const gutter=Math.min(maxGutter,Math.max(MIN_GUTTER,Math.ceil(Math.max(longStart,longEnd)/Math.max(scale,.001))+GUTTER_PAD));
+
     root.classList.toggle('stage-rotated',rotated);
     root.classList.toggle('stage-native',!rotated);
     root.style.setProperty('--board-scale',scale.toFixed(6));
     root.style.setProperty('--board-rot',rotated?'90deg':'0deg');
     root.style.setProperty('--board-left',cx+'px');
     root.style.setProperty('--board-top',cy+'px');
-    window.EDHStage={state:{...p,safe,safeX,safeY,safeW,safeH,rotated,boardW:BOARD_W,boardH:BOARD_H,scale,cx,cy},update:applyBoard};
+    root.style.setProperty('--gutter-w',gutter+'px');
+    window.EDHStage={state:{...p,safe,rotated,boardW:BOARD_W,boardH:BOARD_H,scale,cx,cy,gutter},update:applyBoard};
     settleLayout();
   }
   const app=document.getElementById('app');
