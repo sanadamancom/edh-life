@@ -1,17 +1,79 @@
-/* Symmetric long-axis gutters. The stage stays centered; safe-area only changes gutter width. */
-:root{--gutter-w:52px}
+/* Symmetric long-axis gutters; the short edge is always filled exactly. */
+:root{
+  --gutter-w:52px;
+  --ui-scale:1;
+  --tool-scale:1;
+  --tool-size:42px;
+}
 
 #stage #app{
   left:var(--gutter-w)!important;
   right:var(--gutter-w)!important;
 }
 
+#stage .pc{
+  padding:calc(6px * var(--ui-scale)) calc(8px * var(--ui-scale))!important;
+  gap:calc(4px * var(--ui-scale))!important;
+}
+#stage .name{font-size:calc(16px * var(--ui-scale))!important}
+#stage .lifeRow{
+  width:96%!important;
+  grid-template-columns:calc(44px * var(--ui-scale)) calc(56px * var(--ui-scale)) minmax(0,1fr) calc(56px * var(--ui-scale)) calc(44px * var(--ui-scale))!important;
+  gap:calc(5px * var(--ui-scale))!important;
+}
+#stage .life{font-size:calc(96px * var(--ui-scale) * var(--life-fit,1))!important}
+#stage .delta,#stage .quick5{
+  height:calc(70px * var(--ui-scale))!important;
+  border-radius:calc(18px * var(--ui-scale))!important;
+}
+#stage .delta .mi{
+  width:calc(38px * var(--ui-scale))!important;
+  height:calc(38px * var(--ui-scale))!important;
+}
+#stage .quick5{font-size:calc(22px * var(--ui-scale))!important}
+#stage .cmd{
+  width:95%!important;
+  padding:calc(4px * var(--ui-scale))!important;
+  border-radius:calc(12px * var(--ui-scale))!important;
+}
+#stage .cg{gap:calc(4px * var(--ui-scale))!important}
+#stage .cc{
+  padding:calc(3px * var(--ui-scale))!important;
+  border-radius:calc(9px * var(--ui-scale))!important;
+}
+#stage .cw{font-size:calc(9px * var(--ui-scale))!important}
+#stage .cv{
+  font-size:calc(22px * var(--ui-scale))!important;
+  margin:calc(2px * var(--ui-scale)) 0 calc(3px * var(--ui-scale))!important;
+}
+#stage .cb{gap:calc(3px * var(--ui-scale))!important}
+#stage .cb button{
+  min-height:calc(26px * var(--ui-scale))!important;
+  font-size:calc(13px * var(--ui-scale))!important;
+  border-radius:calc(7px * var(--ui-scale))!important;
+}
+
 #stage #tools{
   left:auto!important;
-  right:calc((var(--gutter-w) - 42px) / 2)!important;
+  right:calc((var(--gutter-w) - var(--tool-size)) / 2)!important;
   top:50%!important;
   transform:translateY(-50%)!important;
   flex-direction:column!important;
+  gap:calc(4px * var(--tool-scale))!important;
+}
+#stage #tools>button,#stage .dw>button{
+  width:var(--tool-size)!important;
+  height:var(--tool-size)!important;
+  padding:calc(10px * var(--tool-scale))!important;
+  border-radius:calc(12px * var(--tool-scale))!important;
+}
+#stage .dm{
+  right:calc(var(--tool-size) + 6px)!important;
+}
+#stage .dm button{
+  min-width:calc(58px * var(--tool-scale))!important;
+  height:calc(38px * var(--tool-scale))!important;
+  font-size:calc(14px * var(--tool-scale))!important;
 }
 
 #stage .diceLayer{
@@ -19,52 +81,10 @@
   right:var(--gutter-w)!important;
 }
 
-/* Tablet / square-ish viewport: the board still fills the short side exactly.
-   The logical long axis becomes shorter, so horizontal controls compact instead
-   of shrinking the complete board and leaving large top/bottom margins. */
-html.stage-compact #stage .pc{
-  padding-left:5px!important;
-  padding-right:5px!important;
-  gap:3px!important;
-}
-html.stage-compact #stage .name{font-size:14px!important}
-html.stage-compact #stage .lifeRow{
-  width:98%!important;
-  grid-template-columns:34px 40px minmax(64px,1fr) 40px 34px!important;
-  gap:3px!important;
-}
-html.stage-compact #stage .life{font-size:calc(84px * var(--life-fit,1))!important}
-html.stage-compact #stage .delta,
-html.stage-compact #stage .quick5{height:60px!important;border-radius:15px!important}
-html.stage-compact #stage .delta .mi{width:32px!important;height:32px!important}
-html.stage-compact #stage .quick5{font-size:18px!important}
-html.stage-compact #stage .cmd{width:97%!important;padding:3px!important}
-html.stage-compact #stage .cg{gap:3px!important}
-html.stage-compact #stage .cc{padding:2px!important;border-radius:8px!important}
-html.stage-compact #stage .cw{font-size:8px!important}
-html.stage-compact #stage .cv{font-size:19px!important;margin:1px 0 2px!important}
-html.stage-compact #stage .cb{gap:2px!important}
-html.stage-compact #stage .cb button{min-height:23px!important;font-size:12px!important}
-
-/* Typical 4:3 tablets land here at full short-side scale. */
-html.stage-narrow #stage .lifeRow{
-  grid-template-columns:28px 34px minmax(58px,1fr) 34px 28px!important;
-  gap:2px!important;
-}
-html.stage-narrow #stage .life{font-size:calc(76px * var(--life-fit,1))!important}
-html.stage-narrow #stage .delta,
-html.stage-narrow #stage .quick5{height:56px!important;border-radius:13px!important}
-html.stage-narrow #stage .delta .mi{width:29px!important;height:29px!important}
-html.stage-narrow #stage .quick5{font-size:16px!important}
-html.stage-narrow #stage .name{font-size:13px!important}
-html.stage-narrow #stage .cw{font-size:7px!important}
-html.stage-narrow #stage .cv{font-size:18px!important}
-html.stage-narrow #stage .cb button{min-height:22px!important;font-size:11px!important}
-
 @media (orientation:portrait), (orientation:landscape){
   #stage #tools{
     left:auto!important;
-    right:calc((var(--gutter-w) - 42px) / 2)!important;
+    right:calc((var(--gutter-w) - var(--tool-size)) / 2)!important;
     top:50%!important;
     transform:translateY(-50%)!important;
     flex-direction:column!important;
