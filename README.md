@@ -27,11 +27,9 @@ EDH（Commander）用の卓上ライフカウンターWebアプリです。
 
 `https://sanadamancom.github.io/edh-life/`
 
-`.github/workflows/pages.yml` で `main` へのpush時にGitHub Pagesへデプロイする構成です。
+`.github/workflows/pages.yml` で `main` へのpush時にGitHub Pagesへ自動デプロイする構成です。
 
-初回だけ、GitHubの **Settings → Pages → Build and deployment → Source** を **GitHub Actions** に設定してください。
-
-> 現在このリポジトリはPrivateです。PrivateリポジトリのGitHub Pagesは対応プランが必要です。利用できない場合はリポジトリをPublicに変更してください。
+初回だけ、GitHubの **Settings → Pages → Build and deployment → Source** を **GitHub Actions** に設定してください。以後は `main` 更新時に自動デプロイされます。
 
 ## 構成
 
