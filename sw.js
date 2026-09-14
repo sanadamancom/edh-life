@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v33-special-counters';
+const CACHE_NAME='edh-life-v34-counter-buttons';
 const APP_SHELL=[
   './',
   './index.html',
