@@ -1,0 +1,75 @@
+/* UX feedback: long-press life editing + defeated state */
+
+/* Long-press feedback is drawn inside the life button so it never changes layout. */
+#stage .life{
+  position:relative!important;
+  isolation:isolate;
+}
+
+@property --hold-angle{
+  syntax:"<angle>";
+  inherits:false;
+  initial-value:0deg;
+}
+
+#stage .life.holding::after{
+  content:"";
+  position:absolute;
+  inset:5px 8px;
+  border-radius:18px;
+  padding:3px;
+  background:conic-gradient(from -90deg,var(--warn) var(--hold-angle),rgba(255,255,255,.16) 0deg);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  pointer-events:none;
+  animation:life-hold-progress 600ms linear forwards;
+  filter:drop-shadow(0 0 5px rgba(255,204,102,.45));
+  z-index:2;
+}
+
+#stage .life.holding{
+  text-shadow:0 0 14px rgba(255,204,102,.35),0 6px 18px #0006!important;
+}
+
+@keyframes life-hold-progress{
+  from{--hold-angle:0deg}
+  to{--hold-angle:360deg}
+}
+
+/* Defeated players stay editable, but are clearly de-emphasised. */
+#stage .pc{
+  position:relative!important;
+}
+
+#stage .p:has(.dead:not(:empty)) .pc > *:not(.dead){
+  opacity:.48;
+  filter:saturate(.45) brightness(.82);
+}
+
+#stage .p:has(.dead:not(:empty)) .pc::after{
+  content:"DEFEATED";
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  background:rgba(4,6,9,.24);
+  color:rgba(255,255,255,.78);
+  font-size:34px;
+  font-weight:950;
+  letter-spacing:.12em;
+  text-shadow:0 3px 14px rgba(0,0,0,.75);
+  pointer-events:none;
+  z-index:8;
+}
+
+#stage .p:has(.dead:not(:empty)) .dead{
+  z-index:9!important;
+  color:var(--danger)!important;
+  opacity:1!important;
+  filter:none!important;
+}
+
+@media (prefers-reduced-motion:reduce){
+  #stage .life.holding::after{animation-duration:600ms}
+}
