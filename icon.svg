@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="104" fill="#0d0f14"/>
+  <path d="M0 0h256v256H0z" fill="#5d2630" opacity=".9"/>
+  <path d="M256 0h256v256H256z" fill="#263a62" opacity=".9"/>
+  <path d="M0 256h256v256H0z" fill="#244a38" opacity=".9"/>
+  <path d="M256 256h256v256H256z" fill="#5a4726" opacity=".9"/>
+  <circle cx="256" cy="256" r="166" fill="#0d0f14" stroke="#ffffff" stroke-opacity=".18" stroke-width="8"/>
+  <text x="256" y="300" text-anchor="middle" font-family="system-ui,-apple-system,Segoe UI,sans-serif" font-size="174" font-weight="900" fill="#f7f8fb">40</text>
+  <text x="256" y="374" text-anchor="middle" font-family="system-ui,-apple-system,Segoe UI,sans-serif" font-size="38" font-weight="800" letter-spacing="8" fill="#aab2c2">EDH</text>
+</svg>
