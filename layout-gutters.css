@@ -1,14 +1,15 @@
-/* Symmetric long-axis gutters; the short edge is always filled exactly. */
+/* Long-axis gutters are independent: start absorbs device chrome/cutouts, end holds tools. */
 :root{
-  --gutter-w:52px;
+  --gutter-start:12px;
+  --gutter-end:52px;
   --ui-scale:1;
   --tool-scale:1;
   --tool-size:42px;
 }
 
 #stage #app{
-  left:var(--gutter-w)!important;
-  right:var(--gutter-w)!important;
+  left:var(--gutter-start)!important;
+  right:var(--gutter-end)!important;
 }
 
 #stage .pc{
@@ -55,7 +56,7 @@
 
 #stage #tools{
   left:auto!important;
-  right:calc((var(--gutter-w) - var(--tool-size)) / 2)!important;
+  right:calc((var(--gutter-end) - var(--tool-size)) / 2)!important;
   top:50%!important;
   transform:translateY(-50%)!important;
   flex-direction:column!important;
@@ -67,9 +68,7 @@
   padding:calc(10px * var(--tool-scale))!important;
   border-radius:calc(12px * var(--tool-scale))!important;
 }
-#stage .dm{
-  right:calc(var(--tool-size) + 6px)!important;
-}
+#stage .dm{right:calc(var(--tool-size) + 6px)!important}
 #stage .dm button{
   min-width:calc(58px * var(--tool-scale))!important;
   height:calc(38px * var(--tool-scale))!important;
@@ -77,14 +76,14 @@
 }
 
 #stage .diceLayer{
-  left:var(--gutter-w)!important;
-  right:var(--gutter-w)!important;
+  left:var(--gutter-start)!important;
+  right:var(--gutter-end)!important;
 }
 
 @media (orientation:portrait), (orientation:landscape){
   #stage #tools{
     left:auto!important;
-    right:calc((var(--gutter-w) - var(--tool-size)) / 2)!important;
+    right:calc((var(--gutter-end) - var(--tool-size)) / 2)!important;
     top:50%!important;
     transform:translateY(-50%)!important;
     flex-direction:column!important;
