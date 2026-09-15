@@ -260,7 +260,7 @@ button{
 /* One floating utility material instead of five unrelated boxes. */
 #tools{
   gap:2px;
-  padding:4px;
+  padding:4px 0;
   border:1px solid rgba(255,255,255,.13);
   border-radius:calc(16px * var(--tool-scale));
   background:rgba(18,22,31,.74);
@@ -274,7 +274,9 @@ button{
   background:transparent;
   box-shadow:none;
 }
-#tools>button:hover,.dw>button:hover{background:rgba(255,255,255,.07)}
+@media (hover:hover){
+  #tools>button:hover,.dw>button:hover{background:rgba(255,255,255,.07)}
+}
 #tools>button:active,.dw>button:active{background:rgba(255,255,255,.14)}
 
 /* Dice choices originate from the dice button and return to the same place. */
@@ -371,9 +373,6 @@ button{
   }
   .die,.rolling .face{
     animation:none!important;
-  }
-  .life.holding .lifeValue::after,#quickReset.holding::after{
-    animation-duration:0.01ms!important;
   }
   .ov,.ov.show{
     -webkit-backdrop-filter:none;
