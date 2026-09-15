@@ -26,6 +26,7 @@
     /* D20 intentionally shares the same body, size, shadow and roll animation as D6. */
     .d20Die .face{
       display:grid;
+      grid-template:1fr/1fr;
       place-items:center;
       color:#11151c;
       font-size:48px;
