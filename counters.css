@@ -196,3 +196,209 @@
   from{--hold-angle:0deg}
   to{--hold-angle:360deg}
 }
+
+/* Apple-inspired interaction polish: hierarchy, direct feedback and restrained material. */
+html,body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,"Segoe UI",sans-serif;
+  font-optical-sizing:auto;
+}
+button{
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* Make the life total the strongest typographic voice without crushing the digits together. */
+.life{
+  font-weight:900;
+  letter-spacing:-.042em;
+}
+.name{
+  font-weight:800;
+  letter-spacing:-.01em;
+}
+.cw{font-weight:750;letter-spacing:.01em}
+.cv{font-weight:850;letter-spacing:-.025em}
+.cb button,.delta,.quick5{font-weight:800}
+
+/* Immediate physical response. Keep it subtle because these controls are tapped repeatedly. */
+.delta,.quick5,.cb button,#tools>button,.dw>button,.dm button,.modal button,.specialCounterControls button{
+  transform:scale(1);
+  transform-origin:center;
+  transition:transform 105ms ease-out,background-color 140ms ease-out,border-color 140ms ease-out,box-shadow 160ms ease-out,opacity 140ms ease-out;
+}
+.delta:active,.quick5:active,.cb button:active,#tools>button:active,.dw>button:active,.dm button:active,.modal button:active,.specialCounterControls button:active{
+  transform:scale(.955);
+}
+.lifeValue{
+  transform:scale(1);
+  transition:transform 105ms ease-out,text-shadow 140ms ease-out;
+}
+.life:active .lifeValue{transform:scale(.985)}
+
+/* Gameplay controls stay quiet until touched. */
+.delta,.quick5{
+  border-color:rgba(255,255,255,.12);
+  background:rgba(255,255,255,.075);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.055);
+}
+.quick5{background:rgba(5,8,12,.50)}
+.delta:active,.quick5:active,.cmd button:active{
+  background:rgba(255,255,255,.15);
+}
+.cmd{
+  border-color:rgba(255,255,255,.10);
+  background:rgba(4,7,11,.43);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035);
+}
+.cc{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+.cb button{
+  border-color:rgba(255,255,255,.10);
+  background:rgba(255,255,255,.07);
+}
+
+/* One floating utility material instead of five unrelated boxes. */
+#tools{
+  gap:2px;
+  padding:4px 0;
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:calc(16px * var(--tool-scale));
+  background:rgba(18,22,31,.74);
+  -webkit-backdrop-filter:blur(18px) saturate(155%);
+  backdrop-filter:blur(18px) saturate(155%);
+  box-shadow:0 10px 28px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.10);
+}
+#tools>button,.dw>button{
+  border-color:transparent;
+  border-radius:calc(10px * var(--tool-scale));
+  background:transparent;
+  box-shadow:none;
+}
+@media (hover:hover){
+  #tools>button:hover,.dw>button:hover{background:rgba(255,255,255,.07)}
+}
+#tools>button:active,.dw>button:active{background:rgba(255,255,255,.14)}
+
+/* Dice choices originate from the dice button and return to the same place. */
+.dm{
+  display:flex;
+  visibility:hidden;
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(-50%) translateX(7px) scale(.94);
+  transform-origin:right center;
+  border-color:rgba(255,255,255,.14);
+  background:rgba(18,22,31,.88);
+  -webkit-backdrop-filter:blur(18px) saturate(150%);
+  backdrop-filter:blur(18px) saturate(150%);
+  box-shadow:0 12px 30px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.09);
+  transition:opacity 150ms ease-out,transform 180ms cubic-bezier(.2,.75,.25,1),visibility 180ms;
+}
+.dm.show{
+  visibility:visible;
+  opacity:1;
+  pointer-events:auto;
+  transform:translateY(-50%) translateX(0) scale(1);
+}
+.dm button{
+  border-color:rgba(255,255,255,.11);
+  background:rgba(255,255,255,.075);
+  font-weight:750;
+}
+
+/* Modal surfaces materialize instead of abruptly appearing. */
+.ov{
+  display:flex;
+  visibility:hidden;
+  opacity:0;
+  pointer-events:none;
+  background:rgba(3,5,8,.36);
+  -webkit-backdrop-filter:blur(0) saturate(100%);
+  backdrop-filter:blur(0) saturate(100%);
+  transition:opacity 180ms ease-out,backdrop-filter 220ms ease-out,-webkit-backdrop-filter 220ms ease-out,visibility 220ms;
+}
+.ov.show{
+  visibility:visible;
+  opacity:1;
+  pointer-events:auto;
+  background:rgba(3,5,8,.64);
+  -webkit-backdrop-filter:blur(11px) saturate(125%);
+  backdrop-filter:blur(11px) saturate(125%);
+}
+.modal{
+  border-color:rgba(255,255,255,.13);
+  background:rgba(21,25,35,.97);
+  box-shadow:0 22px 60px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.08);
+  transform:translateY(5px) scale(.965);
+  transform-origin:center;
+  transition:transform 220ms cubic-bezier(.2,.78,.24,1),box-shadow 180ms ease-out;
+}
+.ov.show .modal{transform:translateY(0) scale(1)}
+.counter-flipped .counterPanel{transform:rotate(180deg) translateY(5px) scale(.965)}
+.counter-flipped.show .counterPanel{transform:rotate(180deg) translateY(0) scale(1)}
+.modal h2{
+  font-weight:800;
+  letter-spacing:-.025em;
+}
+.modal button{
+  border-color:rgba(255,255,255,.11);
+  background:rgba(255,255,255,.075);
+}
+.specialCounterCard{
+  border-color:rgba(255,255,255,.10);
+  background:#0d1118;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045);
+}
+.specialCounterLabel{font-weight:800}
+.counterInput{font-weight:850;letter-spacing:-.025em}
+.counterBadge{font-weight:800}
+
+/* A held action should look armed before it commits. */
+#quickReset.holding{
+  background:rgba(255,204,102,.10);
+  box-shadow:inset 0 0 0 1px rgba(255,204,102,.18);
+}
+.life.holding .lifeValue{
+  transform:scale(.985);
+  text-shadow:0 0 14px rgba(255,204,102,.35),0 6px 18px #0006;
+}
+
+/* Respect platform accessibility preferences without removing useful state feedback. */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    scroll-behavior:auto!important;
+  }
+  .delta,.quick5,.cb button,#tools>button,.dw>button,.dm,.dm button,.modal,.modal button,.specialCounterControls button,.lifeValue{
+    transition-duration:0.01ms!important;
+  }
+  .die,.rolling .face{
+    animation:none!important;
+  }
+  .ov,.ov.show{
+    -webkit-backdrop-filter:none;
+    backdrop-filter:none;
+  }
+}
+
+@media (prefers-reduced-transparency:reduce){
+  #tools,.dm,.modal{
+    background:#171c26;
+    -webkit-backdrop-filter:none;
+    backdrop-filter:none;
+  }
+  .ov,.ov.show{
+    background:rgba(3,5,8,.88);
+    -webkit-backdrop-filter:none;
+    backdrop-filter:none;
+  }
+}
+
+@media (prefers-contrast:more){
+  #tools,.dm,.modal,.specialCounterCard{
+    border-color:rgba(255,255,255,.42);
+  }
+  .delta,.quick5,.cb button,.modal button,.dm button{
+    border-color:rgba(255,255,255,.34);
+  }
+  .name,.cw,.counterHint,.counterPlayer{color:#fff}
+}
