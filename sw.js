@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v38-more-dice';
+const CACHE_NAME='edh-life-v39-d20-coin';
 const APP_SHELL=[
   './',
   './index.html',
