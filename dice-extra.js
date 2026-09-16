@@ -289,3 +289,9 @@
     navigator.vibrate?.(24);
   });
 })();
+
+(()=>{
+  const script=document.createElement('script');
+  script.src='./table-state-hub.js?v=1';
+  document.body.appendChild(script);
+})();
