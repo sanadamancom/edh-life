@@ -5,10 +5,12 @@
   --tool-gap:4px;
   --tool-clearance:0px;
   --stage-full-height:100dvh;
-  --bottom-viewport-tail:0px;
+  --ui-viewport-height:100dvh;
+  --bottom-content-safe:var(--safe-top);
 }
 
-/* Background/board remains full bleed to the measured device height. */
+/* The background can extend to the physical display, while gameplay UI uses only
+   the visible viewport so the shared controls stay on the real visual center. */
 html.layout-vertical-v2 #stage{
   top:0!important;
   right:0!important;
@@ -21,10 +23,10 @@ html.layout-vertical-v2 #app,
 html.layout-vertical-v2 .diceLayer{
   top:0!important;
   right:0!important;
-  bottom:0!important;
+  bottom:auto!important;
   left:0!important;
   width:100%!important;
-  height:100%!important;
+  height:var(--ui-viewport-height)!important;
 }
 
 /* Top seats / center utility row / bottom seats. */
@@ -45,16 +47,14 @@ html.layout-vertical-v2 #app.c2{
 html.layout-vertical-v2 #app.c2 .p:nth-child(1){grid-column:1;grid-row:1}
 html.layout-vertical-v2 #app.c2 .p:nth-child(2){grid-column:1;grid-row:3}
 
-/* Background reaches the edge, but playable content is symmetric.
-   Top seats reserve safe-top on their physical top edge in v2.css.
-   Bottom seats reserve the same visible margin. If the full-bleed stage extends
-   below the CSS viewport, --bottom-viewport-tail compensates for that hidden tail. */
+/* Background reaches the edge, but playable content is symmetric. The physical
+   tail below the visible viewport itself counts toward the bottom safe margin. */
 html.layout-vertical-v2 #app.c4 .p:nth-child(3) .pc,
 html.layout-vertical-v2 #app.c4 .p:nth-child(4) .pc,
 html.layout-vertical-v2 #app.c3 .p:nth-child(2) .pc,
 html.layout-vertical-v2 #app.c3 .p:nth-child(3) .pc,
 html.layout-vertical-v2 #app.c2 .p:nth-child(2) .pc{
-  padding-bottom:calc(var(--panel-pad) + var(--safe-top) + var(--bottom-viewport-tail))!important;
+  padding-bottom:calc(var(--panel-pad) + var(--bottom-content-safe))!important;
 }
 
 /* Long-press makes ±5 redundant. Life size is intentionally left untouched. */
@@ -157,7 +157,7 @@ html.layout-vertical-v2 .counterBadge{
 html.layout-vertical-v2 #tools{
   left:50%!important;
   right:auto!important;
-  top:50%!important;
+  top:calc(var(--ui-viewport-height) / 2)!important;
   bottom:auto!important;
   gap:var(--tool-gap);
   max-width:calc(100vw - var(--safe-left) - var(--safe-right) - 8px);

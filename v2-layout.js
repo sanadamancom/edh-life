@@ -37,31 +37,32 @@
       ?Math.max(viewportHeight,screenHeight)
       :viewportHeight;
 
-    /* iOS standalone with black-translucent status bar can report the CSS viewport
-       shorter than the screenshot/physical display by exactly safe-area-inset-top.
-       Android standalone keeps the normal viewport/screen calculation above. */
+    /* iOS standalone with a translucent status bar may report the CSS viewport
+       shorter than the physical display by safe-area-inset-top. Keep the board
+       background full bleed, but do not use that hidden tail to position gameplay UI. */
     if(navigator.standalone===true&&safeTop>0){
       fullHeight=Math.max(fullHeight,viewportHeight+safeTop);
     }
 
     const measured=Math.ceil(fullHeight);
-    const viewportTail=isInstalledDisplay()
-      ?Math.max(0,measured-Math.ceil(viewportHeight))
-      :0;
+    const visible=Math.ceil(viewportHeight);
+    const viewportTail=isInstalledDisplay()?Math.max(0,measured-visible):0;
+    const bottomContentSafe=Math.max(0,Math.ceil(safeTop)-viewportTail);
 
     root.style.setProperty('--stage-full-height',`${measured}px`);
-    /* If the full-bleed stage extends below the visible CSS viewport, the normal
-       bottom padding lands partly off-screen. Add exactly that hidden tail back
-       to the bottom seats so their visible margin matches the top safe margin. */
-    root.style.setProperty('--bottom-viewport-tail',`${viewportTail}px`);
+    root.style.setProperty('--ui-viewport-height',`${visible}px`);
+    root.style.setProperty('--bottom-content-safe',`${bottomContentSafe}px`);
+
     stage.dataset.stageHeight=String(measured);
-    stage.dataset.viewportHeight=String(Math.ceil(viewportHeight));
+    stage.dataset.viewportHeight=String(visible);
     stage.dataset.safeTop=String(Math.ceil(safeTop));
     stage.dataset.viewportTail=String(viewportTail);
+    stage.dataset.bottomContentSafe=String(bottomContentSafe);
   }
 
   function syncBottomBackdrop(){
     const app=document.getElementById('app');
+    const stage=document.getElementById('stage');
     if(!app)return;
 
     const players=[...app.querySelectorAll('.p:not(.hide)')];
@@ -84,6 +85,7 @@
 
     document.documentElement.style.background=background;
     document.body.style.background=background;
+    if(stage)stage.style.background=background;
   }
 
   function retireTableStateUi(){
@@ -122,7 +124,7 @@
   if(!document.querySelector('link[data-v2-compact]')){
     const link=document.createElement('link');
     link.rel='stylesheet';
-    link.href='./v2-compact.css?v=9';
+    link.href='./v2-compact.css?v=10';
     link.dataset.v2Compact='1';
     head.appendChild(link);
   }
