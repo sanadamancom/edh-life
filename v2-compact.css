@@ -90,30 +90,30 @@ html.layout-vertical-v2 .cc.commanderQuick .cv{
 html.layout-vertical-v2 .commanderTap:active,
 html.layout-vertical-v2 .commanderTapRow:active{filter:brightness(1.18)}
 
-/* Partner uses one horizontal A/B row so it consumes roughly the same height as a normal commander card. */
+/* Partner keeps A/B horizontal and trims vertical chrome to protect the life area. */
 html.layout-vertical-v2 .partnerCc{
-  min-height:58px;
-  padding:3px 5px 4px;
+  min-height:50px;
+  padding:2px 4px 3px;
 }
 html.layout-vertical-v2 .partnerCc>.cw{
-  margin:0 0 3px;
+  margin:0 0 2px;
   text-align:center;
-  font-size:clamp(9px,2.7vw,11px);
+  font-size:clamp(9px,2.6vw,11px);
   line-height:1;
 }
 html.layout-vertical-v2 .partnerRows{
   display:grid;
   grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-  gap:4px;
+  gap:3px;
   margin:0;
 }
 html.layout-vertical-v2 .partnerRow{
   display:grid;
-  grid-template-columns:auto minmax(24px,1fr) auto;
+  grid-template-columns:auto minmax(22px,1fr) auto;
   align-items:center;
-  gap:4px;
-  min-height:34px;
-  padding:3px 6px;
+  gap:3px;
+  min-height:30px;
+  padding:2px 5px;
   border:1px solid rgba(255,255,255,.08);
   border-radius:8px;
   background:rgba(255,255,255,.045);
@@ -121,19 +121,34 @@ html.layout-vertical-v2 .partnerRow{
   touch-action:manipulation;
 }
 html.layout-vertical-v2 .partnerMark{
-  font-size:10px;
+  font-size:9px;
   font-weight:900;
   color:var(--mut);
 }
 html.layout-vertical-v2 .partnerRow b{
   justify-self:center;
-  font-size:clamp(18px,5vw,23px);
+  font-size:clamp(17px,4.6vw,21px);
   line-height:1;
 }
 html.layout-vertical-v2 .partnerRow .cmdTax{
   justify-self:end;
-  font-size:7.5px;
-  padding:2px 3px;
+  font-size:7px;
+  padding:1px 3px;
+}
+
+/* Special counters use vertical space, preserving the player name's horizontal room. */
+html.layout-vertical-v2 .counterBadges{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-end!important;
+  gap:3px!important;
+  top:var(--panel-pad)!important;
+  right:var(--panel-pad)!important;
+  max-width:none!important;
+}
+html.layout-vertical-v2 .counterBadge{
+  flex:0 0 auto;
+  align-self:flex-end;
 }
 
 /* Shared controls have no enclosing tray. The buttons themselves nearly fill the center band. */
