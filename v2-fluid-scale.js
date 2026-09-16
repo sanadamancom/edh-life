@@ -84,9 +84,13 @@
     const toolSize=fit(46,52*toolScale,86);
     const toolGap=fit(3,4*toolScale,8);
     const controlIcon=fit(26,34*controlScale,52);
-    const badgeHeight=fit(20,21*badgeScale,34);
-    const badgeFont=fit(11,12*badgeScale,18);
-    const badgeIcon=fit(12,13*badgeScale,20);
+
+    /* Status badges are intentionally more legible than before. They still use
+       the same continuous seat scale, so tablets grow them without device checks. */
+    const badgeHeight=fit(24,26*badgeScale,40);
+    const badgeFont=fit(12,14*badgeScale,21);
+    const badgeIcon=fit(16,18*badgeScale,28);
+
     const dieSize=fit(84,92*diceScale,150);
     const playerDieSize=fit(72,78*diceScale,126);
 

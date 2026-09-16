@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v83-state-symbol-loop-fix';
+const CACHE_NAME='edh-life-v84-larger-status-badges';
 const APP_SHELL=[
   './',
   './index.html',
@@ -8,14 +8,14 @@ const APP_SHELL=[
   './v2-base.css?v=1',
   './v2-compact.css?v=13',
   './v2-utility.css?v=4',
-  './v2-responsive.css?v=1',
+  './v2-responsive.css?v=2',
   './v2-owner-status.css?v=3',
   './layout.js?v=30',
   './app.js?v=33',
   './edh-features.js?v=2',
   './multitouch.js?v=4',
   './dice-extra.js?v=1',
-  './v2-fluid-scale.js?v=2',
+  './v2-fluid-scale.js?v=3',
   './v2-compact-interactions.js?v=3',
   './v2-utility-behavior.js?v=5',
   './v2-commander-owner-settings.js?v=3',
