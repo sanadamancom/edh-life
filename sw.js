@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v43-pointer-release';
+const CACHE_NAME='edh-life-v44-commander-pie';
 const APP_SHELL=[
   './',
   './index.html',
@@ -6,8 +6,8 @@ const APP_SHELL=[
   './counters.css?v=34',
   './layout.js?v=30',
   './app.js?v=33',
-  './edh-features.js?v=1',
-  './multitouch.js?v=3',
+  './edh-features.js?v=2',
+  './multitouch.js?v=4',
   './dice-extra.js?v=1',
   './manifest.webmanifest',
   './icon.svg'
