@@ -1,5 +1,10 @@
 (()=>{
-  const HOLD_MS=300;
+  const HOLD_DELAY_MS=200;
+  const HOLD_PROGRESS_MS=300;
+  const HOLD_TOTAL_MS=HOLD_DELAY_MS+HOLD_PROGRESS_MS;
+  const LEGACY_COMMANDER_HOLD_MS=360;
+  const COMMANDER_PROXY_DELAY_MS=Math.max(0,HOLD_TOTAL_MS-LEGACY_COMMANDER_HOLD_MS);
+
   const settingsReset=document.getElementById('reset');
   const settings=document.getElementById('settings');
   const diceMenu=document.getElementById('dm');
@@ -7,6 +12,7 @@
 
   let randomDismissArmed=false;
   let lifeHold=null;
+  let commanderHold=null;
 
   function clearRandomSelection(){
     randomDismissArmed=false;
@@ -17,7 +23,8 @@
     const hold=lifeHold;
     if(!hold)return;
 
-    clearTimeout(hold.timer);
+    clearTimeout(hold.progressTimer);
+    clearTimeout(hold.completeTimer);
     hold.panel?.classList.remove('life-hold-active');
     try{
       if(hold.life?.hasPointerCapture?.(hold.pointerId))hold.life.releasePointerCapture(hold.pointerId);
@@ -35,25 +42,118 @@
     if(!panel||!Number.isInteger(index))return false;
 
     clearLifeHold();
-    panel.classList.remove('life-hold-active');
-    void panel.offsetWidth;
-    panel.classList.add('life-hold-active');
-
-    const hold={life,panel,index,pointerId:event.pointerId,timer:0};
+    const hold={
+      life,
+      panel,
+      index,
+      pointerId:event.pointerId,
+      progressTimer:0,
+      completeTimer:0
+    };
     lifeHold=hold;
 
     try{life.setPointerCapture?.(event.pointerId)}catch{}
 
-    hold.timer=setTimeout(()=>{
+    hold.progressTimer=setTimeout(()=>{
+      if(lifeHold!==hold)return;
+      panel.classList.remove('life-hold-active');
+      void panel.offsetWidth;
+      panel.classList.add('life-hold-active');
+    },HOLD_DELAY_MS);
+
+    hold.completeTimer=setTimeout(()=>{
       if(lifeHold!==hold)return;
       panel.classList.remove('life-hold-active');
       lifeHold=null;
       navigator.vibrate?.(18);
       if(typeof openCounters==='function')openCounters(index);
-    },HOLD_MS);
+    },HOLD_TOTAL_MS);
 
     /* v2 owns life long-press completely. Prevent the legacy app.js
        .life.holding handler from receiving this pointerdown. */
+    event.preventDefault();
+    event.stopPropagation();
+    return true;
+  }
+
+  function commanderProxyEvent(type,hold){
+    try{
+      return new PointerEvent(type,{
+        bubbles:true,
+        cancelable:true,
+        composed:true,
+        pointerId:hold.pointerId,
+        pointerType:hold.pointerType||'touch',
+        isPrimary:true,
+        button:0,
+        buttons:type==='pointerdown'?1:0,
+        clientX:hold.clientX,
+        clientY:hold.clientY
+      });
+    }catch{
+      return new Event(type,{bubbles:true,cancelable:true,composed:true});
+    }
+  }
+
+  function clearCommanderHold(cancelLegacy=true){
+    const hold=commanderHold;
+    if(!hold)return;
+
+    clearTimeout(hold.proxyTimer);
+    clearTimeout(hold.progressTimer);
+    clearTimeout(hold.finishTimer);
+    hold.card?.classList.remove('commander-hold-active');
+
+    if(cancelLegacy&&hold.proxyStarted){
+      try{hold.card?.dispatchEvent(commanderProxyEvent('pointercancel',hold))}catch{}
+    }
+    commanderHold=null;
+  }
+
+  function startCommanderHold(event){
+    if(event.pointerType==='mouse'&&event.button!==0)return false;
+    if(event.target.closest?.('button'))return false;
+
+    const card=event.target.closest?.('#app .cc[data-cmd-card]');
+    if(!card)return false;
+
+    clearCommanderHold();
+    const hold={
+      card,
+      pointerId:event.pointerId,
+      pointerType:event.pointerType,
+      clientX:event.clientX,
+      clientY:event.clientY,
+      proxyStarted:false,
+      proxyTimer:0,
+      progressTimer:0,
+      finishTimer:0
+    };
+    commanderHold=hold;
+
+    /* edh-features.js still owns opening the commander detail panel with its
+       360ms timer. Start that hidden timer early enough that detail opens at
+       the same 500ms boundary as the v2 hold gesture. Its legacy progress
+       pseudo-element is suppressed by v2-utility.css. */
+    hold.proxyTimer=setTimeout(()=>{
+      if(commanderHold!==hold)return;
+      hold.proxyStarted=true;
+      card.dispatchEvent(commanderProxyEvent('pointerdown',hold));
+    },COMMANDER_PROXY_DELAY_MS);
+
+    hold.progressTimer=setTimeout(()=>{
+      if(commanderHold!==hold)return;
+      card.classList.remove('commander-hold-active');
+      void card.offsetWidth;
+      card.classList.add('commander-hold-active');
+    },HOLD_DELAY_MS);
+
+    hold.finishTimer=setTimeout(()=>{
+      if(commanderHold!==hold)return;
+      card.classList.remove('commander-hold-active');
+      commanderHold=null;
+    },HOLD_TOTAL_MS+24);
+
     event.preventDefault();
     event.stopPropagation();
     return true;
@@ -70,20 +170,31 @@
   }
 
   document.addEventListener('pointerdown',event=>{
+    /* Synthetic commander bridge events must pass through to edh-features.js. */
+    if(!event.isTrusted)return;
     if(randomDismissArmed)clearRandomSelection();
-    startLifeHold(event);
+    if(startLifeHold(event))return;
+    startCommanderHold(event);
   },true);
 
   document.addEventListener('pointerup',event=>{
     if(lifeHold?.pointerId===event.pointerId)clearLifeHold();
+    if(commanderHold?.pointerId===event.pointerId)clearCommanderHold();
   },true);
   document.addEventListener('pointercancel',event=>{
     if(lifeHold?.pointerId===event.pointerId)clearLifeHold();
+    if(commanderHold?.pointerId===event.pointerId)clearCommanderHold();
   },true);
-  window.addEventListener('blur',clearLifeHold);
-  window.addEventListener('pagehide',clearLifeHold);
+
+  function clearAllHolds(){
+    clearLifeHold();
+    clearCommanderHold();
+  }
+
+  window.addEventListener('blur',clearAllHolds);
+  window.addEventListener('pagehide',clearAllHolds);
   document.addEventListener('visibilitychange',()=>{
-    if(document.visibilityState!=='visible')clearLifeHold();
+    if(document.visibilityState!=='visible')clearAllHolds();
   });
 
   if(diceMenu){
@@ -100,7 +211,7 @@
       diceMenu?.classList.remove('show');
       document.querySelectorAll('.die').forEach(die=>die.remove());
       clearRandomSelection();
-      clearLifeHold();
+      clearAllHolds();
 
       const players=[...document.querySelectorAll('#app .p:not(.hide)')];
       if(!players.length)return;
@@ -139,7 +250,7 @@
       clearTimeout(timer);
       armed=false;
       clearRandomSelection();
-      clearLifeHold();
+      clearAllHolds();
       document.querySelectorAll('.die').forEach(die=>die.remove());
 
       try{
