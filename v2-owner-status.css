@@ -43,6 +43,51 @@ html.layout-vertical-v2 #app .ownerStateIcon{
   fill:currentColor;
 }
 
+/* Keep the player name clear of left/right status stacks. Only tighten the name
+   when a status badge is actually present; ordinary seats keep the wider title. */
+html.layout-vertical-v2 #app .p:has(.ownerStatusBadges) .name,
+html.layout-vertical-v2 #app .p:has(.counterBadges) .name{
+  max-width:56%!important;
+}
+
+/* Player State: frequently changed table state comes before the mostly setup-time
+   commander controls. Compact the commander section without shrinking touch targets. */
+#counters .ownerCommanderSettings{
+  gap:7px!important;
+  margin-top:9px!important;
+  padding:9px!important;
+}
+#counters .ownerTableSection{
+  order:-1!important;
+  gap:6px!important;
+  padding:0 0 9px!important;
+  border-top:0!important;
+  border-bottom:1px solid rgba(255,255,255,.09)!important;
+}
+#counters .ownerTableGrid{
+  gap:6px!important;
+}
+#counters .ownerTableButton{
+  min-height:40px!important;
+}
+#counters .ownerCommanderMode{
+  gap:5px!important;
+}
+#counters .ownerCommanderMode button{
+  min-height:36px!important;
+}
+#counters .ownerTaxGrid{
+  gap:5px!important;
+}
+#counters .ownerTaxItem{
+  gap:6px!important;
+  padding:5px 7px!important;
+}
+#counters .ownerTaxControls button,
+#counters .ownerTaxValue{
+  min-height:38px!important;
+}
+
 /* Commander Tax belongs to the commander owner, not to every opponent's
    Commander Damage card. Keep those cards focused on damage only. */
 html.layout-vertical-v2 #app .cmdTax{
