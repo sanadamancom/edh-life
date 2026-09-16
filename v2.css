@@ -1,3 +1,7 @@
+@import url('./v2-compact.css?v=13');
+@import url('./v2-feedback.css?v=1');
+@import url('./v2-utility.css?v=1');
+
 /* EDH Life v2 — vertical-only layout rebuilt from scratch. */
 :root{
   --safe-top:env(safe-area-inset-top,0px);
