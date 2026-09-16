@@ -5,7 +5,7 @@
     try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||null}catch{return null}
   })();
   const baseNormalizeState=normalizeState;
-  const baseOpenCounters=openCounters;
+  const baseRender=render;
 
   function clampOwner(value,count){
     const n=Number(value);
@@ -67,10 +67,13 @@
     return {defeated:false,reason:''};
   };
 
-  function commanderButtons(target,source,slot){
-    return `
-      <button type="button" data-cmd="-1" data-slot="${slot}" data-t="${target}" data-s="${source}">−1</button>
-      <button type="button" data-cmd="1" data-slot="${slot}" data-t="${target}" data-s="${source}">＋1</button>`;
+  function taxMarkup(sourcePlayer,slot){
+    const tax=sourcePlayer.tax?.[slot]||0;
+    return `<span class="cmdTax${tax?'':' empty'}">${tax?`T+${tax}`:''}</span>`;
+  }
+
+  function quickPlus(target,source,slot){
+    return `<button type="button" class="cmdQuickPlus" data-cmd="1" data-slot="${slot}" data-t="${target}" data-s="${source}" aria-label="Commander Damageを1増やす">＋1</button>`;
   }
 
   commanderCards=function(playerIndex){
@@ -80,24 +83,29 @@
       const sourcePlayer=state.players[source];
       const first=state.players[playerIndex].cmd[source]||0;
       const second=state.players[playerIndex].cmdB?.[source]||0;
+
       if(!sourcePlayer.partner){
         cards.push(`
-          <div class="cc ${first>=18?'hot':''}" data-cmd-card data-t="${playerIndex}" data-s="${source}" style="--c:${sourcePlayer.color}" title="長押しで統率者設定">
+          <div class="cc commanderQuick ${first>=18?'hot':''}" data-cmd-card data-t="${playerIndex}" data-s="${source}" style="--c:${sourcePlayer.color}" title="長押しで統率者詳細">
             <div class="cw">${escapeHtml(sourcePlayer.name)}</div>
-            <div class="cv">${first}</div>
-            <div class="cb">${commanderButtons(playerIndex,source,0)}</div>
+            <div class="commanderQuickRow">
+              <div class="cv">${first}</div>
+              ${taxMarkup(sourcePlayer,0)}
+              ${quickPlus(playerIndex,source,0)}
+            </div>
           </div>`);
         continue;
       }
+
       cards.push(`
-        <div class="cc partnerCc ${(first>=18||second>=18)?'hot':''}" data-cmd-card data-t="${playerIndex}" data-s="${source}" style="--c:${sourcePlayer.color}" title="長押しでPartner設定">
+        <div class="cc partnerCc ${(first>=18||second>=18)?'hot':''}" data-cmd-card data-t="${playerIndex}" data-s="${source}" style="--c:${sourcePlayer.color}" title="長押しでPartner詳細">
           <div class="cw">${escapeHtml(sourcePlayer.name)} · Partner</div>
           <div class="partnerRows">
             <div class="partnerRow ${first>=18?'hot':''}">
-              <span class="partnerMark">A</span><b>${first}</b><div class="cb">${commanderButtons(playerIndex,source,0)}</div>
+              <span class="partnerMark">A</span><b>${first}</b>${taxMarkup(sourcePlayer,0)}${quickPlus(playerIndex,source,0)}
             </div>
             <div class="partnerRow ${second>=18?'hot':''}">
-              <span class="partnerMark">B</span><b>${second}</b><div class="cb">${commanderButtons(playerIndex,source,1)}</div>
+              <span class="partnerMark">B</span><b>${second}</b>${taxMarkup(sourcePlayer,1)}${quickPlus(playerIndex,source,1)}
             </div>
           </div>
         </div>`);
@@ -107,7 +115,6 @@
 
   counterBadges=function(player){
     const badges=[];
-    const index=state.players.indexOf(player);
     if(player.poison>0){
       badges.push(`<span class="counterBadge poison ${player.poison>=8?'hot':''}" aria-label="毒カウンター ${player.poison}">${icon('skull','counterIcon')}<b>${player.poison}</b></span>`);
     }
@@ -116,12 +123,6 @@
     }
     if(player.speed>0){
       badges.push(`<span class="counterBadge speed" aria-label="速度 ${player.speed}">${icon('speed','counterIcon')}<b>${player.speed}</b></span>`);
-    }
-    if(state.monarch===index){
-      badges.push('<span class="counterBadge monarch" aria-label="Monarch"><b>♛</b></span>');
-    }
-    if(state.initiative===index){
-      badges.push('<span class="counterBadge initiative" aria-label="Initiative"><b>◆</b></span>');
     }
     return badges.length?`<div class="counterBadges">${badges.join('')}</div>`:'';
   };
@@ -144,8 +145,6 @@
 
   const style=document.createElement('style');
   style.textContent=`
-    .counterBadge.monarch{color:#ffd46d;border-color:#ffd46d70;background:#241b08e8}
-    .counterBadge.initiative{color:#cfb4ff;border-color:#cfb4ff70;background:#160e24e8}
     .cc{position:relative}
     .cc.commander-holding::after{
       content:"";position:absolute;inset:2px;z-index:5;padding:2px;pointer-events:none;border-radius:inherit;
@@ -154,20 +153,26 @@
       animation:commander-hold-progress 360ms linear forwards
     }
     @keyframes commander-hold-progress{from{--hold-angle:0deg}to{--hold-angle:360deg}}
+
+    .commanderQuick{padding:calc(4px * var(--ui-scale)) calc(5px * var(--ui-scale))}
+    .commanderQuickRow{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(46px,34%);gap:5px;align-items:center;margin-top:3px}
+    .commanderQuick .cv{margin:0;font-size:calc(24px * var(--ui-scale))}
+    .cmdQuickPlus{
+      min-width:0;min-height:calc(31px * var(--ui-scale));padding:0 6px;border:1px solid rgba(255,255,255,.13);
+      border-radius:calc(8px * var(--ui-scale));background:rgba(255,255,255,.10);font-size:calc(15px * var(--ui-scale));font-weight:900
+    }
+    .cmdTax{justify-self:center;padding:2px 5px;border:1px solid rgba(255,204,102,.34);border-radius:999px;color:#ffd477;background:#2a210be8;font-size:calc(9px * var(--ui-scale));font-weight:900;line-height:1.15;white-space:nowrap}
+    .cmdTax.empty{visibility:hidden}
+
     .partnerCc{padding:calc(3px * var(--ui-scale)) calc(4px * var(--ui-scale))}
-    .partnerRows{display:grid;gap:2px;margin-top:2px}
-    .partnerRow{display:grid;grid-template-columns:14px 22px 1fr;gap:2px;align-items:center;min-width:0}
-    .partnerRow b{font-size:calc(14px * var(--ui-scale));font-variant-numeric:tabular-nums;line-height:1}
+    .partnerRows{display:grid;gap:3px;margin-top:3px}
+    .partnerRow{display:grid;grid-template-columns:14px 24px minmax(0,1fr) minmax(48px,36%);gap:4px;align-items:center;min-width:0}
+    .partnerRow b{font-size:calc(16px * var(--ui-scale));font-variant-numeric:tabular-nums;line-height:1}
     .partnerRow.hot b{color:var(--danger)}
-    .partnerMark{font-size:9px;font-weight:900;color:var(--mut)}
-    .partnerRow .cb{gap:2px}
-    .partnerRow .cb button{min-height:calc(19px * var(--ui-scale));font-size:calc(10px * var(--ui-scale));border-radius:5px}
-    .tableStateSection{grid-column:1/-1;padding-top:2px}
-    .tableStateTitle{margin:1px 0 7px;text-align:center;color:var(--mut);font-size:11px;font-weight:800;letter-spacing:.05em}
-    .tableStateGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-    .tableStateButton{min-height:44px;border-radius:12px!important;font-weight:800!important}
-    .tableStateButton.active{box-shadow:inset 0 0 0 2px currentColor!important;background:rgba(255,255,255,.13)!important}
-    #monarchToggle{color:#ffd46d}#initiativeToggle{color:#cfb4ff}
+    .partnerMark{font-size:10px;font-weight:900;color:var(--mut)}
+    .partnerRow .cmdQuickPlus{min-height:calc(29px * var(--ui-scale));font-size:calc(14px * var(--ui-scale));border-radius:calc(7px * var(--ui-scale))}
+    .partnerRow .cmdTax{font-size:calc(8px * var(--ui-scale));padding:2px 4px}
+
     .commanderPanel{width:min(590px,92%);padding:14px 16px}
     .commanderPanel h2{text-align:center;margin:0 0 2px}
     .commanderContext{text-align:center;color:var(--mut);font-size:13px;font-weight:800;margin-bottom:10px}
@@ -185,24 +190,121 @@
     .commanderTaxValue{font-size:18px;font-weight:900}
     .commander-flipped .commanderPanel{transform:rotate(180deg) translateY(5px) scale(.965)}
     .commander-flipped.show .commanderPanel{transform:rotate(180deg) translateY(0) scale(1)}
+
+    #tableStateHub{position:absolute;z-index:15;display:flex;align-items:center;gap:7px;transform:translate(-50%,-50%);pointer-events:auto}
+    .statePieWrap{display:grid;place-items:center;gap:2px}
+    .statePie{
+      position:relative;width:44px;height:44px;padding:0;overflow:hidden;border:1px solid rgba(255,255,255,.20);border-radius:50%;
+      background:#0b0f16;box-shadow:0 4px 14px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.08);touch-action:manipulation
+    }
+    .statePieGrid{position:absolute;inset:2px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:1px;border-radius:50%;overflow:hidden;background:#05070b}
+    .pieQuarter{background:rgba(255,255,255,.07);transition:background-color 150ms ease,filter 150ms ease}
+    .statePie.monarch .pieQuarter.active{background:#d7a82c;filter:brightness(1.16)}
+    .statePie.initiative .pieQuarter.active{background:#9a72d7;filter:brightness(1.18)}
+    .statePieIcon{position:absolute;inset:50% auto auto 50%;width:20px;height:20px;display:grid;place-items:center;transform:translate(-50%,-50%);border:1px solid rgba(255,255,255,.20);border-radius:50%;background:#111722;color:#fff;font-size:12px;font-weight:900;box-shadow:0 2px 7px rgba(0,0,0,.55)}
+    .statePie.monarch .statePieIcon{color:#ffd76d}.statePie.initiative .statePieIcon{color:#d9c2ff}
+    .statePie.is-selecting{box-shadow:0 0 0 3px rgba(255,255,255,.78),0 5px 18px rgba(0,0,0,.5)}
+    .statePieLabel{color:rgba(255,255,255,.72);font-size:7px;font-weight:900;line-height:1;letter-spacing:.04em}
+    #tableStateHint{position:absolute;left:50%;top:calc(100% + 4px);transform:translateX(-50%);min-width:max-content;padding:2px 6px;border-radius:999px;background:#080b10e8;color:#fff;font-size:8px;font-weight:800;opacity:0;pointer-events:none;transition:opacity 120ms ease}
+    #tableStateHub.is-selecting #tableStateHint{opacity:1}
+    #app .p.state-pick-target{box-shadow:inset 0 0 0 4px rgba(255,255,255,.62);cursor:pointer}
+    #app .p.state-pick-current{box-shadow:inset 0 0 0 4px rgba(255,204,102,.88)}
+    @media (prefers-reduced-motion:reduce){.pieQuarter,#tableStateHint{transition:none}}
   `;
   document.head.appendChild(style);
 
-  const counterGrid=document.querySelector('#counters .counterGrid');
-  if(counterGrid&&!document.getElementById('tableStateSection')){
-    const section=document.createElement('div');
-    section.id='tableStateSection';
-    section.className='tableStateSection';
-    section.innerHTML=`
-      <div class="tableStateTitle">卓上状態</div>
-      <div class="tableStateGrid">
-        <button type="button" id="monarchToggle" class="tableStateButton">♛ Monarch</button>
-        <button type="button" id="initiativeToggle" class="tableStateButton">◆ Initiative</button>
-      </div>`;
-    counterGrid.appendChild(section);
+  const stage=document.getElementById('stage');
+
+  const tableStateHub=document.createElement('div');
+  tableStateHub.id='tableStateHub';
+  tableStateHub.innerHTML=`
+    <div class="statePieWrap">
+      <button type="button" class="statePie monarch" data-table-state="monarch" aria-label="Monarchの移動先を選ぶ">
+        <span class="statePieGrid"><i class="pieQuarter" data-q="0"></i><i class="pieQuarter" data-q="1"></i><i class="pieQuarter" data-q="2"></i><i class="pieQuarter" data-q="3"></i></span>
+        <span class="statePieIcon">♛</span>
+      </button>
+      <span class="statePieLabel">MONARCH</span>
+    </div>
+    <div class="statePieWrap">
+      <button type="button" class="statePie initiative" data-table-state="initiative" aria-label="Initiativeの移動先を選ぶ">
+        <span class="statePieGrid"><i class="pieQuarter" data-q="0"></i><i class="pieQuarter" data-q="1"></i><i class="pieQuarter" data-q="2"></i><i class="pieQuarter" data-q="3"></i></span>
+        <span class="statePieIcon">◆</span>
+      </button>
+      <span class="statePieLabel">INIT</span>
+    </div>
+    <div id="tableStateHint">移動先をタップ</div>`;
+  stage.appendChild(tableStateHub);
+
+  let statePickType=null;
+
+  function ownerSegments(owner){
+    if(owner===null||owner===undefined||owner<0||owner>=state.count)return [];
+    if(state.count===4)return [owner];
+    if(state.count===3){
+      if(owner===0)return [0,1];
+      return owner===1?[2]:[3];
+    }
+    if(state.count===2)return owner===0?[0,1]:[2,3];
+    return [];
   }
 
-  const stage=document.getElementById('stage');
+  function syncPie(type){
+    const pie=tableStateHub.querySelector(`[data-table-state="${type}"]`);
+    if(!pie)return;
+    const active=new Set(ownerSegments(state[type]));
+    pie.querySelectorAll('.pieQuarter').forEach(quarter=>quarter.classList.toggle('active',active.has(Number(quarter.dataset.q))));
+    pie.classList.toggle('is-selecting',statePickType===type);
+  }
+
+  function syncTableHub(){
+    const centerX=app.offsetLeft+app.offsetWidth/2;
+    const centerY=app.offsetTop+app.offsetHeight/2;
+    tableStateHub.style.left=`${centerX}px`;
+    tableStateHub.style.top=`${centerY}px`;
+    tableStateHub.classList.toggle('is-selecting',Boolean(statePickType));
+    syncPie('monarch');
+    syncPie('initiative');
+
+    const players=[...app.querySelectorAll('.p')];
+    players.forEach((player,index)=>{
+      const target=Boolean(statePickType)&&index<state.count;
+      player.classList.toggle('state-pick-target',target);
+      player.classList.toggle('state-pick-current',target&&state[statePickType]===index);
+    });
+  }
+
+  tableStateHub.addEventListener('click',event=>{
+    const pie=event.target.closest('[data-table-state]');
+    if(!pie)return;
+    event.stopPropagation();
+    const type=pie.dataset.tableState;
+    statePickType=statePickType===type?null:type;
+    syncTableHub();
+    navigator.vibrate?.(12);
+  });
+
+  app.addEventListener('pointerdown',event=>{
+    if(!statePickType)return;
+    if(event.target.closest('.p'))event.stopPropagation();
+  },true);
+
+  app.addEventListener('click',event=>{
+    if(!statePickType)return;
+    const player=event.target.closest('.p');
+    if(!player||player.classList.contains('hide'))return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    const index=[...app.children].indexOf(player);
+    if(index<0||index>=state.count)return;
+    const type=statePickType;
+    statePickType=null;
+    mutate(()=>{state[type]=state[type]===index?null:index});
+    navigator.vibrate?.(18);
+  },true);
+
+  window.__edhTableStatePickActive=()=>Boolean(statePickType);
+  window.addEventListener('resize',()=>requestAnimationFrame(syncTableHub));
+
   const commanderOverlay=document.createElement('div');
   commanderOverlay.id='commanderDetail';
   commanderOverlay.className='ov';
@@ -220,34 +322,6 @@
   stage.appendChild(commanderOverlay);
 
   let commanderContext=null;
-
-  function syncTableStateButtons(){
-    const monarch=document.getElementById('monarchToggle');
-    const initiative=document.getElementById('initiativeToggle');
-    if(counterIndex===null||!monarch||!initiative)return;
-    const monarchActive=state.monarch===counterIndex;
-    const initiativeActive=state.initiative===counterIndex;
-    monarch.classList.toggle('active',monarchActive);
-    initiative.classList.toggle('active',initiativeActive);
-    monarch.textContent=monarchActive?'♛ Monarchを解除':'♛ Monarchにする';
-    initiative.textContent=initiativeActive?'◆ Initiativeを解除':'◆ Initiativeにする';
-  }
-
-  openCounters=function(index){
-    baseOpenCounters(index);
-    syncTableStateButtons();
-  };
-
-  document.getElementById('monarchToggle')?.addEventListener('click',()=>{
-    if(counterIndex===null)return;
-    mutate(()=>{state.monarch=state.monarch===counterIndex?null:counterIndex});
-    syncTableStateButtons();
-  });
-  document.getElementById('initiativeToggle')?.addEventListener('click',()=>{
-    if(counterIndex===null)return;
-    mutate(()=>{state.initiative=state.initiative===counterIndex?null:counterIndex});
-    syncTableStateButtons();
-  });
 
   function damageValue(target,source,slot){
     return slot===0?(state.players[target].cmd[source]||0):(state.players[target].cmdB?.[source]||0);
@@ -300,6 +374,7 @@
 
   commanderOverlay.addEventListener('click',event=>{
     if(event.target===commanderOverlay){closeCommanderDetail();return}
+
     const mode=event.target.closest('[data-commander-mode]');
     if(mode&&commanderContext){
       const {source}=commanderContext;
@@ -308,6 +383,7 @@
       syncCommanderDetail();
       return;
     }
+
     const damage=event.target.closest('[data-detail-damage]');
     if(damage&&commanderContext){
       const {target,source}=commanderContext;
@@ -323,6 +399,7 @@
       }
       return;
     }
+
     const taxButton=event.target.closest('[data-detail-tax]');
     if(taxButton&&commanderContext){
       const {source}=commanderContext;
@@ -341,6 +418,7 @@
   let commanderHoldTimer=0;
   let commanderHoldCard=null;
   let commanderHoldPointer=null;
+
   function clearCommanderHold(){
     if(commanderHoldTimer){clearTimeout(commanderHoldTimer);commanderHoldTimer=0}
     if(commanderHoldCard)commanderHoldCard.classList.remove('commander-holding');
@@ -349,6 +427,7 @@
   }
 
   app.addEventListener('pointerdown',event=>{
+    if(statePickType)return;
     if(event.pointerType==='mouse'&&event.button!==0)return;
     if(event.target.closest('button'))return;
     const card=event.target.closest('.cc[data-cmd-card]');
@@ -372,7 +451,6 @@
     if(event.target.closest('.cc[data-cmd-card]'))event.preventDefault();
   });
 
-  /* Keyboard activation for Partner B bypasses the legacy slot-A click handler. */
   app.addEventListener('click',event=>{
     if(event.detail!==0)return;
     const button=event.target.closest('[data-cmd][data-slot="1"]');
@@ -388,6 +466,11 @@
     if(!applied)return;
     mutate(()=>{state.players[target].cmdB[source]=next;state.players[target].life-=applied});
   },true);
+
+  render=function(){
+    baseRender();
+    syncTableHub();
+  };
 
   saveState();
   render();
