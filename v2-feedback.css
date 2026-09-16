@@ -1,4 +1,4 @@
-/* Life long-press now uses the shared player-panel highlight in v2-utility.css. */
+/* Life long-press feedback is handled exclusively by the player-panel highlight. */
 html.layout-vertical-v2 .life.holding{
   text-shadow:inherit!important;
 }
@@ -6,4 +6,8 @@ html.layout-vertical-v2 .life.holding{
 html.layout-vertical-v2 .life.holding::after{
   content:none!important;
   display:none!important;
+  visibility:hidden!important;
+  animation:none!important;
+  background:none!important;
+  filter:none!important;
 }

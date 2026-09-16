@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v70-shared-player-highlight';
+const CACHE_NAME='edh-life-v71-hold-progress-highlight';
 const APP_SHELL=[
   './',
   './index.html',
@@ -7,8 +7,8 @@ const APP_SHELL=[
   './v2.css?v=1',
   './v2-base.css?v=1',
   './v2-compact.css?v=13',
-  './v2-feedback.css?v=1',
-  './v2-utility.css?v=1',
+  './v2-feedback.css?v=2',
+  './v2-utility.css?v=2',
   './layout.js?v=30',
   './app.js?v=33',
   './edh-features.js?v=2',
