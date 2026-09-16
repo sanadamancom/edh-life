@@ -74,7 +74,8 @@
       transform-style:preserve-3d;
       will-change:transform
     }
-    .coinFace3d{
+    .coinFace3d,
+    .coinStaticFace{
       position:absolute;
       inset:0;
       display:grid;
@@ -82,15 +83,18 @@
       overflow:hidden;
       border:4px solid #f1d47e;
       border-radius:50%;
-      backface-visibility:hidden;
-      -webkit-backface-visibility:hidden;
       box-shadow:
         inset 0 0 0 3px rgba(83,45,5,.62),
         inset 0 0 0 8px rgba(255,232,164,.34),
         inset 0 0 22px rgba(61,31,2,.62),
-        0 7px 14px rgba(0,0,0,.26);
+        0 7px 14px rgba(0,0,0,.26)
     }
-    .coinFace3d::before{
+    .coinFace3d{
+      backface-visibility:hidden;
+      -webkit-backface-visibility:hidden
+    }
+    .coinFace3d::before,
+    .coinStaticFace::before{
       content:"";
       position:absolute;
       inset:9px;
@@ -98,22 +102,25 @@
       border-radius:50%;
       opacity:.42
     }
-    .coinFace3d.heads{
+    .coinFace3d.heads,
+    .coinStaticFace.heads{
       color:#5a3308;
       background:
         radial-gradient(circle at 34% 27%,rgba(255,255,255,.76) 0 4%,transparent 5%),
-        radial-gradient(circle at 38% 34%,#ffe7aa 0 8%,#dbaa42 36%,#a66d17 68%,#683d08 100%);
-      transform:translateZ(4px)
+        radial-gradient(circle at 38% 34%,#ffe7aa 0 8%,#dbaa42 36%,#a66d17 68%,#683d08 100%)
     }
-    .coinFace3d.tails{
+    .coinFace3d.heads{transform:translateZ(4px)}
+    .coinFace3d.tails,
+    .coinStaticFace.tails{
       color:#332d12;
       border-color:#d8c683;
       background:
         radial-gradient(circle at 34% 27%,rgba(255,255,255,.62) 0 4%,transparent 5%),
-        radial-gradient(circle at 38% 34%,#e4d79c 0 8%,#b49a50 36%,#75602c 68%,#433613 100%);
-      transform:rotateX(180deg) translateZ(4px)
+        radial-gradient(circle at 38% 34%,#e4d79c 0 8%,#b49a50 36%,#75602c 68%,#433613 100%)
     }
-    .coinFace3d svg{
+    .coinFace3d.tails{transform:rotateX(180deg) translateZ(4px)}
+    .coinFace3d svg,
+    .coinStaticFace svg{
       position:relative;
       z-index:1;
       width:57%;
@@ -159,22 +166,26 @@
     .coinResultLabel{
       position:relative;
       z-index:3;
-      min-width:94px;
-      margin-top:13px;
-      padding:6px 18px 7px;
+      min-width:80px;
+      margin-top:10px;
+      padding:5px 14px 6px;
       border:2px solid rgba(255,255,255,.72);
       border-radius:999px;
       background:rgba(8,11,16,.92);
       box-shadow:0 7px 18px rgba(0,0,0,.42);
       color:#fff;
-      font-size:clamp(25px,calc(var(--tool-size) * .72),34px);
+      font-size:clamp(20px,calc(var(--tool-size) * .58),28px);
       font-weight:950;
       line-height:1;
       letter-spacing:.08em;
       text-align:center;
       opacity:0;
-      transform:translateY(-4px) scale(.92);
-      animation:coin-result-label-in 180ms ease-out 720ms forwards
+      transform:translateY(-3px) scale(.94);
+      transition:opacity 150ms ease-out,transform 150ms ease-out
+    }
+    .coinResultLabel.show{
+      opacity:1;
+      transform:translateY(0) scale(1)
     }
     .coinTossResult[data-side="heads"] .coinResultLabel{
       border-color:#f2d57f;
@@ -184,11 +195,8 @@
       border-color:#d7ca98;
       color:#eee4b9
     }
-    @keyframes coin-result-label-in{
-      to{opacity:1;transform:translateY(0) scale(1)}
-    }
     @media (prefers-reduced-motion:reduce){
-      .coinResultLabel{animation:none;opacity:1;transform:none}
+      .coinResultLabel{transition:none}
     }
   `;
   document.head.appendChild(style);
@@ -219,41 +227,63 @@
   const clearResults=()=>document.querySelectorAll('.die').forEach(die=>die.remove());
   const closeMenu=()=>diceMenu.classList.remove('show');
 
-  function coinFaceMarkup(type,label){
+  function coinArt(type){
     if(type==='heads'){
       return `
-        <div class="coinFace3d heads">
-          <svg viewBox="0 0 512 512" aria-hidden="true">
-            <circle cx="256" cy="220" r="72"></circle>
-            <path d="M256 43v55M256 342v55M79 220h55M378 220h55M131 95l39 39M342 306l39 39M381 95l-39 39M170 306l-39 39"></path>
-          </svg>
-          <span class="coinFaceWord">${label}</span>
-        </div>`;
+        <svg viewBox="0 0 512 512" aria-hidden="true">
+          <circle cx="256" cy="220" r="72"></circle>
+          <path d="M256 43v55M256 342v55M79 220h55M378 220h55M131 95l39 39M342 306l39 39M381 95l-39 39M170 306l-39 39"></path>
+        </svg>`;
     }
     return `
-      <div class="coinFace3d tails">
-        <svg viewBox="0 0 512 512" aria-hidden="true">
-          <path d="M329 77c-96 19-168 103-168 204 0 61 27 117 70 155-93-12-165-91-165-187 0-103 83-186 186-186 28 0 54 5 77 14Z"></path>
-          <path d="M341 181l17 36 39 6-28 27 7 39-35-18-35 18 7-39-28-27 39-6 17-36Z"></path>
-        </svg>
+      <svg viewBox="0 0 512 512" aria-hidden="true">
+        <path d="M329 77c-96 19-168 103-168 204 0 61 27 117 70 155-93-12-165-91-165-187 0-103 83-186 186-186 28 0 54 5 77 14Z"></path>
+        <path d="M341 181l17 36 39 6-28 27 7 39-35-18-35 18 7-39-28-27 39-6 17-36Z"></path>
+      </svg>`;
+  }
+
+  function coinFaceMarkup(type,label,staticFace=false){
+    return `
+      <div class="${staticFace?'coinStaticFace':'coinFace3d'} ${type}">
+        ${coinArt(type)}
         <span class="coinFaceWord">${label}</span>
       </div>`;
   }
 
-  function animateCoin(coin,side){
+  function animateCoin(coin,side,label){
     const rotor=coin.querySelector('.coinRotor');
     const shadow=coin.querySelector('.coinGroundShadow');
+    const resultLabel=coin.querySelector('.coinResultLabel');
     if(!rotor)return;
 
-    const end=side==='heads'?1440:1620;
+    let settled=false;
+    let motion=null;
+    let shadowMotion=null;
+    const settle=()=>{
+      if(settled)return;
+      settled=true;
+      try{motion?.cancel()}catch{}
+      try{shadowMotion?.cancel()}catch{}
+      rotor.style.transform='none';
+      rotor.style.willChange='auto';
+      rotor.innerHTML=coinFaceMarkup(side,label,true);
+      if(shadow){
+        shadow.style.transform='translate(-50%,-50%) scale(1)';
+        shadow.style.opacity='.68';
+        shadow.style.willChange='auto';
+      }
+      resultLabel?.classList.add('show');
+    };
+
     const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     if(reduced||typeof rotor.animate!=='function'){
-      rotor.style.transform=`rotateX(${end}deg)`;
+      settle();
       return;
     }
 
+    const end=side==='heads'?1440:1620;
     const rotation=value=>Math.round(end*value);
-    rotor.animate([
+    motion=rotor.animate([
       {transform:'translate3d(0,34px,0) rotateX(0deg) rotateZ(-6deg) scale(.78)',offset:0},
       {transform:`translate3d(0,-66px,26px) rotateX(${rotation(.25)}deg) rotateZ(7deg) scale(.92)`,offset:.22},
       {transform:`translate3d(0,-112px,44px) rotateX(${rotation(.55)}deg) rotateZ(-5deg) scale(1.02)`,offset:.50},
@@ -263,10 +293,10 @@
     ],{
       duration:900,
       easing:'cubic-bezier(.18,.76,.24,1)',
-      fill:'forwards'
+      fill:'none'
     });
 
-    shadow?.animate([
+    shadowMotion=shadow?.animate([
       {transform:'translate(-50%,-50%) scale(1.05)',opacity:.68,offset:0},
       {transform:'translate(-50%,-50%) scale(.48)',opacity:.22,offset:.48},
       {transform:'translate(-50%,-50%) scale(.72)',opacity:.36,offset:.78},
@@ -275,8 +305,12 @@
     ],{
       duration:900,
       easing:'cubic-bezier(.18,.76,.24,1)',
-      fill:'forwards'
+      fill:'none'
     });
+
+    motion.onfinish=settle;
+    motion.oncancel=()=>{};
+    setTimeout(settle,980);
   }
 
   function flipCoin(){
@@ -299,7 +333,7 @@
         <div class="coinResultLabel">${label}</div>
       </div>`;
     diceLayer.appendChild(coin);
-    requestAnimationFrame(()=>animateCoin(coin,side));
+    requestAnimationFrame(()=>animateCoin(coin,side,label));
     navigator.vibrate?.(18);
   }
 
