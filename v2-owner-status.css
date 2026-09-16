@@ -6,39 +6,39 @@ html.layout-vertical-v2 #app .ownerStatusBadges{
   align-items:flex-start!important;
 }
 
-/* Special counters and owner-state badges share one visual size system. */
+/* Special counters and owner-state badges share the same fluid size system. */
 html.layout-vertical-v2 #app .counterBadge,
 html.layout-vertical-v2 #app .ownerStatusBadge{
-  min-width:28px!important;
-  height:25px!important;
-  min-height:25px!important;
-  padding:2px 6px!important;
-  gap:4px!important;
+  min-width:calc(var(--fluid-badge-height) * 1.33)!important;
+  height:var(--fluid-badge-height)!important;
+  min-height:var(--fluid-badge-height)!important;
+  padding:calc(var(--fluid-badge-height) * .095) calc(var(--fluid-badge-height) * .285)!important;
+  gap:calc(var(--fluid-badge-height) * .19)!important;
   box-sizing:border-box!important;
   border-radius:999px!important;
-  font-size:12px!important;
+  font-size:var(--fluid-badge-font)!important;
   line-height:1!important;
 }
 html.layout-vertical-v2 #app .counterBadge b{
-  font-size:12px!important;
+  font-size:var(--fluid-badge-font)!important;
   line-height:1!important;
 }
 html.layout-vertical-v2 #app .counterBadge .counterIcon,
 html.layout-vertical-v2 #app .ownerStatusBadge .ownerStateSvg{
-  width:14px!important;
-  height:14px!important;
-  flex:0 0 14px;
+  width:var(--fluid-badge-icon)!important;
+  height:var(--fluid-badge-icon)!important;
+  flex:0 0 var(--fluid-badge-icon);
   fill:currentColor;
 }
 html.layout-vertical-v2 #app .ownerStateIcon{
-  width:14px;
-  height:14px;
+  width:var(--fluid-badge-icon);
+  height:var(--fluid-badge-icon);
   display:inline-grid;
   place-items:center;
 }
 #counters .ownerTableButton .ownerStateSvg{
-  width:20px;
-  height:20px;
+  width:clamp(20px,calc(var(--fluid-badge-icon) * 1.35),28px);
+  height:clamp(20px,calc(var(--fluid-badge-icon) * 1.35),28px);
   display:block;
   fill:currentColor;
 }
