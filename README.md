@@ -13,7 +13,7 @@ v2は**縦型レイアウトのみ**を使用します。スマホ・タブレ�
 - Commander Damageをライフ下部に表示
 - PartnerはA/BそれぞれのCommander Damageを分離
 - 上側プレイヤーは180度回転し、卓の反対側から読める
-- Undo / Dice / Reset / Help / Settingsを中央の共有操作列へ配置
+- Undo / Dice / Coin / Reset / Fullscreen / Settingsを中央の共有操作列へ配置
 - safe area、短いスマホ画面、タブレット幅に合わせて席サイズから自動調整
 
 `layout.js` は端末種別でスマホ/タブレットを分けず、実際の表示領域からスケールを計算します。PWAのmanifestは `portrait-primary` を指定しています。
@@ -36,8 +36,9 @@ v2は**縦型レイアウトのみ**を使用します。スマホ・タブレ�
   - 単一統率者 / Partner
 - Undo
 - 長押しゲームリセット
-- D6 1個 / 全員ロール
-- D20 / コイン / ランダムプレイヤー
+- **Diceを1タップでD6 1個**
+- **Coinを1タップでコイントス**
+- Dice長押しで D6全員 / D20 / ランダムプレイヤー
 - LocalStorage保存
 - PWA / オフライン起動
 - Screen Wake Lock / Fullscreen API対応ブラウザをサポート
@@ -85,10 +86,11 @@ Partnerだけは、Commander DamageをA/Bで分けるために必要なのでア
 - `counters.css` — 長押しUIなど既存モーダル基盤の互換スタイル
 - `layout.js` — portrait-only v2のviewport / safe area管理
 - `v2-layout.js` — v2用のレスポンシブ・操作レイヤー読込
-- `app.js` — 基本状態管理・ライフ・設定・ダイス
+- `app.js` — 基本状態管理・ライフ・設定・D6
 - `edh-features.js` — Partner / Commander Damage互換状態
 - `multitouch.js` — マルチタッチ入力
-- `dice-extra.js` — D20 / コイン / ランダムプレイヤー
+- `dice-extra.js` — D20 / コイン描画 / ランダムプレイヤー
+- `v2-quick-dice-coin.js` — D6・Coinの1タップ操作とDice長押しメニュー
 - `sw.js` — PWAオフラインキャッシュ
 
 ## データ
