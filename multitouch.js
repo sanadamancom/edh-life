@@ -6,6 +6,7 @@
   const REPEAT_INTERVAL=120;
   const ACCELERATE_AFTER=1500;
   const FAST_REPEAT_INTERVAL=80;
+  const MAX_HOLD_MS=15000;
 
   const activePointers=new Map();
   let renderFrame=0;
@@ -27,6 +28,7 @@
   document.head.appendChild(style);
 
   function markHeldControls(){
+    app.querySelectorAll('.repeat-held').forEach(button=>button.classList.remove('repeat-held'));
     activePointers.forEach(session=>{
       let selector='';
       if(session.action.kind==='life'){
@@ -42,14 +44,16 @@
     if(renderFrame)return;
     renderFrame=requestAnimationFrame(()=>{
       renderFrame=0;
+      if(activePointers.size){
+        markHeldControls();
+        return;
+      }
       render();
-      markHeldControls();
     });
   }
 
-  function saveAndRender(){
+  function saveOnly(){
     saveState();
-    scheduleRender();
   }
 
   function closeTransientUi(){
@@ -102,16 +106,70 @@
     return true;
   }
 
+  function syncLife(index){
+    const value=app.querySelector(`.life[data-life="${index}"] .lifeValue`);
+    if(value)value.textContent=String(state.players[index].life);
+  }
+
+  function syncCommander(action){
+    syncLife(action.target);
+
+    const player=state.players[action.target];
+    const store=action.slot===1?player.cmdB:player.cmd;
+    const value=store?.[action.source]||0;
+    const selector=`[data-cmd="1"][data-slot="${action.slot}"][data-t="${action.target}"][data-s="${action.source}"]`;
+    const button=app.querySelector(selector);
+    if(!button)return;
+
+    const partnerRow=button.closest('.partnerRow');
+    if(partnerRow){
+      const number=partnerRow.querySelector('b');
+      if(number)number.textContent=String(value);
+      partnerRow.classList.toggle('hot',value>=18);
+      button.closest('.cc')?.classList.toggle('hot',
+        (player.cmd?.[action.source]||0)>=18||(player.cmdB?.[action.source]||0)>=18
+      );
+      return;
+    }
+
+    const card=button.closest('.cc');
+    const number=card?.querySelector('.cv');
+    if(number)number.textContent=String(value);
+    card?.classList.toggle('hot',value>=18);
+  }
+
+  function syncActionDisplay(action){
+    if(action.kind==='life')syncLife(action.index);
+    else syncCommander(action);
+  }
+
+  function clearSessionTimers(session){
+    clearTimeout(session.timer);
+    clearTimeout(session.guardTimer);
+  }
+
   function stopPointer(pointerId){
     const session=activePointers.get(pointerId);
     if(!session)return;
-    clearTimeout(session.timer);
+
+    clearSessionTimers(session);
     activePointers.delete(pointerId);
-    scheduleRender();
+
+    try{
+      if(app.hasPointerCapture?.(pointerId))app.releasePointerCapture(pointerId);
+    }catch{}
+
+    if(activePointers.size===0)scheduleRender();
+    else markHeldControls();
   }
 
   function stopAllPointers(){
-    activePointers.forEach(session=>clearTimeout(session.timer));
+    activePointers.forEach((session,pointerId)=>{
+      clearSessionTimers(session);
+      try{
+        if(app.hasPointerCapture?.(pointerId))app.releasePointerCapture(pointerId);
+      }catch{}
+    });
     activePointers.clear();
     scheduleRender();
   }
@@ -130,7 +188,8 @@
       navigator.vibrate?.(10);
     }
 
-    saveAndRender();
+    saveOnly();
+    syncActionDisplay(session.action);
 
     const elapsed=performance.now()-session.startedAt;
     const delay=elapsed>=ACCELERATE_AFTER?FAST_REPEAT_INTERVAL:REPEAT_INTERVAL;
@@ -146,27 +205,41 @@
     event.preventDefault();
     closeTransientUi();
 
+    /* Mobile browsers may reuse a pointerId quickly. Never leave the old timer alive. */
+    if(activePointers.has(event.pointerId))stopPointer(event.pointerId);
+
     pushHistory();
     if(!applyAction(action)){
       state.hist.pop();
       return;
     }
 
-    saveAndRender();
-
     const session={
       action,
       startedAt:performance.now(),
       repeating:false,
-      timer:0
+      timer:0,
+      guardTimer:0
     };
-    session.timer=setTimeout(()=>repeatPointer(event.pointerId),HOLD_DELAY);
+
     activePointers.set(event.pointerId,session);
+
+    /* Capture on #app, which survives player re-renders, so pointerup cannot be lost with a child node. */
+    try{app.setPointerCapture?.(event.pointerId)}catch{}
+
+    saveOnly();
+    syncActionDisplay(action);
+    markHeldControls();
+
+    session.timer=setTimeout(()=>repeatPointer(event.pointerId),HOLD_DELAY);
+    session.guardTimer=setTimeout(()=>stopPointer(event.pointerId),MAX_HOLD_MS);
   });
 
+  app.addEventListener('lostpointercapture',event=>stopPointer(event.pointerId));
   document.addEventListener('pointerup',event=>stopPointer(event.pointerId),true);
   document.addEventListener('pointercancel',event=>stopPointer(event.pointerId),true);
   window.addEventListener('blur',stopAllPointers);
+  window.addEventListener('pagehide',stopAllPointers);
   document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState!=='visible')stopAllPointers();
   });
