@@ -4,13 +4,27 @@
   --tool-size:38px;
   --tool-gap:2px;
   --tool-clearance:0px;
+  --stage-full-height:100dvh;
 }
 
-/* On iOS fixed inset is the authoritative full viewport. Avoid an over-constrained 100dvh height. */
+/* Installed PWAs can report a CSS viewport shorter than the physical display. The measured
+   --stage-full-height keeps the board/background reaching the real bottom edge. */
 html.layout-vertical-v2 #stage{
-  inset:0;
-  width:auto;
-  height:auto;
+  top:0!important;
+  right:0!important;
+  bottom:auto!important;
+  left:0!important;
+  width:100vw!important;
+  height:var(--stage-full-height)!important;
+}
+html.layout-vertical-v2 #app,
+html.layout-vertical-v2 .diceLayer{
+  top:0!important;
+  right:0!important;
+  bottom:0!important;
+  left:0!important;
+  width:100%!important;
+  height:100%!important;
 }
 
 /* Reserve one physical row in the middle for shared table controls. */
