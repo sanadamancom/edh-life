@@ -6,6 +6,7 @@
   --tool-clearance:0px;
   --stage-full-height:100dvh;
   --seat-edge-safe:max(var(--safe-top),var(--safe-bottom));
+  --commander-card-h:50px;
 }
 
 /* The physical board is the layout frame. The exact 50% line is the invariant:
@@ -69,12 +70,21 @@ html.layout-vertical-v2 .lifeRow .delta[data-d="-1"]{grid-column:1;grid-row:2}
 html.layout-vertical-v2 .lifeRow .delta[data-d="1"]{grid-column:2;grid-row:2}
 html.layout-vertical-v2 .lifeRow .delta{min-height:42px}
 
-/* Commander Damage: card/partner row itself is the +1 control. */
+/* Commander Damage: every opponent card has the same outer height whether it is
+   a single commander or Partner. Partner changes only the contents, never geometry. */
 html.layout-vertical-v2 .cmdQuickPlus{display:none!important}
 html.layout-vertical-v2 .cmdTax.empty{display:none!important}
+html.layout-vertical-v2 .cc.commanderQuick,
+html.layout-vertical-v2 .cc.partnerCc{
+  height:var(--commander-card-h)!important;
+  min-height:var(--commander-card-h)!important;
+  max-height:var(--commander-card-h)!important;
+  box-sizing:border-box;
+  overflow:hidden;
+}
 html.layout-vertical-v2 .cc.commanderQuick{
-  min-height:44px;
   grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
   gap:8px;
   padding:5px 8px;
   cursor:pointer;
@@ -95,9 +105,10 @@ html.layout-vertical-v2 .cc.commanderQuick .cv{
 html.layout-vertical-v2 .commanderTap:active,
 html.layout-vertical-v2 .commanderTapRow:active{filter:brightness(1.18)}
 
-/* Partner keeps A/B horizontal and trims vertical chrome to protect the life area. */
+/* Partner keeps A/B horizontal inside exactly the same card height. */
 html.layout-vertical-v2 .partnerCc{
-  min-height:50px;
+  display:grid;
+  grid-template-rows:auto minmax(0,1fr);
   padding:2px 4px 3px;
 }
 html.layout-vertical-v2 .partnerCc>.cw{
@@ -110,6 +121,7 @@ html.layout-vertical-v2 .partnerRows{
   display:grid;
   grid-template-columns:minmax(0,1fr) minmax(0,1fr);
   gap:3px;
+  min-height:0;
   margin:0;
 }
 html.layout-vertical-v2 .partnerRow{
@@ -117,7 +129,8 @@ html.layout-vertical-v2 .partnerRow{
   grid-template-columns:auto minmax(22px,1fr) auto;
   align-items:center;
   gap:3px;
-  min-height:30px;
+  min-height:0;
+  height:100%;
   padding:2px 5px;
   border:1px solid rgba(255,255,255,.08);
   border-radius:8px;
@@ -209,8 +222,10 @@ html.layout-vertical-v2 #unifiedTableStateHub{display:none!important}
 html.layout-vertical-v2.layout-short{
   --tool-size:48px;
   --center-band-h:54px;
+  --commander-card-h:46px;
 }
 html.layout-vertical-v2.layout-tablet{
   --tool-size:60px;
   --center-band-h:68px;
+  --commander-card-h:60px;
 }
