@@ -32,7 +32,7 @@
       if(session.action.kind==='life'){
         selector=`[data-life="${session.action.index}"][data-d="${session.action.delta}"]`;
       }else{
-        selector=`[data-cmd="${session.action.delta}"][data-t="${session.action.target}"][data-s="${session.action.source}"]`;
+        selector=`[data-cmd="${session.action.delta}"][data-slot="${session.action.slot}"][data-t="${session.action.target}"][data-s="${session.action.source}"]`;
       }
       app.querySelector(selector)?.classList.add('repeat-held');
     });
@@ -78,8 +78,9 @@
     const target=Number(commanderButton.dataset.t);
     const source=Number(commanderButton.dataset.s);
     const delta=Number(commanderButton.dataset.cmd);
+    const slot=Number(commanderButton.dataset.slot||0);
     if(!Number.isInteger(target)||!Number.isInteger(source)||!state.players[target])return null;
-    return {kind:'commander',target,source,delta};
+    return {kind:'commander',target,source,slot:slot===1?1:0,delta};
   }
 
   function applyAction(action){
@@ -88,13 +89,16 @@
       return true;
     }
 
-    const current=state.players[action.target].cmd[action.source]||0;
+    const player=state.players[action.target];
+    if(action.slot===1&&!Array.isArray(player.cmdB))player.cmdB=[0,0,0,0];
+    const store=action.slot===1?player.cmdB:player.cmd;
+    const current=store[action.source]||0;
     const next=Math.max(0,current+action.delta);
     const applied=next-current;
     if(!applied)return false;
 
-    state.players[action.target].cmd[action.source]=next;
-    state.players[action.target].life-=applied;
+    store[action.source]=next;
+    player.life-=applied;
     return true;
   }
 
@@ -142,7 +146,6 @@
     event.preventDefault();
     closeTransientUi();
 
-    /* One history entry per press/hold gesture, not one per repeat tick. */
     pushHistory();
     if(!applyAction(action)){
       state.hist.pop();
@@ -172,11 +175,6 @@
     if(actionFromEvent(event))event.preventDefault();
   });
 
-  /*
-   * Pointer input is committed on pointerdown above. Suppress the compatibility
-   * click so the original click handler in app.js cannot apply the change twice.
-   * Keyboard/assistive clicks (detail === 0) are intentionally left alone.
-   */
   app.addEventListener('click',event=>{
     if(event.detail===0)return;
 
