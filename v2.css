@@ -1,0 +1,224 @@
+/* EDH Life v2: native portrait layout. Landscape keeps the existing v1 board. */
+
+html.v2-portrait #stage{
+  width:var(--board-w);
+  height:var(--board-h);
+  transform:translate(-50%,-50%);
+  overflow:hidden;
+}
+
+html.v2-portrait #app,
+html.v2-portrait .diceLayer{
+  inset:var(--v2-safe-top) var(--v2-safe-right) var(--v2-game-bottom) var(--v2-safe-left);
+}
+
+html.v2-portrait #app.c4,
+html.v2-portrait #app.c3{
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  grid-template-rows:minmax(0,1fr) minmax(0,1fr);
+}
+html.v2-portrait #app.c3 .p:nth-child(1){grid-column:1/3}
+html.v2-portrait #app.c2{
+  grid-template-columns:minmax(0,1fr);
+  grid-template-rows:minmax(0,1fr) minmax(0,1fr);
+}
+
+html.v2-portrait .pc{
+  justify-content:flex-start;
+  gap:var(--v2-gap);
+  padding:var(--v2-panel-pad);
+}
+
+html.v2-portrait .name{
+  max-width:72%;
+  min-height:1em;
+  transform:none;
+  font-size:var(--v2-name-size);
+  line-height:1.05;
+}
+
+/* Portrait v2: life gets a full-width row, then ±1 and ±5 form a 2×2 pad. */
+html.v2-portrait .lifeRow{
+  width:94%;
+  min-height:0;
+  flex:1 1 auto;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  grid-template-rows:minmax(var(--v2-life-min-h),1fr) var(--v2-control-h) var(--v2-control-h);
+  gap:var(--v2-control-gap);
+  align-items:stretch;
+  overflow:visible;
+}
+html.v2-portrait .life{
+  grid-column:1/3;
+  grid-row:1;
+  width:100%;
+  height:100%;
+  min-height:0;
+  font-size:var(--life-size);
+  border-radius:14px;
+}
+html.v2-portrait .lifeValue{padding:0 4px}
+
+html.v2-portrait .lifeRow .delta,
+html.v2-portrait .lifeRow .quick5{
+  width:100%;
+  height:100%;
+  min-height:0;
+  border-radius:var(--v2-control-radius);
+}
+html.v2-portrait .lifeRow .delta[data-d="-1"]{grid-column:1;grid-row:2}
+html.v2-portrait .lifeRow .delta[data-d="1"]{grid-column:2;grid-row:2}
+html.v2-portrait .lifeRow .quick5[data-d="-5"]{grid-column:1;grid-row:3}
+html.v2-portrait .lifeRow .quick5[data-d="5"]{grid-column:2;grid-row:3}
+html.v2-portrait .lifeRow .delta .mi{
+  width:var(--v2-icon-size);
+  height:var(--v2-icon-size);
+}
+html.v2-portrait .lifeRow .quick5{font-size:var(--v2-quick-size)}
+
+/* Commander Damage becomes a vertical list in portrait. */
+html.v2-portrait .cmd{
+  width:94%;
+  flex:0 0 auto;
+  margin-top:1px;
+  padding:var(--v2-cmd-pad);
+  border-radius:var(--v2-cmd-radius);
+}
+html.v2-portrait .cg{
+  grid-template-columns:minmax(0,1fr);
+  gap:var(--v2-cmd-gap);
+}
+html.v2-portrait .cc{
+  min-height:var(--v2-cmd-row-h);
+  border-radius:var(--v2-cmd-card-radius);
+}
+
+html.v2-portrait .cc.commanderQuick{
+  display:grid;
+  grid-template-columns:minmax(44px,.9fr) minmax(84px,1.45fr);
+  align-items:center;
+  gap:4px;
+  padding:3px 4px;
+}
+html.v2-portrait .cc.commanderQuick .cw{
+  padding-left:2px;
+  text-align:left;
+  font-size:var(--v2-cmd-name-size);
+}
+html.v2-portrait .cc.commanderQuick .commanderQuickRow{
+  display:grid;
+  grid-template-columns:minmax(20px,.55fr) minmax(24px,.75fr) minmax(42px,1fr);
+  gap:3px;
+  align-items:center;
+  margin:0;
+}
+html.v2-portrait .cc.commanderQuick .cv{
+  margin:0;
+  font-size:var(--v2-cmd-value-size);
+}
+html.v2-portrait .cmdQuickPlus{
+  min-height:var(--v2-cmd-button-h);
+  border-radius:7px;
+  font-size:var(--v2-cmd-button-size);
+}
+html.v2-portrait .cmdTax{
+  padding:2px 3px;
+  font-size:var(--v2-tax-size);
+}
+
+html.v2-portrait .partnerCc{
+  padding:3px 4px;
+}
+html.v2-portrait .partnerCc>.cw{
+  margin-bottom:2px;
+  font-size:var(--v2-cmd-name-size);
+}
+html.v2-portrait .partnerRows{gap:2px;margin-top:1px}
+html.v2-portrait .partnerRow{
+  grid-template-columns:12px 22px minmax(24px,1fr) minmax(44px,36%);
+  gap:3px;
+  min-height:var(--v2-partner-row-h);
+}
+html.v2-portrait .partnerRow b{font-size:var(--v2-cmd-value-size)}
+html.v2-portrait .partnerMark{font-size:9px}
+html.v2-portrait .partnerRow .cmdQuickPlus{
+  min-height:var(--v2-partner-button-h);
+  font-size:var(--v2-cmd-button-size);
+}
+html.v2-portrait .partnerRow .cmdTax{font-size:var(--v2-tax-size)}
+
+html.v2-portrait .counterBadges{
+  top:var(--v2-panel-pad);
+  right:var(--v2-panel-pad);
+  gap:3px;
+}
+html.v2-portrait .counterBadge{
+  min-width:22px;
+  height:21px;
+  padding:2px 4px;
+  font-size:12px;
+}
+html.v2-portrait .counterIcon{width:13px;height:13px}
+
+/* A bottom rail is much cheaper than sacrificing half a phone column to a right rail. */
+html.v2-portrait #tools{
+  left:50%;
+  right:auto;
+  top:auto;
+  bottom:calc(var(--v2-safe-bottom) + 5px);
+  flex-direction:row;
+  gap:var(--v2-tool-gap);
+  transform:translateX(-50%);
+}
+html.v2-portrait #tools>button,
+html.v2-portrait .dw>button{
+  width:var(--tool-size);
+  height:var(--tool-size);
+  padding:calc(var(--tool-size) * .22);
+  border-radius:calc(var(--tool-size) * .28);
+}
+html.v2-portrait .dm{
+  left:50%;
+  right:auto;
+  top:auto;
+  bottom:calc(var(--tool-size) + 7px);
+  transform:translateX(-50%);
+}
+
+html.v2-portrait .ov{
+  padding:calc(var(--v2-safe-top) + 10px) calc(var(--v2-safe-right) + 10px) calc(var(--v2-game-bottom) + 6px) calc(var(--v2-safe-left) + 10px);
+}
+html.v2-portrait .modal{
+  width:min(94%,560px);
+  max-height:100%;
+}
+html.v2-portrait #helpOverlay .helpPanel{width:min(94%,560px)}
+html.v2-portrait #helpOverlay .helpGrid{grid-template-columns:1fr}
+html.v2-portrait #helpOverlay .helpTools{grid-column:auto}
+html.v2-portrait #helpOverlay .helpToolsGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+html.v2-portrait .counterGrid{grid-template-columns:1fr}
+html.v2-portrait .commanderDetailGrid{grid-template-columns:1fr}
+
+/* The center hub sits at the actual player-grid intersection in portrait too. */
+html.v2-portrait #unifiedTableStateHub{
+  width:58px;
+  height:58px;
+}
+html.v2-portrait .tableStateCenter{width:44px;height:26px}
+
+html.v2-portrait .die{width:94px;height:94px}
+html.v2-portrait .die.player{width:82px;height:82px}
+
+/* Very short portrait screens compact the lower-information areas first. */
+html.v2-portrait.v2-compact .pc{gap:2px;padding:4px}
+html.v2-portrait.v2-compact .name{font-size:12px}
+html.v2-portrait.v2-compact .cmd{width:96%;padding:2px}
+html.v2-portrait.v2-compact .cg{gap:2px}
+html.v2-portrait.v2-compact .cc.commanderQuick{padding:2px 3px}
+html.v2-portrait.v2-compact .partnerCc{padding:2px 3px}
+html.v2-portrait.v2-compact .counterBadge{height:19px;font-size:11px}
+
+@media (prefers-reduced-motion:reduce){
+  html.v2-portrait #stage{transition:none}
+}
