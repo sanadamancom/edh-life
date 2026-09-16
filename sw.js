@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v44-commander-pie';
+const CACHE_NAME='edh-life-v45-unified-table-state';
 const APP_SHELL=[
   './',
   './index.html',
@@ -9,6 +9,7 @@ const APP_SHELL=[
   './edh-features.js?v=2',
   './multitouch.js?v=4',
   './dice-extra.js?v=1',
+  './table-state-hub.js?v=1',
   './manifest.webmanifest',
   './icon.svg'
 ];
