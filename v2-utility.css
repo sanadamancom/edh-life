@@ -5,8 +5,17 @@
   initial-value:0deg;
 }
 
+/* Safety: the legacy life-local hold indicator is not part of v2 anymore. */
+html.layout-vertical-v2 .life.holding{
+  text-shadow:inherit!important;
+}
+html.layout-vertical-v2 .life.holding::after{
+  content:none!important;
+  display:none!important;
+}
+
 html.layout-vertical-v2 #app .p.random-selected::after,
-html.layout-vertical-v2 #app .p.life-hold-selected::after{
+html.layout-vertical-v2 #app .p.life-hold-active::after{
   content:"";
   position:absolute;
   inset:5px;
@@ -25,15 +34,13 @@ html.layout-vertical-v2 #app .p.random-selected::after{
   animation:random-player-glow .72s ease-in-out 2;
 }
 
-/* Long-press progress is drawn directly into the player-panel highlight.
-   app.js opens the special-counter dialog after 300ms, so the ring completes
-   at the same moment. */
-html.layout-vertical-v2 #app .p.life-hold-selected::after{
+/* Life long-press progress lives only on the player-panel outline. */
+html.layout-vertical-v2 #app .p.life-hold-active::after{
   padding:4px;
   background:conic-gradient(
     from -90deg,
     color-mix(in srgb,var(--pc) 76%,white 24%) 0deg var(--life-hold-angle),
-    rgba(255,255,255,.10) var(--life-hold-angle) 360deg
+    transparent var(--life-hold-angle) 360deg
   );
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;
@@ -57,5 +64,5 @@ html.layout-vertical-v2 #app .p.life-hold-selected::after{
 
 @media (prefers-reduced-motion:reduce){
   html.layout-vertical-v2 #app .p.random-selected::after{animation:none}
-  /* Keep the hold-progress animation because it communicates the hold duration. */
+  /* Hold progress is functional timing feedback, so keep its 300ms sweep. */
 }
