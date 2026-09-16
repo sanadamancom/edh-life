@@ -3,8 +3,10 @@
   const settings=document.getElementById('settings');
   const diceMenu=document.getElementById('dm');
   const randomPlayer=document.getElementById('randomPlayer');
+  let randomDismissArmed=false;
 
   function clearRandomSelection(){
+    randomDismissArmed=false;
     document.querySelectorAll('#app .p.random-selected').forEach(player=>player.classList.remove('random-selected'));
   }
 
@@ -17,6 +19,12 @@
     }
     return Math.floor(Math.random()*max);
   }
+
+  /* A random-player highlight is only a temporary result indicator. The next tap
+     anywhere clears it without consuming or blocking that tap's normal action. */
+  document.addEventListener('pointerdown',()=>{
+    if(randomDismissArmed)clearRandomSelection();
+  },true);
 
   if(diceMenu){
     diceMenu.addEventListener('click',event=>{
@@ -37,6 +45,7 @@
       if(!players.length)return;
       const selected=players[randomInt(players.length)];
       selected.classList.add('random-selected');
+      randomDismissArmed=true;
       navigator.vibrate?.(28);
     },true);
   }

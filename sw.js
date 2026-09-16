@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v68-stable-boot-assets';
+const CACHE_NAME='edh-life-v69-random-dismiss-anywhere';
 const APP_SHELL=[
   './',
   './index.html',
