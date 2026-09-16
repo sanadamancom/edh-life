@@ -2,6 +2,21 @@
 
 EDH（Commander）用の卓上ライフカウンターWebアプリです。
 
+## v2
+
+v2ではスマホ・タブレットの**縦向きを正式なネイティブレイアウト**として扱います。従来の「横長ボードを90度回転する」方式は縦向きでは使いません。横向きはこれまでのv1レイアウトを維持します。
+
+縦4人戦は2×2を維持し、各プレイヤーを縦長パネルとして構成します。
+
+- ライフをパネル上部〜中央で最も大きく表示
+- `−1 / +1`、`−5 / +5` をライフ下の2×2操作パッドへ配置
+- Commander Damageはその下に縦リストで配置
+- PartnerはA/Bそれぞれの `+1` を維持
+- 上側プレイヤーは従来どおり180度回転
+- Monarch / Initiativeの8分割ハブは4人の交点へ配置
+- Undo / Dice / Reset / Fullscreen / Help / Settingsは縦向きでは下部ツールバーへ移動
+- safe area、短い画面、タブレット幅に応じて自動縮小・拡大
+
 ## 主な機能
 
 - 2〜4人対応
@@ -31,7 +46,7 @@ EDH（Commander）用の卓上ライフカウンターWebアプリです。
   - 設定画面から卓状態UIをON/OFF可能。OFF時はMonarch / Initiative状態もクリア
 - 特殊カウンターは有効なものだけ通常画面にアイコン付きで表示
 - Undo
-- 右ツールバーのリセットは長押し時のみ実行
+- リセットは長押し時のみ実行
 - 設定画面には従来の2段階確認リセットも残す
 - プレイヤー名・カラー変更
 - LocalStorageで状態保存
@@ -62,19 +77,19 @@ GitHubの **Settings → Pages → Build and deployment → Source** は **GitHu
 3. **ホーム画面に追加** を選ぶ
 4. 追加された `EDH Life` アイコンから起動する
 
-manifestの向き指定は `any` です。アプリ側では、横向きはそのまま、縦向きは完成した横長ボード全体を90度回転して表示します。
+manifestの向き指定は `any` です。横向きでは従来の横長レイアウト、縦向きではv2のネイティブ縦レイアウトを自動選択します。
 
 ## レイアウト方針
 
-内部UIは高さ390pxの論理ボードを基準にしています。
-
-- 短辺は表示領域に合わせて拡大縮小
-- 長辺は最大844px
-- 端末のsafe areaと操作ボタン用に長辺側へガターを確保
-- 4人表示は常に2×2の均等分割
-- ライフ数字の大きさは値そのものではなく、プレイヤー領域の実幅から決定
+- 横向き: 既存の844×390論理ボードを基準としたv1レイアウト
+- 縦向き: 実際のviewportをそのまま使うv2レイアウト
+- 4人表示は縦横とも基本2×2
+- 3人表示は上側1人＋下側2人
+- 2人表示は上下2人
+- 上側プレイヤーは180度回転し、卓の反対側から読める
+- 縦向きではライフ→ライフ操作→Commander Damageの情報階層を明確化
 - 特殊カウンターは通常操作を圧迫しないよう長押し画面で編集し、通常画面には有効な値だけ表示
-- 単一統率者は大きいCommander Damage `+1` を1個だけ表示し、PartnerはA/Bそれぞれに大きい `+1` を1個ずつ表示
+- 単一統率者はCommander Damage `+1` を1個、PartnerはA/Bそれぞれに `+1` を表示
 - Commander Damageの減算、Partner切り替え、Commander Tax編集はCommander Damageカード長押しの詳細UIへまとめる
 - Commander Taxは通常画面では非0時だけ表示する
 - Monarch / Initiative はプレイヤー個別UIから切り離し、ON/OFF可能な卓全体の中央8分割ハブとして扱う
@@ -86,9 +101,11 @@ Service Workerでアプリ本体・CSS・JavaScript・manifest・アイコンを
 ## 構成
 
 - `index.html` — ページ構造とツールバー
-- `styles.css` — 基本UI・レイアウト・ダイス等のアニメーション
+- `styles.css` — v1基本UI・レイアウト・ダイス等のアニメーション
 - `counters.css` — 特殊カウンター・敗北理由・長押しフィードバック・長押しリセット
-- `layout.js` — viewport / safe area / 縦横表示 / 自動サイズ計算
+- `layout.js` — v1 viewport / safe area / 横長論理ボード計算
+- `v2.css` — ネイティブ縦向きレイアウト
+- `v2-layout.js` — v2 viewport / safe area / スマホ・タブレット自動サイズ計算
 - `app.js` — 基本状態管理・ライフ・Commander Damage・特殊カウンター・設定・ダイス・PWA補助
 - `edh-features.js` — Partner、Commander Tax、Monarch、InitiativeのEDH固有拡張
 - `table-state-hub.js` — Monarch / Initiativeの統合8分割ハブと表示ON/OFF
@@ -96,7 +113,7 @@ Service Workerでアプリ本体・CSS・JavaScript・manifest・アイコンを
 - `dice-extra.js` — D20、コイン、ランダムプレイヤーと卓状態ハブのローダー
 - `manifest.webmanifest` — PWA設定
 - `sw.js` — オフラインキャッシュ
-- `icon.svg` — アプリアイコン
+- `icon.svg` — PWAアイコン
 - `.github/workflows/pages.yml` — GitHub Pagesデプロイ
 - `.nojekyll` — Jekyll処理無効化
 
