@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v84-larger-status-badges';
+const CACHE_NAME='edh-life-v85-sticky-counter-close';
 const APP_SHELL=[
   './',
   './index.html',
@@ -20,6 +20,7 @@ const APP_SHELL=[
   './v2-utility-behavior.js?v=5',
   './v2-commander-owner-settings.js?v=3',
   './v2-state-symbols.js?v=1',
+  './v2-counter-sticky-header.js?v=1',
   './v2-layout.js?v=1',
   './manifest.webmanifest',
   './icon.svg'
