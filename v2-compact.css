@@ -1,0 +1,105 @@
+/* v2 compact interaction pass: fewer controls, larger hit targets, symmetric utility band. */
+:root{
+  --utility-band:max(var(--safe-top),calc(var(--safe-bottom) + 44px),54px);
+  --tool-size:38px;
+  --tool-clearance:var(--utility-band);
+}
+
+/* On iOS fixed inset is the authoritative full viewport. Avoid an over-constrained 100dvh height. */
+html.layout-vertical-v2 #stage{
+  inset:0;
+  width:auto;
+  height:auto;
+}
+
+/* Long-press makes ±5 redundant. Life now gets one large control row only. */
+html.layout-vertical-v2 .lifeRow{
+  grid-template-rows:minmax(0,1fr) var(--control-h);
+}
+html.layout-vertical-v2 .lifeRow .quick5{
+  display:none!important;
+}
+html.layout-vertical-v2 .lifeRow .delta[data-d="-1"]{grid-column:1;grid-row:2}
+html.layout-vertical-v2 .lifeRow .delta[data-d="1"]{grid-column:2;grid-row:2}
+html.layout-vertical-v2 .lifeRow .delta{
+  min-height:42px;
+}
+
+/* Commander Damage: the card/partner row itself is the +1 control. */
+html.layout-vertical-v2 .cmdQuickPlus{display:none!important}
+html.layout-vertical-v2 .cc.commanderQuick{
+  min-height:44px;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:8px;
+  padding:5px 8px;
+  cursor:pointer;
+  touch-action:manipulation;
+}
+html.layout-vertical-v2 .cc.commanderQuick .cw{
+  font-size:clamp(10px,3vw,13px);
+}
+html.layout-vertical-v2 .cc.commanderQuick .commanderQuickRow{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:7px;
+}
+html.layout-vertical-v2 .cc.commanderQuick .cv{
+  min-width:1.4em;
+  text-align:center;
+  font-size:clamp(20px,5.8vw,27px);
+}
+html.layout-vertical-v2 .commanderTap:active,
+html.layout-vertical-v2 .commanderTapRow:active{
+  filter:brightness(1.18);
+}
+
+html.layout-vertical-v2 .partnerCc{
+  padding:4px 6px;
+}
+html.layout-vertical-v2 .partnerCc>.cw{
+  margin-bottom:3px;
+}
+html.layout-vertical-v2 .partnerRows{gap:3px}
+html.layout-vertical-v2 .partnerRow{
+  grid-template-columns:16px minmax(28px,1fr) auto;
+  min-height:34px;
+  padding:2px 6px;
+  border-radius:7px;
+  background:rgba(255,255,255,.035);
+  cursor:pointer;
+  touch-action:manipulation;
+}
+html.layout-vertical-v2 .partnerRow b{
+  font-size:clamp(18px,5vw,23px);
+}
+html.layout-vertical-v2 .partnerRow .cmdTax{
+  justify-self:end;
+}
+
+/* Use the bottom counterpart of the top status/island clearance as the utility strip. */
+html.layout-vertical-v2 #tools{
+  bottom:max(var(--safe-bottom),4px);
+  gap:2px;
+  padding:3px 5px;
+  border-radius:15px;
+  background:#0d121bd9;
+}
+html.layout-vertical-v2 #tools>button,
+html.layout-vertical-v2 .dw>button{
+  width:var(--tool-size);
+  height:var(--tool-size);
+  padding:8px;
+  border-radius:10px;
+}
+
+html.layout-vertical-v2.layout-short{
+  --tool-size:36px;
+  --utility-band:max(var(--safe-top),calc(var(--safe-bottom) + 42px),50px);
+  --tool-clearance:var(--utility-band);
+}
+html.layout-vertical-v2.layout-tablet{
+  --tool-size:46px;
+  --utility-band:max(var(--safe-top),calc(var(--safe-bottom) + 54px),64px);
+  --tool-clearance:var(--utility-band);
+}
