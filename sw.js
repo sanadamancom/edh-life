@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v65-ui-polish-static-rolls';
+const CACHE_NAME='edh-life-v66-life-hold-feedback';
 const APP_SHELL=[
   './',
   './index.html',
@@ -6,6 +6,7 @@ const APP_SHELL=[
   './counters.css?v=34',
   './v2.css?v=1',
   './v2-compact.css?v=13',
+  './v2-feedback.css?v=1',
   './layout.js?v=30',
   './app.js?v=33',
   './edh-features.js?v=2',
