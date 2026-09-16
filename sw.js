@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v39-d20-coin';
+const CACHE_NAME='edh-life-v40-multitouch';
 const APP_SHELL=[
   './',
   './index.html',
@@ -6,6 +6,7 @@ const APP_SHELL=[
   './counters.css?v=34',
   './layout.js?v=30',
   './app.js?v=33',
+  './multitouch.js?v=1',
   './dice-extra.js?v=1',
   './manifest.webmanifest',
   './icon.svg'
