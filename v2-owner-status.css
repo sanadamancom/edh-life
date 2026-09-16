@@ -6,6 +6,43 @@ html.layout-vertical-v2 #app .ownerStatusBadges{
   align-items:flex-start!important;
 }
 
+/* Special counters and owner-state badges share one visual size system. */
+html.layout-vertical-v2 #app .counterBadge,
+html.layout-vertical-v2 #app .ownerStatusBadge{
+  min-width:28px!important;
+  height:25px!important;
+  min-height:25px!important;
+  padding:2px 6px!important;
+  gap:4px!important;
+  box-sizing:border-box!important;
+  border-radius:999px!important;
+  font-size:12px!important;
+  line-height:1!important;
+}
+html.layout-vertical-v2 #app .counterBadge b{
+  font-size:12px!important;
+  line-height:1!important;
+}
+html.layout-vertical-v2 #app .counterBadge .counterIcon,
+html.layout-vertical-v2 #app .ownerStatusBadge .ownerStateSvg{
+  width:14px!important;
+  height:14px!important;
+  flex:0 0 14px;
+  fill:currentColor;
+}
+html.layout-vertical-v2 #app .ownerStateIcon{
+  width:14px;
+  height:14px;
+  display:inline-grid;
+  place-items:center;
+}
+#counters .ownerTableButton .ownerStateSvg{
+  width:20px;
+  height:20px;
+  display:block;
+  fill:currentColor;
+}
+
 /* Commander Tax belongs to the commander owner, not to every opponent's
    Commander Damage card. Keep those cards focused on damage only. */
 html.layout-vertical-v2 #app .cmdTax{
