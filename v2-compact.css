@@ -27,6 +27,7 @@ html.layout-vertical-v2 .lifeRow .delta{
 
 /* Commander Damage: the card/partner row itself is the +1 control. */
 html.layout-vertical-v2 .cmdQuickPlus{display:none!important}
+html.layout-vertical-v2 .cmdTax.empty{display:none!important}
 html.layout-vertical-v2 .cc.commanderQuick{
   min-height:44px;
   grid-template-columns:minmax(0,1fr) auto;
