@@ -23,11 +23,12 @@ EDH（Commander）用の卓上ライフカウンターWebアプリです。
   - 毒カウンター
   - 経験カウンター
   - 速度（0〜4）
-- Monarch / Initiative は盤面中央の4分割パイで管理
-  - パイをタップして移動先選択モードへ
-  - プレイヤー領域をタップすると所有者を移動
-  - 現在の所有者を再度選ぶと解除
-  - 4人戦では所有者方向の1/4、3人戦・2人戦ではレイアウトに合わせて上半分 / 下半分を使用
+- Monarch / Initiative は盤面中央の1つの8分割ハブで管理
+  - 金の1/8 = Monarch、紫の1/8 = Initiative
+  - 4人戦では各プレイヤー方向に2つの1/8を割り当て、両方を保持するとその方向の1/4が埋まる
+  - 中央の `♛ / ◆` をタップして移動先選択モードへ
+  - プレイヤー領域をタップすると所有者を移動し、現在の所有者を再度選ぶと解除
+  - 設定画面から卓状態UIをON/OFF可能。OFF時はMonarch / Initiative状態もクリア
 - 特殊カウンターは有効なものだけ通常画面にアイコン付きで表示
 - Undo
 - 右ツールバーのリセットは長押し時のみ実行
@@ -76,7 +77,7 @@ manifestの向き指定は `any` です。アプリ側では、横向きはそ�
 - 単一統率者は大きいCommander Damage `+1` を1個だけ表示し、PartnerはA/Bそれぞれに大きい `+1` を1個ずつ表示
 - Commander Damageの減算、Partner切り替え、Commander Tax編集はCommander Damageカード長押しの詳細UIへまとめる
 - Commander Taxは通常画面では非0時だけ表示する
-- Monarch / Initiative はプレイヤー個別UIから切り離し、卓全体の中央UIとして扱う
+- Monarch / Initiative はプレイヤー個別UIから切り離し、ON/OFF可能な卓全体の中央8分割ハブとして扱う
 
 ## オフライン
 
@@ -90,8 +91,9 @@ Service Workerでアプリ本体・CSS・JavaScript・manifest・アイコンを
 - `layout.js` — viewport / safe area / 縦横表示 / 自動サイズ計算
 - `app.js` — 基本状態管理・ライフ・Commander Damage・特殊カウンター・設定・ダイス・PWA補助
 - `edh-features.js` — Partner、Commander Tax、Monarch、InitiativeのEDH固有拡張
+- `table-state-hub.js` — Monarch / Initiativeの統合8分割ハブと表示ON/OFF
 - `multitouch.js` — マルチタッチと長押し連続入力
-- `dice-extra.js` — D20、コイン、ランダムプレイヤー
+- `dice-extra.js` — D20、コイン、ランダムプレイヤーと卓状態ハブのローダー
 - `manifest.webmanifest` — PWA設定
 - `sw.js` — オフラインキャッシュ
 - `icon.svg` — アプリアイコン
