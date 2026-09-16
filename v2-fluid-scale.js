@@ -4,6 +4,7 @@
   if(!root||!app)return;
 
   const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
+  const fit=(min,value,max)=>clamp(value,min,max);
   const px=value=>`${Math.round(value*100)/100}px`;
 
   function playerCount(){
@@ -27,62 +28,67 @@
     const safe=currentSafeArea();
     const safeEdge=Math.max(Number(safe.top)||0,Number(safe.bottom)||0);
 
-    /* Reference is the current phone layout: roughly one 215 x 375 usable seat.
-       Use both width and height continuously instead of classifying devices. */
+    /* Phone reference seat. Scale continuously by how much of that complete seat
+       fits in the current seat. The limiting axis wins, so a wider tablet never
+       over-scales vertically. No phone/tablet device classification is involved. */
     let density=1;
-    for(let i=0;i<3;i++){
-      const centerBand=60*clamp(density,.9,1.3);
+    for(let i=0;i<4;i++){
+      const toolProbe=fit(.88,density,1.68);
+      const centerBand=fit(54,60*toolProbe,96);
       const seatHeight=Math.max(1,(height-centerBand)/2);
       const usableHeight=Math.max(1,seatHeight-safeEdge);
       const widthRatio=seatWidth/215;
       const heightRatio=usableHeight/375;
-      density=clamp(Math.sqrt(Math.max(.01,widthRatio*heightRatio)),.86,1.35);
+      density=clamp(Math.min(widthRatio,heightRatio),.86,1.75);
     }
 
-    const toolScale=clamp(density,.9,1.30);
-    const controlScale=clamp(density,.9,1.22);
-    const commanderScale=clamp(density,.9,1.08);
-    const nameScale=clamp(density,.9,1.20);
-    const chromeScale=clamp(density,.9,1.18);
-    const badgeScale=clamp(density,.9,1.25);
-    const diceScale=clamp(density,.9,1.35);
+    /* Secondary UI grows with the seat too, but at slightly different rates.
+       Commander Damage grows a little slower so three opponent cards cannot steal
+       the life area; life itself is calculated from the remaining real space. */
+    const toolScale=clamp(density,.88,1.68);
+    const controlScale=clamp(density,.86,1.58);
+    const commanderScale=clamp(1+(density-1)*.80,.90,1.48);
+    const nameScale=clamp(1+(density-1)*.88,.90,1.55);
+    const chromeScale=clamp(1+(density-1)*.55,.90,1.35);
+    const badgeScale=clamp(1+(density-1)*.90,.90,1.60);
+    const diceScale=clamp(density,.90,1.70);
 
-    const centerBand=clamp(54,60*toolScale,78);
+    const centerBand=fit(54,60*toolScale,96);
     const seatHeight=Math.max(1,(height-centerBand)/2);
-    const panelPad=clamp(4,6*chromeScale,10);
-    const panelGap=clamp(3,4*chromeScale,6);
-    const controlHeight=clamp(40,46*controlScale,56);
-    const commanderCardHeight=clamp(44,50*commanderScale,54);
-    const nameFont=clamp(15,19*nameScale,24);
-    const commanderNameFont=clamp(10,13*nameScale,16);
-    const commanderValueFont=clamp(20,27*nameScale,34);
-    const partnerNameFont=clamp(9,11*nameScale,14);
-    const partnerValueFont=clamp(17,21*nameScale,27);
-    const partnerMarkFont=clamp(9,9*nameScale,12);
+    const panelPad=fit(4,6*chromeScale,12);
+    const panelGap=fit(3,4*chromeScale,8);
+    const controlHeight=fit(40,46*controlScale,72);
+    const commanderCardHeight=fit(44,50*commanderScale,74);
+    const nameFont=fit(15,19*nameScale,29);
+    const commanderNameFont=fit(10,13*nameScale,19);
+    const commanderValueFont=fit(20,27*nameScale,40);
+    const partnerNameFont=fit(9,11*nameScale,16);
+    const partnerValueFont=fit(17,21*nameScale,32);
+    const partnerMarkFont=fit(9,9*nameScale,13);
 
-    /* Life gets whatever space remains after the secondary controls are budgeted.
-       This is what lets a large tablet grow the important number without making
-       Commander Damage consume the whole seat. */
+    /* Life is primary. Budget the real seat height after all persistent controls,
+       then let the number consume that remainder. 0.76 accounts for the actual
+       glyph box being shorter than the CSS font-size. Width remains the other cap. */
     const opponents=Math.max(1,count-1);
-    const commanderGap=clamp(3,3*commanderScale,4);
-    const commanderPadding=clamp(4,6*commanderScale,7);
+    const commanderGap=fit(3,3*commanderScale,5);
+    const commanderPadding=fit(4,6*commanderScale,9);
     const commanderBlock=opponents*commanderCardHeight+
       Math.max(0,opponents-1)*commanderGap+commanderPadding;
     const innerHeight=Math.max(1,seatHeight-safeEdge-panelPad*2);
     const fixedHeight=commanderBlock+(nameFont*1.05)+(panelGap*3)+controlHeight;
     const lifeSlot=Math.max(64,innerHeight-fixedHeight);
-    const lifeByHeight=lifeSlot/.90;
-    const lifeByWidth=seatWidth*(count===2?.72:.64);
-    const lifeFont=clamp(Math.min(lifeByHeight,lifeByWidth),64,260);
+    const lifeByHeight=lifeSlot/.76;
+    const lifeByWidth=seatWidth*(count===2?.76:.68);
+    const lifeFont=clamp(Math.min(lifeByHeight,lifeByWidth),64,320);
 
-    const toolSize=clamp(46,52*toolScale,72);
-    const toolGap=clamp(3,4*toolScale,7);
-    const controlIcon=clamp(26,34*controlScale,43);
-    const badgeHeight=clamp(20,21*badgeScale,29);
-    const badgeFont=clamp(11,12*badgeScale,16);
-    const badgeIcon=clamp(12,13*badgeScale,17);
-    const dieSize=clamp(84,92*diceScale,124);
-    const playerDieSize=clamp(72,78*diceScale,106);
+    const toolSize=fit(46,52*toolScale,86);
+    const toolGap=fit(3,4*toolScale,8);
+    const controlIcon=fit(26,34*controlScale,52);
+    const badgeHeight=fit(20,21*badgeScale,34);
+    const badgeFont=fit(11,12*badgeScale,18);
+    const badgeIcon=fit(12,13*badgeScale,20);
+    const dieSize=fit(84,92*diceScale,150);
+    const playerDieSize=fit(72,78*diceScale,126);
 
     root.style.setProperty('--seat-scale',String(density));
     root.style.setProperty('--panel-pad',px(panelPad));
@@ -106,8 +112,8 @@
     root.style.setProperty('--fluid-die-size',px(dieSize));
     root.style.setProperty('--fluid-player-die-size',px(playerDieSize));
 
-    /* Device-category classes are legacy only. v2 sizing is now seat-driven. */
     root.classList.remove('layout-short','layout-tablet');
+    root.dataset.seatScale=density.toFixed(3);
 
     if(window.EDHStage?.state){
       Object.assign(window.EDHStage.state,{
