@@ -2,54 +2,59 @@
 
 EDH（Commander）用の卓上ライフカウンターWebアプリです。
 
+このアプリは、特定デッキや特定メカニズム専用の管理機能を増やすのではなく、**どんなEDHデッキでも毎ゲーム使う情報を最短操作で扱う**ことを優先します。背景画像や汎用カウンター管理は持ちません。
+
 ## v2 レイアウト
 
-v2は**縦型レイアウトのみ**を使用します。従来の横向き専用v1レイアウトと、横長ボードを90度回転して縦表示する方式は廃止しました。
-
-スマホ・タブレットともに4人戦は2×2を基本とし、各プレイヤーを縦長パネルとして構成します。
+v2は**縦型レイアウトのみ**を使用します。スマホ・タブレットともに4人戦は2×2を基本とし、各プレイヤーを縦長パネルとして構成します。
 
 - ライフを各パネルで最も大きく表示
-- `−1 / +1`、`−5 / +5` をライフ下の2×2操作パッドへ配置
-- Commander Damageはその下に縦リストで配置
-- PartnerはA/Bそれぞれの `+1` を表示
+- `−1 / +1` をライフ下に配置
+- Commander Damageをライフ下部に表示
+- PartnerはA/BそれぞれのCommander Damageを分離
 - 上側プレイヤーは180度回転し、卓の反対側から読める
-- Monarch / Initiativeの8分割ハブはプレイヤー4区画の交点へ配置
-- Undo / Dice / Reset / Fullscreen / Help / Settingsは下部ツールバーへ配置
-- safe area、短いスマホ画面、タブレット幅に合わせて自動調整
+- Undo / Dice / Reset / Help / Settingsを中央の共有操作列へ配置
+- safe area、短いスマホ画面、タブレット幅に合わせて席サイズから自動調整
 
-`layout.js` は端末向きによる別レイアウトへの切り替えを行いません。ブラウザ上で横向きになった場合も同じv2構成を維持して縮尺だけ調整します。PWAのmanifestは `portrait-primary` を指定しています。
+`layout.js` は端末種別でスマホ/タブレットを分けず、実際の表示領域からスケールを計算します。PWAのmanifestは `portrait-primary` を指定しています。
 
 ## 主な機能
 
 - 2〜4人対応 / 初期ライフ40
-- ライフ `−5 / −1 / +1 / +5`
-- ライフ操作とCommander Damage `+1` の長押し連続入力
+- ライフ `−1 / +1`
 - 複数箇所の同時タッチ
 - 相手統率者ごとのCommander Damage管理
 - Commander Damage変更をライフへ自動反映
+- Commander Damageカードをタップで `+1`
 - Commander Damageカード長押しで詳細編集
   - Damage `−1 / +1`
-  - 単一統率者 / Partner切り替え
-  - A/B別Commander Damage
-  - A/B別Commander Tax（2点刻み）
-- Commander Taxは非0時だけ通常画面へ `T+2` などで表示
-- Life 0以下 / Commander Damage 21以上 / Poison 10以上の敗北判定
-- ライフ長押しで毒・経験・速度を編集
-- Monarch / Initiative統合8分割ハブ
-  - 金の1/8 = Monarch
-  - 紫の1/8 = Initiative
-  - 4人戦では各プレイヤー方向に2つの1/8を割り当てる
-  - `♛ / ◆` を選択後、移動先プレイヤーをタップ
-  - 現所有者を再度選ぶと解除
-  - 設定からON/OFF可能。OFF時は両状態をクリア
-- Undo / 長押しリセット
-- プレイヤー名・カラー変更
-- LocalStorage保存
+  - Partner時はA/B別Commander Damage
+- Commander Damage 21以上 / Life 0以下の敗北表示
+- ライフ長押しでプレイヤー設定
+  - プレイヤー名
+  - プレイヤーカラー
+  - 単一統率者 / Partner
+- Undo
+- 長押しゲームリセット
 - D6 1個 / 全員ロール
 - D20 / コイン / ランダムプレイヤー
+- LocalStorage保存
 - PWA / オフライン起動
 - Screen Wake Lock / Fullscreen API対応ブラウザをサポート
 - iPhone / iPad safe area対応
+
+## 意図的に持たない機能
+
+卓上の物理ダイスやトークンで十分に管理できる、デッキ依存の状態はアプリへ追加しません。
+
+- 毒 / 経験 / 速度などの個別カウンター
+- Commander Tax
+- Monarch / Initiative
+- Energy / Rad / Stormなどの汎用カウンター
+- 背景画像設定
+- カード検索 / デッキ管理 / 戦績管理
+
+Partnerだけは、Commander DamageをA/Bで分けるために必要なのでアプリ内で管理します。
 
 ## 人数別レイアウト
 
@@ -66,8 +71,6 @@ v2は**縦型レイアウトのみ**を使用します。従来の横向き専�
 3. **ホーム画面に追加** を選ぶ
 4. `EDH Life` を起動する
 
-PWAでは `portrait-primary` を指定し、縦向きを基本表示とします。
-
 ## GitHub Pages
 
 公開URL：`https://sanadamancom.github.io/edh-life/`
@@ -79,16 +82,17 @@ PWAでは `portrait-primary` を指定し、縦向きを基本表示とします
 - `index.html` — ページ構造とアセット読み込み
 - `styles.css` — 共通UI・ダイス・モーダル等の基本スタイル
 - `v2.css` — v2縦型ゲームレイアウト
-- `counters.css` — 特殊カウンター・敗北・長押しUI
-- `layout.js` — portrait-only v2のviewport / safe area / 自動サイズ計算
-- `v2-layout.js` — v2移行時の互換用no-opローダー
+- `counters.css` — 長押しUIなど既存モーダル基盤の互換スタイル
+- `layout.js` — portrait-only v2のviewport / safe area管理
+- `v2-layout.js` — v2用のレスポンシブ・操作レイヤー読込
 - `app.js` — 基本状態管理・ライフ・設定・ダイス
-- `edh-features.js` — Partner / Commander Tax / Monarch / Initiative
-- `table-state-hub.js` — Monarch / Initiative統合8分割ハブ
-- `multitouch.js` — マルチタッチと長押し連続入力
+- `edh-features.js` — Partner / Commander Damage互換状態
+- `multitouch.js` — マルチタッチ入力
 - `dice-extra.js` — D20 / コイン / ランダムプレイヤー
 - `sw.js` — PWAオフラインキャッシュ
 
 ## データ
 
 ゲーム状態はブラウザの `localStorage` に保存されます。サーバーや外部DBには送信しません。
+
+旧バージョンで保存された毒・経験・速度・Commander Tax・Monarch・Initiativeの値は互換性のため読み込み可能なままですが、現在のUI・勝敗判定では使用しません。

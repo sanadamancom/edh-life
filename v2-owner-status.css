@@ -1,98 +1,26 @@
-/* Owner-state badges mirror the special-counter badges at the top of each seat. */
+/* Core-only EDH surface: retire optional counter/status chrome. */
+html.layout-vertical-v2 #app .counterBadges,
 html.layout-vertical-v2 #app .ownerStatusBadges{
-  top:var(--panel-pad)!important;
-  left:var(--panel-pad)!important;
-  transform:none!important;
-  align-items:flex-start!important;
+  display:none!important;
 }
 
-/* Special counters and owner-state badges share the same fluid size system. */
-html.layout-vertical-v2 #app .counterBadge,
-html.layout-vertical-v2 #app .ownerStatusBadge{
-  min-width:calc(var(--fluid-badge-height) * 1.33)!important;
-  height:var(--fluid-badge-height)!important;
-  min-height:var(--fluid-badge-height)!important;
-  padding:calc(var(--fluid-badge-height) * .095) calc(var(--fluid-badge-height) * .285)!important;
-  gap:calc(var(--fluid-badge-height) * .19)!important;
-  box-sizing:border-box!important;
-  border-radius:999px!important;
-  font-size:var(--fluid-badge-font)!important;
-  line-height:1!important;
-}
-html.layout-vertical-v2 #app .counterBadge b{
-  font-size:var(--fluid-badge-font)!important;
-  line-height:1!important;
-}
-html.layout-vertical-v2 #app .counterBadge .counterIcon,
-html.layout-vertical-v2 #app .ownerStatusBadge .ownerStateSvg{
-  width:var(--fluid-badge-icon)!important;
-  height:var(--fluid-badge-icon)!important;
-  flex:0 0 var(--fluid-badge-icon);
-  fill:currentColor;
-}
-html.layout-vertical-v2 #app .ownerStateIcon{
-  width:var(--fluid-badge-icon);
-  height:var(--fluid-badge-icon);
-  display:inline-grid;
-  place-items:center;
-}
-#counters .ownerTableButton .ownerStateSvg{
-  width:clamp(20px,calc(var(--fluid-badge-icon) * 1.35),28px);
-  height:clamp(20px,calc(var(--fluid-badge-icon) * 1.35),28px);
-  display:block;
-  fill:currentColor;
-}
-
-/* Keep the player name clear of left/right status stacks. Only tighten the name
-   when a status badge is actually present; ordinary seats keep the wider title. */
-html.layout-vertical-v2 #app .p:has(.ownerStatusBadges) .name,
-html.layout-vertical-v2 #app .p:has(.counterBadges) .name{
-  max-width:56%!important;
-}
-
-/* Player State: frequently changed table state comes before the mostly setup-time
-   commander controls. Compact the commander section without shrinking touch targets. */
-#counters .ownerCommanderSettings{
-  gap:7px!important;
-  margin-top:9px!important;
-  padding:9px!important;
-}
-#counters .ownerTableSection{
-  order:-1!important;
-  gap:6px!important;
-  padding:0 0 9px!important;
-  border-top:0!important;
-  border-bottom:1px solid rgba(255,255,255,.09)!important;
-}
-#counters .ownerTableGrid{
-  gap:6px!important;
-}
-#counters .ownerTableButton{
-  min-height:40px!important;
-}
-#counters .ownerCommanderMode{
-  gap:5px!important;
-}
-#counters .ownerCommanderMode button{
-  min-height:36px!important;
-}
-#counters .ownerTaxGrid{
-  gap:5px!important;
-}
-#counters .ownerTaxItem{
-  gap:6px!important;
-  padding:5px 7px!important;
-}
-#counters .ownerTaxControls button,
-#counters .ownerTaxValue{
-  min-height:38px!important;
-}
-
-/* Commander Tax belongs to the commander owner, not to every opponent's
-   Commander Damage card. Keep those cards focused on damage only. */
+/* Commander Tax is retired. Commander Damage cards show damage only. */
 html.layout-vertical-v2 #app .cmdTax{
   display:none!important;
 }
 html.layout-vertical-v2 #app .partnerRow{
   grid-template-columns:auto minmax(22px,1fr)!important;
+}
+
+/* Player identity now lives in the life-long-press Player Settings sheet. */
+#settings #ps{
+  display:none!important;
+}
+#counters .counterGrid{
+  display:none!important;
+}
+
+/* With status badges gone, let player names reclaim the center width. */
+html.layout-vertical-v2 #app .name{
+  max-width:88%!important;
 }

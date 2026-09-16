@@ -5,11 +5,6 @@
   const app=document.getElementById('app');
   if(!app)return;
 
-  const taxMarkup=(sourcePlayer,slot)=>{
-    const tax=sourcePlayer.tax?.[slot]||0;
-    return `<span class="cmdTax${tax?'':' empty'}">${tax?`T+${tax}`:''}</span>`;
-  };
-
   commanderCards=function(playerIndex){
     const cards=[];
     for(let source=0;source<state.count;source++){
@@ -24,7 +19,6 @@
             <div class="cw">${escapeHtml(sourcePlayer.name)}</div>
             <div class="commanderQuickRow">
               <div class="cv">${first}</div>
-              ${taxMarkup(sourcePlayer,0)}
             </div>
           </div>`);
         continue;
@@ -35,10 +29,10 @@
           <div class="cw">${escapeHtml(sourcePlayer.name)} · Partner</div>
           <div class="partnerRows">
             <div class="partnerRow commanderTapRow ${first>=18?'hot':''}" data-cmd-slot="0" role="button" tabindex="0" aria-label="Commander A Damageを1増やす">
-              <span class="partnerMark">A</span><b>${first}</b>${taxMarkup(sourcePlayer,0)}
+              <span class="partnerMark">A</span><b>${first}</b>
             </div>
             <div class="partnerRow commanderTapRow ${second>=18?'hot':''}" data-cmd-slot="1" role="button" tabindex="0" aria-label="Commander B Damageを1増やす">
-              <span class="partnerMark">B</span><b>${second}</b>${taxMarkup(sourcePlayer,1)}
+              <span class="partnerMark">B</span><b>${second}</b>
             </div>
           </div>
         </div>`);
@@ -143,7 +137,7 @@
   const lifeHelp=helpCards.find(card=>card.querySelector('h3')?.textContent==='ライフ');
   if(lifeHelp){
     const paragraphs=lifeHelp.querySelectorAll('p');
-    if(paragraphs[1])paragraphs[1].innerHTML='<b>−1 / +1</b>で増減。長押しで連続入力できます。';
+    if(paragraphs[1])paragraphs[1].innerHTML='<b>−1 / +1</b>で増減。長押しでプレイヤー設定を開きます。';
   }
   const commanderHelp=helpCards.find(card=>card.querySelector('h3')?.textContent==='統率者ダメージ');
   if(commanderHelp){

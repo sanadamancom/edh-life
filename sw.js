@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v86-player-state-polish';
+const CACHE_NAME='edh-life-v87-core-player-settings';
 const APP_SHELL=[
   './',
   './index.html',
@@ -9,17 +9,16 @@ const APP_SHELL=[
   './v2-compact.css?v=13',
   './v2-utility.css?v=4',
   './v2-responsive.css?v=2',
-  './v2-owner-status.css?v=4',
+  './v2-owner-status.css?v=5',
   './layout.js?v=30',
   './app.js?v=33',
   './edh-features.js?v=2',
   './multitouch.js?v=4',
   './dice-extra.js?v=1',
   './v2-fluid-scale.js?v=3',
-  './v2-compact-interactions.js?v=3',
+  './v2-compact-interactions.js?v=4',
   './v2-utility-behavior.js?v=5',
-  './v2-commander-owner-settings.js?v=3',
-  './v2-state-symbols.js?v=1',
+  './v2-commander-owner-settings.js?v=4',
   './v2-counter-sticky-header.js?v=1',
   './v2-layout.js?v=1',
   './manifest.webmanifest',
