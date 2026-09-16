@@ -97,7 +97,7 @@
     tapSession=null;
     const held=performance.now()-session.started;
     const releasedCard=event.target.closest('.cc[data-cmd-card]');
-    if(session.moved||held>=330||releasedCard!==session.card||session.slot===null)return;
+    if(session.moved||held>=360||releasedCard!==session.card||session.slot===null)return;
     event.preventDefault();
     event.stopImmediatePropagation();
     suppressClickUntil=performance.now()+400;
@@ -133,6 +133,18 @@
     event.preventDefault();
     addDamage(Number(card.dataset.t),Number(card.dataset.s),Number(target.dataset.cmdSlot));
   });
+
+  const helpCards=[...document.querySelectorAll('#helpOverlay .helpCard')];
+  const lifeHelp=helpCards.find(card=>card.querySelector('h3')?.textContent==='ライフ');
+  if(lifeHelp){
+    const paragraphs=lifeHelp.querySelectorAll('p');
+    if(paragraphs[1])paragraphs[1].innerHTML='<b>−1 / +1</b>で増減。長押しで連続入力できます。';
+  }
+  const commanderHelp=helpCards.find(card=>card.querySelector('h3')?.textContent==='統率者ダメージ');
+  if(commanderHelp){
+    const paragraphs=commanderHelp.querySelectorAll('p');
+    if(paragraphs[1])paragraphs[1].innerHTML='カードを<b>タップで+1</b>。減算・Partner・Commander Taxは長押しで編集します。';
+  }
 
   render();
 })();
