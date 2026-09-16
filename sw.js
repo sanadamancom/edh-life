@@ -1,17 +1,16 @@
-const CACHE_NAME='edh-life-v54-full-stage-height';
+const CACHE_NAME='edh-life-v55-balanced-seats';
 const APP_SHELL=[
   './',
   './index.html',
   './styles.css?v=33',
   './counters.css?v=34',
   './v2.css?v=1',
-  './v2-compact.css?v=4',
+  './v2-compact.css?v=5',
   './layout.js?v=30',
   './app.js?v=33',
   './edh-features.js?v=2',
   './multitouch.js?v=4',
   './dice-extra.js?v=1',
-  './table-state-hub.js?v=2',
   './v2-compact-interactions.js?v=2',
   './v2-layout.js?v=1',
   './manifest.webmanifest',
