@@ -1,8 +1,8 @@
 /* v2 compact interaction pass: balanced portrait seating and center controls. */
 :root{
-  --center-band-h:54px;
-  --tool-size:40px;
-  --tool-gap:6px;
+  --center-band-h:60px;
+  --tool-size:52px;
+  --tool-gap:4px;
   --tool-clearance:0px;
   --stage-full-height:100dvh;
 }
@@ -55,7 +55,7 @@ html.layout-vertical-v2 #app.c2 .p:nth-child(2) .pc{
   padding-bottom:calc(var(--panel-pad) + var(--safe-top))!important;
 }
 
-/* Long-press makes ±5 redundant. */
+/* Long-press makes ±5 redundant. Life size is intentionally left untouched. */
 html.layout-vertical-v2 .lifeRow{
   grid-template-rows:minmax(0,1fr) var(--control-h);
 }
@@ -89,22 +89,54 @@ html.layout-vertical-v2 .cc.commanderQuick .cv{
 }
 html.layout-vertical-v2 .commanderTap:active,
 html.layout-vertical-v2 .commanderTapRow:active{filter:brightness(1.18)}
-html.layout-vertical-v2 .partnerCc{padding:4px 6px}
-html.layout-vertical-v2 .partnerCc>.cw{margin-bottom:3px}
-html.layout-vertical-v2 .partnerRows{gap:3px}
+
+/* Partner uses one horizontal A/B row so it consumes roughly the same height as a normal commander card. */
+html.layout-vertical-v2 .partnerCc{
+  min-height:58px;
+  padding:3px 5px 4px;
+}
+html.layout-vertical-v2 .partnerCc>.cw{
+  margin:0 0 3px;
+  text-align:center;
+  font-size:clamp(9px,2.7vw,11px);
+  line-height:1;
+}
+html.layout-vertical-v2 .partnerRows{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:4px;
+  margin:0;
+}
 html.layout-vertical-v2 .partnerRow{
-  grid-template-columns:16px minmax(28px,1fr) auto;
+  display:grid;
+  grid-template-columns:auto minmax(24px,1fr) auto;
+  align-items:center;
+  gap:4px;
   min-height:34px;
-  padding:2px 6px;
-  border-radius:7px;
-  background:rgba(255,255,255,.035);
+  padding:3px 6px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:8px;
+  background:rgba(255,255,255,.045);
   cursor:pointer;
   touch-action:manipulation;
 }
-html.layout-vertical-v2 .partnerRow b{font-size:clamp(18px,5vw,23px)}
-html.layout-vertical-v2 .partnerRow .cmdTax{justify-self:end}
+html.layout-vertical-v2 .partnerMark{
+  font-size:10px;
+  font-weight:900;
+  color:var(--mut);
+}
+html.layout-vertical-v2 .partnerRow b{
+  justify-self:center;
+  font-size:clamp(18px,5vw,23px);
+  line-height:1;
+}
+html.layout-vertical-v2 .partnerRow .cmdTax{
+  justify-self:end;
+  font-size:7.5px;
+  padding:2px 3px;
+}
 
-/* Shared controls have no enclosing tray. Each action itself has a clear touch target. */
+/* Shared controls have no enclosing tray. The buttons themselves nearly fill the center band. */
 html.layout-vertical-v2 #tools{
   left:50%!important;
   right:auto!important;
@@ -124,14 +156,16 @@ html.layout-vertical-v2 #tools>button,
 html.layout-vertical-v2 .dw>button{
   width:var(--tool-size);
   height:var(--tool-size);
-  padding:8px;
+  padding:5px;
   border:1px solid rgba(255,255,255,.42)!important;
-  border-radius:11px;
+  border-radius:12px;
   background:linear-gradient(180deg,rgba(35,44,59,.98),rgba(19,25,35,.98))!important;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 3px 8px rgba(0,0,0,.42)!important;
 }
 html.layout-vertical-v2 #tools>button .mi,
 html.layout-vertical-v2 .dw>button .mi{
+  width:100%;
+  height:100%;
   opacity:1;
 }
 html.layout-vertical-v2 #tools>button:active,
@@ -153,10 +187,10 @@ html.layout-vertical-v2 #tableStateHub,
 html.layout-vertical-v2 #unifiedTableStateHub{display:none!important}
 
 html.layout-vertical-v2.layout-short{
-  --tool-size:38px;
-  --center-band-h:50px;
+  --tool-size:48px;
+  --center-band-h:54px;
 }
 html.layout-vertical-v2.layout-tablet{
-  --tool-size:48px;
-  --center-band-h:64px;
+  --tool-size:60px;
+  --center-band-h:68px;
 }
