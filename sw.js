@@ -1,11 +1,11 @@
-const CACHE_NAME='edh-life-v57-partner-horizontal-tools';
+const CACHE_NAME='edh-life-v58-vertical-badges-backdrop';
 const APP_SHELL=[
   './',
   './index.html',
   './styles.css?v=33',
   './counters.css?v=34',
   './v2.css?v=1',
-  './v2-compact.css?v=7',
+  './v2-compact.css?v=8',
   './layout.js?v=30',
   './app.js?v=33',
   './edh-features.js?v=2',
