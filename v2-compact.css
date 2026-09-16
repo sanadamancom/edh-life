@@ -1,8 +1,9 @@
-/* v2 compact interaction pass: fewer controls, larger hit targets, symmetric utility band. */
+/* v2 compact interaction pass: fewer controls, larger hit targets, center-access utility band. */
 :root{
-  --utility-band:max(var(--safe-top),calc(var(--safe-bottom) + 44px),54px);
+  --center-band-h:60px;
   --tool-size:38px;
-  --tool-clearance:var(--utility-band);
+  --tool-gap:2px;
+  --tool-clearance:0px;
 }
 
 /* On iOS fixed inset is the authoritative full viewport. Avoid an over-constrained 100dvh height. */
@@ -10,6 +11,35 @@ html.layout-vertical-v2 #stage{
   inset:0;
   width:auto;
   height:auto;
+}
+
+/* Reserve one physical row in the middle for shared table controls. */
+html.layout-vertical-v2 #app{
+  grid-template-rows:minmax(0,1fr) var(--center-band-h) minmax(0,1fr)!important;
+}
+html.layout-vertical-v2 #app.c4 .p:nth-child(1){grid-column:1;grid-row:1}
+html.layout-vertical-v2 #app.c4 .p:nth-child(2){grid-column:2;grid-row:1}
+html.layout-vertical-v2 #app.c4 .p:nth-child(3){grid-column:1;grid-row:3}
+html.layout-vertical-v2 #app.c4 .p:nth-child(4){grid-column:2;grid-row:3}
+
+html.layout-vertical-v2 #app.c3 .p:nth-child(1){grid-column:1/3;grid-row:1}
+html.layout-vertical-v2 #app.c3 .p:nth-child(2){grid-column:1;grid-row:3}
+html.layout-vertical-v2 #app.c3 .p:nth-child(3){grid-column:2;grid-row:3}
+
+html.layout-vertical-v2 #app.c2{
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:minmax(0,1fr) var(--center-band-h) minmax(0,1fr)!important;
+}
+html.layout-vertical-v2 #app.c2 .p:nth-child(1){grid-column:1;grid-row:1}
+html.layout-vertical-v2 #app.c2 .p:nth-child(2){grid-column:1;grid-row:3}
+
+/* The bottom seats no longer reserve toolbar space. Only the real device safe area remains. */
+html.layout-vertical-v2 #app.c4 .p:nth-child(3) .pc,
+html.layout-vertical-v2 #app.c4 .p:nth-child(4) .pc,
+html.layout-vertical-v2 #app.c3 .p:nth-child(2) .pc,
+html.layout-vertical-v2 #app.c3 .p:nth-child(3) .pc,
+html.layout-vertical-v2 #app.c2 .p:nth-child(2) .pc{
+  padding-bottom:calc(var(--panel-pad) + var(--safe-bottom))!important;
 }
 
 /* Long-press makes ±5 redundant. Life now gets one large control row only. */
@@ -78,13 +108,19 @@ html.layout-vertical-v2 .partnerRow .cmdTax{
   justify-self:end;
 }
 
-/* Use the bottom counterpart of the top status/island clearance as the utility strip. */
+/* Shared controls live in the middle, equally reachable from both sides of the table. */
 html.layout-vertical-v2 #tools{
-  bottom:max(var(--safe-bottom),4px);
-  gap:2px;
+  left:50%!important;
+  right:auto!important;
+  top:50%!important;
+  bottom:auto!important;
+  gap:var(--tool-gap);
+  max-width:calc(100vw - var(--safe-left) - var(--safe-right) - 8px);
   padding:3px 5px;
+  transform:translate(-50%,-50%)!important;
   border-radius:15px;
-  background:#0d121bd9;
+  background:#0d121be6;
+  box-shadow:0 4px 16px rgba(0,0,0,.38);
 }
 html.layout-vertical-v2 #tools>button,
 html.layout-vertical-v2 .dw>button{
@@ -93,14 +129,48 @@ html.layout-vertical-v2 .dw>button{
   padding:8px;
   border-radius:10px;
 }
+html.layout-vertical-v2 #tools .dm{
+  left:50%;
+  right:auto;
+  top:calc(100% + 7px);
+  bottom:auto;
+  transform:translateX(-50%);
+}
+
+/* The unified 1/8 Monarch / Initiative hub becomes a first-class item in the middle strip. */
+html.layout-vertical-v2 #tools #unifiedTableStateHub{
+  position:relative!important;
+  left:auto!important;
+  top:auto!important;
+  width:52px!important;
+  height:52px!important;
+  flex:0 0 52px;
+  transform:none!important;
+  margin:0 2px;
+}
+html.layout-vertical-v2 #tools #unifiedTableStateHub .tableStateCenter{
+  width:40px;
+  height:24px;
+}
+html.layout-vertical-v2 #tools #unifiedTableStateHint{
+  top:calc(100% + 4px);
+}
 
 html.layout-vertical-v2.layout-short{
   --tool-size:36px;
-  --utility-band:max(var(--safe-top),calc(var(--safe-bottom) + 42px),50px);
-  --tool-clearance:var(--utility-band);
+  --center-band-h:56px;
+}
+html.layout-vertical-v2.layout-short #tools #unifiedTableStateHub{
+  width:48px!important;
+  height:48px!important;
+  flex-basis:48px;
 }
 html.layout-vertical-v2.layout-tablet{
   --tool-size:46px;
-  --utility-band:max(var(--safe-top),calc(var(--safe-bottom) + 54px),64px);
-  --tool-clearance:var(--utility-band);
+  --center-band-h:72px;
+}
+html.layout-vertical-v2.layout-tablet #tools #unifiedTableStateHub{
+  width:60px!important;
+  height:60px!important;
+  flex-basis:60px;
 }
