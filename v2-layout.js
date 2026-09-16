@@ -91,7 +91,7 @@
       await loadScript('v2-fluid-scale.js',2);
       await loadScript('v2-compact-interactions.js',2);
       await loadScript('v2-utility-behavior.js',4);
-      await loadScript('v2-commander-owner-settings.js',2);
+      await loadScript('v2-commander-owner-settings.js',3);
       syncBottomBackdrop();
       window.addEventListener('edh-v2-layout',()=>{
         syncVisualFrame();
