@@ -1,0 +1,16 @@
+/* Owner-state badges mirror the special-counter badges at the top of each seat. */
+html.layout-vertical-v2 #app .ownerStatusBadges{
+  top:var(--panel-pad)!important;
+  left:var(--panel-pad)!important;
+  transform:none!important;
+  align-items:flex-start!important;
+}
+
+/* Commander Tax belongs to the commander owner, not to every opponent's
+   Commander Damage card. Keep those cards focused on damage only. */
+html.layout-vertical-v2 #app .cmdTax{
+  display:none!important;
+}
+html.layout-vertical-v2 #app .partnerRow{
+  grid-template-columns:auto minmax(22px,1fr)!important;
+}
