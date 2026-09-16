@@ -45,10 +45,19 @@
     }
 
     const measured=Math.ceil(fullHeight);
+    const viewportTail=isInstalledDisplay()
+      ?Math.max(0,measured-Math.ceil(viewportHeight))
+      :0;
+
     root.style.setProperty('--stage-full-height',`${measured}px`);
+    /* If the full-bleed stage extends below the visible CSS viewport, the normal
+       bottom padding lands partly off-screen. Add exactly that hidden tail back
+       to the bottom seats so their visible margin matches the top safe margin. */
+    root.style.setProperty('--bottom-viewport-tail',`${viewportTail}px`);
     stage.dataset.stageHeight=String(measured);
     stage.dataset.viewportHeight=String(Math.ceil(viewportHeight));
     stage.dataset.safeTop=String(Math.ceil(safeTop));
+    stage.dataset.viewportTail=String(viewportTail);
   }
 
   function syncBottomBackdrop(){
@@ -113,7 +122,7 @@
   if(!document.querySelector('link[data-v2-compact]')){
     const link=document.createElement('link');
     link.rel='stylesheet';
-    link.href='./v2-compact.css?v=8';
+    link.href='./v2-compact.css?v=9';
     link.dataset.v2Compact='1';
     head.appendChild(link);
   }
