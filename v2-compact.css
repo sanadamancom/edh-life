@@ -61,7 +61,19 @@ html.layout-vertical-v2 #app.c2 .p:nth-child(2) .pc{
   padding-bottom:calc(var(--panel-pad) + var(--seat-edge-safe))!important;
 }
 
-/* Long-press makes ±5 redundant. Life size is intentionally left untouched. */
+/* Life is the primary information. Pull it slightly closer to the player name and
+   spend the recovered space on a modestly larger number. */
+html.layout-vertical-v2 .name{
+  margin:0 auto -3px!important;
+}
+html.layout-vertical-v2 .life{
+  font-size:clamp(74px,13.2vh,130px);
+}
+html.layout-vertical-v2 #app.c2 .life{
+  font-size:clamp(90px,15.6vh,158px);
+}
+
+/* Long-press makes ±5 redundant. */
 html.layout-vertical-v2 .lifeRow{
   grid-template-rows:minmax(0,1fr) var(--control-h);
 }
@@ -169,7 +181,8 @@ html.layout-vertical-v2 .counterBadge{
   align-self:flex-end;
 }
 
-/* Shared controls have no enclosing tray. Their center is the physical 50% line. */
+/* Shared controls have no enclosing tray. Match the quieter translucent treatment
+   used by the life +/- controls so the center row belongs to the same visual system. */
 html.layout-vertical-v2 #tools{
   left:50%!important;
   right:auto!important;
@@ -189,11 +202,12 @@ html.layout-vertical-v2 #tools>button,
 html.layout-vertical-v2 .dw>button{
   width:var(--tool-size);
   height:var(--tool-size);
-  padding:5px;
-  border:1px solid rgba(255,255,255,.42)!important;
+  padding:6px;
+  border:1px solid var(--line)!important;
   border-radius:12px;
-  background:linear-gradient(180deg,rgba(35,44,59,.98),rgba(19,25,35,.98))!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 3px 8px rgba(0,0,0,.42)!important;
+  background:#ffffff12!important;
+  box-shadow:none!important;
+  backdrop-filter:none;
 }
 html.layout-vertical-v2 #tools>button .mi,
 html.layout-vertical-v2 .dw>button .mi{
@@ -203,8 +217,8 @@ html.layout-vertical-v2 .dw>button .mi{
 }
 html.layout-vertical-v2 #tools>button:active,
 html.layout-vertical-v2 .dw>button:active{
-  background:linear-gradient(180deg,rgba(52,64,84,.98),rgba(28,35,47,.98))!important;
-  transform:translateY(1px);
+  background:#ffffff20!important;
+  transform:none;
 }
 html.layout-vertical-v2 #tools .dm{
   left:50%;
@@ -212,6 +226,23 @@ html.layout-vertical-v2 #tools .dm{
   top:calc(100% + 7px);
   bottom:auto;
   transform:translateX(-50%);
+}
+
+/* Dice and coin results stay centered while they animate. No travel, bounce or
+   scaling: just a short spin in place. */
+html.layout-vertical-v2 .die{
+  animation:v2-spin-in-place .52s cubic-bezier(.2,.72,.25,1)!important;
+  transform-origin:center center;
+}
+html.layout-vertical-v2 .die.mtgCoin{
+  animation:v2-spin-in-place .52s cubic-bezier(.2,.72,.25,1)!important;
+}
+html.layout-vertical-v2 .rolling .face{
+  animation:none!important;
+}
+@keyframes v2-spin-in-place{
+  0%{opacity:.78;transform:translate(-50%,-50%) rotate(-300deg)}
+  100%{opacity:1;transform:translate(-50%,-50%) rotate(0deg)}
 }
 
 /* Monarch / Initiative center displays are retired for now.
@@ -224,8 +255,14 @@ html.layout-vertical-v2.layout-short{
   --center-band-h:54px;
   --commander-card-h:46px;
 }
+html.layout-vertical-v2.layout-short .life{
+  font-size:clamp(64px,11.6vh,104px)!important;
+}
 html.layout-vertical-v2.layout-tablet{
   --tool-size:60px;
   --center-band-h:68px;
   --commander-card-h:60px;
+}
+html.layout-vertical-v2.layout-tablet .life{
+  font-size:clamp(116px,12.6vh,188px)!important;
 }
