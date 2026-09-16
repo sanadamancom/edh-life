@@ -72,6 +72,13 @@
     }
   }
 
+  function syncCenterHub(){
+    const hub=document.getElementById('unifiedTableStateHub');
+    if(!hub)return;
+    hub.style.left=`${app.offsetLeft+app.offsetWidth/2}px`;
+    hub.style.top=`${app.offsetTop+app.offsetHeight/2}px`;
+  }
+
   function applyPortraitLayout(){
     if(applying)return;
     applying=true;
@@ -105,7 +112,7 @@
 
       const uiScale=clamp(.76,view.w/390,1.42);
       const lifeSize=clamp(compact?52:60,Math.min(pW*.46,pH*.28),132);
-      const controlH=clamp(compact?28:34,pH*(compact?.105:.105),compact?36:46);
+      const controlH=clamp(compact?28:34,pH*.105,compact?36:46);
       const lifeMinH=clamp(compact?48:58,pH*.19,118);
       const cmdRowH=clamp(compact?28:34,pH*(compact?.105:.10),compact?34:46);
       const cmdButtonH=clamp(compact?23:27,cmdRowH*.82,38);
@@ -185,6 +192,7 @@
         });
       }
 
+      requestAnimationFrame(syncCenterHub);
       window.dispatchEvent(new CustomEvent('edh-v2-layout'));
     }finally{
       applying=false;
