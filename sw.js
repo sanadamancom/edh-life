@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v47-portrait-only';
+const CACHE_NAME='edh-life-v48-full-bleed-safe-area';
 const APP_SHELL=[
   './',
   './index.html',
