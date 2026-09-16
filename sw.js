@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v62-physical-stage-origin';
+const CACHE_NAME='edh-life-v63-css-viewport-geometry';
 const APP_SHELL=[
   './',
   './index.html',
