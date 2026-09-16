@@ -1,17 +1,19 @@
 /* v2 shared player-panel highlight visuals */
-@property --life-hold-angle{
+@property --v2-hold-angle{
   syntax:"<angle>";
   inherits:false;
   initial-value:0deg;
 }
 
-/* Safety: the legacy life-local hold indicator is not part of v2 anymore. */
+/* Safety: legacy life-local and commander-local hold indicators are not part of v2. */
 html.layout-vertical-v2 .life.holding{
   text-shadow:inherit!important;
 }
-html.layout-vertical-v2 .life.holding::after{
+html.layout-vertical-v2 .life.holding::after,
+html.layout-vertical-v2 #app .cc.commander-holding::after{
   content:none!important;
   display:none!important;
+  animation:none!important;
 }
 
 html.layout-vertical-v2 #app .p.random-selected::after,
@@ -39,8 +41,8 @@ html.layout-vertical-v2 #app .p.life-hold-active::after{
   padding:4px;
   background:conic-gradient(
     from -90deg,
-    color-mix(in srgb,var(--pc) 76%,white 24%) 0deg var(--life-hold-angle),
-    transparent var(--life-hold-angle) 360deg
+    color-mix(in srgb,var(--pc) 76%,white 24%) 0deg var(--v2-hold-angle),
+    transparent var(--v2-hold-angle) 360deg
   );
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;
@@ -49,12 +51,36 @@ html.layout-vertical-v2 #app .p.life-hold-active::after{
     drop-shadow(0 0 5px color-mix(in srgb,var(--pc) 84%,transparent))
     drop-shadow(0 0 10px color-mix(in srgb,var(--pc) 52%,transparent));
   opacity:.98;
-  animation:life-hold-panel-progress 300ms linear forwards;
+  animation:v2-hold-progress 300ms linear forwards;
 }
 
-@keyframes life-hold-panel-progress{
-  from{--life-hold-angle:0deg}
-  to{--life-hold-angle:360deg}
+/* Commander-detail hold uses the same delayed 300ms progress language. */
+html.layout-vertical-v2 #app .cc.commander-hold-active::after{
+  content:"";
+  position:absolute;
+  inset:2px;
+  z-index:20;
+  padding:3px;
+  pointer-events:none;
+  border-radius:inherit;
+  background:conic-gradient(
+    from -90deg,
+    color-mix(in srgb,var(--c) 76%,white 24%) 0deg var(--v2-hold-angle),
+    transparent var(--v2-hold-angle) 360deg
+  );
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  filter:
+    drop-shadow(0 0 4px color-mix(in srgb,var(--c) 82%,transparent))
+    drop-shadow(0 0 8px color-mix(in srgb,var(--c) 50%,transparent));
+  opacity:.98;
+  animation:v2-hold-progress 300ms linear forwards;
+}
+
+@keyframes v2-hold-progress{
+  from{--v2-hold-angle:0deg}
+  to{--v2-hold-angle:360deg}
 }
 
 @keyframes random-player-glow{
