@@ -93,6 +93,7 @@
       await loadScript('v2-utility-behavior.js',5);
       await loadScript('v2-commander-owner-settings.js',3);
       await loadScript('v2-state-symbols.js',1);
+      await loadScript('v2-counter-sticky-header.js',1);
       syncBottomBackdrop();
       window.addEventListener('edh-v2-layout',()=>{
         syncVisualFrame();
