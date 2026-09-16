@@ -14,7 +14,8 @@
   const style=document.createElement('style');
   style.textContent=`
     #app .lifeRow button,
-    #app .cb button{
+    #app .cb button,
+    #app .cmdQuickPlus{
       touch-action:manipulation;
       -webkit-user-select:none;
       user-select:none;
@@ -198,6 +199,7 @@
 
   app.addEventListener('pointerdown',event=>{
     if(!validPointer(event))return;
+    if(window.__edhTableStatePickActive?.())return;
 
     const action=actionFromEvent(event);
     if(!action)return;
@@ -205,7 +207,6 @@
     event.preventDefault();
     closeTransientUi();
 
-    /* Mobile browsers may reuse a pointerId quickly. Never leave the old timer alive. */
     if(activePointers.has(event.pointerId))stopPointer(event.pointerId);
 
     pushHistory();
@@ -224,7 +225,6 @@
 
     activePointers.set(event.pointerId,session);
 
-    /* Capture on #app, which survives player re-renders, so pointerup cannot be lost with a child node. */
     try{app.setPointerCapture?.(event.pointerId)}catch{}
 
     saveOnly();
