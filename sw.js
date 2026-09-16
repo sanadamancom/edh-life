@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v80-owner-badges-top-no-card-tax';
+const CACHE_NAME='edh-life-v81-commander-tap-vs-hold';
 const APP_SHELL=[
   './',
   './index.html',
@@ -16,8 +16,8 @@ const APP_SHELL=[
   './multitouch.js?v=4',
   './dice-extra.js?v=1',
   './v2-fluid-scale.js?v=2',
-  './v2-compact-interactions.js?v=2',
-  './v2-utility-behavior.js?v=4',
+  './v2-compact-interactions.js?v=3',
+  './v2-utility-behavior.js?v=5',
   './v2-commander-owner-settings.js?v=3',
   './v2-layout.js?v=1',
   './manifest.webmanifest',

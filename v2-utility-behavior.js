@@ -9,6 +9,7 @@
   const settings=document.getElementById('settings');
   const diceMenu=document.getElementById('dm');
   const randomPlayer=document.getElementById('randomPlayer');
+  const app=document.getElementById('app');
 
   let randomDismissArmed=false;
   let lifeHold=null;
@@ -154,6 +155,9 @@
       commanderHold=null;
     },HOLD_TOTAL_MS+24);
 
+    /* This listener now runs on #app after the commander tap capture listener.
+       The tap session is already registered, while propagation is still stopped
+       before the legacy 360ms app bubble listener can see the trusted event. */
     event.preventDefault();
     event.stopPropagation();
     return true;
@@ -173,7 +177,14 @@
     /* Synthetic commander bridge events must pass through to edh-features.js. */
     if(!event.isTrusted)return;
     if(randomDismissArmed)clearRandomSelection();
-    if(startLifeHold(event))return;
+    startLifeHold(event);
+  },true);
+
+  /* v2-compact-interactions.js is loaded before this file and registers its
+     #app capture listener first. Let it record a tap, then claim the same event
+     here for the 500ms hold path before the legacy bubble handler sees it. */
+  app?.addEventListener('pointerdown',event=>{
+    if(!event.isTrusted)return;
     startCommanderHold(event);
   },true);
 
