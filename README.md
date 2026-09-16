@@ -7,22 +7,31 @@ EDH（Commander）用の卓上ライフカウンターWebアプリです。
 - 2〜4人対応
 - 初期ライフ40
 - ライフ操作は `−5 / −1 / LIFE / +1 / +5`
+- `±1 / ±5 / Commander Damage` は長押しで連続入力、複数箇所の同時タッチにも対応
 - ライフ数字・Commander Damage・各種ボタンを表示領域に合わせて自動調整
 - 相手統率者ごとのCommander Damage管理
 - Commander Damageの増減をライフへ自動反映
-- Life 0以下 / Commander Damage 21以上 / Poison 10以上の敗北判定
+- Commander Damageカード長押しで統率者詳細を表示
+  - 単一統率者 / Partner 切り替え
+  - Partner時は統率者A/BのCommander Damageを別々に管理
+  - 統率者A/BのCommander Taxを別々に管理（2点刻み）
+- Life 0以下 / 各Commander Damage 21以上 / Poison 10以上の敗北判定
 - 敗北時は `DEFEATED` の下に敗北理由を表示
 - ライフ数字長押しで特殊カウンター画面を開く
   - 毒カウンター
   - 経験カウンター
   - 速度（0〜4）
-- 特殊カウンターは1以上のものだけ通常画面にアイコン付きで表示
+  - Monarch
+  - Initiative
+- Monarch / Initiative は卓上でそれぞれ1人だけが保持し、通常画面には小さな状態バッジを表示
+- 特殊カウンターは有効なものだけ通常画面にアイコン付きで表示
 - Undo
 - 右ツールバーのリセットは長押し時のみ実行
 - 設定画面には従来の2段階確認リセットも残す
 - プレイヤー名・カラー変更
 - LocalStorageで状態保存
 - D6：1個 / 全員ロール
+- D20 / コイン / ランダムプレイヤー
 - ダイスの転がり演出、D6の目表示、1の目は赤
 - 全員ロール時の最高値強調
 - ダイス結果は次のタップまで表示
@@ -60,6 +69,8 @@ manifestの向き指定は `any` です。アプリ側では、横向きはそ�
 - 4人表示は常に2×2の均等分割
 - ライフ数字の大きさは値そのものではなく、プレイヤー領域の実幅から決定
 - 特殊カウンターは通常操作を圧迫しないよう長押し画面で編集し、通常画面には有効な値だけ表示
+- 単一統率者の通常UIは従来どおりとし、Partnerを有効にしたプレイヤーだけCommander DamageカードをA/Bの2段表示にする
+- Commander Taxは通常画面へ常設せず、Commander Damage長押しの詳細UI内だけで管理する
 
 ## オフライン
 
@@ -71,7 +82,10 @@ Service Workerでアプリ本体・CSS・JavaScript・manifest・アイコンを
 - `styles.css` — 基本UI・レイアウト・ダイス等のアニメーション
 - `counters.css` — 特殊カウンター・敗北理由・長押しフィードバック・長押しリセット
 - `layout.js` — viewport / safe area / 縦横表示 / 自動サイズ計算
-- `app.js` — 状態管理・ライフ・Commander Damage・特殊カウンター・設定・ダイス・PWA補助
+- `app.js` — 基本状態管理・ライフ・Commander Damage・特殊カウンター・設定・ダイス・PWA補助
+- `edh-features.js` — Partner、Commander Tax、Monarch、InitiativeのEDH固有拡張
+- `multitouch.js` — マルチタッチと長押し連続入力
+- `dice-extra.js` — D20、コイン、ランダムプレイヤー
 - `manifest.webmanifest` — PWA設定
 - `sw.js` — オフラインキャッシュ
 - `icon.svg` — アプリアイコン
