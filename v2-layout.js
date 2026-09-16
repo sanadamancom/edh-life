@@ -37,27 +37,18 @@
       ?Math.max(viewportHeight,screenHeight)
       :viewportHeight;
 
-    /* iOS standalone with a translucent status bar may report the CSS viewport
-       shorter than the physical display by safe-area-inset-top. Keep the board
-       background full bleed, but do not use that hidden tail to position gameplay UI. */
+    /* Keep the physical board full bleed. The gameplay grid itself is centered
+       from the exact 50% line of this height; safe areas never change seat size. */
     if(navigator.standalone===true&&safeTop>0){
       fullHeight=Math.max(fullHeight,viewportHeight+safeTop);
     }
 
     const measured=Math.ceil(fullHeight);
-    const visible=Math.ceil(viewportHeight);
-    const viewportTail=isInstalledDisplay()?Math.max(0,measured-visible):0;
-    const bottomContentSafe=Math.max(0,Math.ceil(safeTop)-viewportTail);
-
     root.style.setProperty('--stage-full-height',`${measured}px`);
-    root.style.setProperty('--ui-viewport-height',`${visible}px`);
-    root.style.setProperty('--bottom-content-safe',`${bottomContentSafe}px`);
 
     stage.dataset.stageHeight=String(measured);
-    stage.dataset.viewportHeight=String(visible);
+    stage.dataset.viewportHeight=String(Math.ceil(viewportHeight));
     stage.dataset.safeTop=String(Math.ceil(safeTop));
-    stage.dataset.viewportTail=String(viewportTail);
-    stage.dataset.bottomContentSafe=String(bottomContentSafe);
   }
 
   function syncBottomBackdrop(){
@@ -124,7 +115,7 @@
   if(!document.querySelector('link[data-v2-compact]')){
     const link=document.createElement('link');
     link.rel='stylesheet';
-    link.href='./v2-compact.css?v=10';
+    link.href='./v2-compact.css?v=11';
     link.dataset.v2Compact='1';
     head.appendChild(link);
   }
