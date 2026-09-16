@@ -1,14 +1,13 @@
-/* v2 compact interaction pass: fewer controls, larger hit targets, center-access utility band. */
+/* v2 compact interaction pass: balanced portrait seating and center controls. */
 :root{
-  --center-band-h:60px;
+  --center-band-h:54px;
   --tool-size:38px;
-  --tool-gap:2px;
+  --tool-gap:5px;
   --tool-clearance:0px;
   --stage-full-height:100dvh;
 }
 
-/* Installed PWAs can report a CSS viewport shorter than the physical display. The measured
-   --stage-full-height keeps the board/background reaching the real bottom edge. */
+/* Background/board remains full bleed to the measured device height. */
 html.layout-vertical-v2 #stage{
   top:0!important;
   right:0!important;
@@ -27,7 +26,7 @@ html.layout-vertical-v2 .diceLayer{
   height:100%!important;
 }
 
-/* Reserve one physical row in the middle for shared table controls. */
+/* Top seats / center utility row / bottom seats. */
 html.layout-vertical-v2 #app{
   grid-template-rows:minmax(0,1fr) var(--center-band-h) minmax(0,1fr)!important;
 }
@@ -35,11 +34,9 @@ html.layout-vertical-v2 #app.c4 .p:nth-child(1){grid-column:1;grid-row:1}
 html.layout-vertical-v2 #app.c4 .p:nth-child(2){grid-column:2;grid-row:1}
 html.layout-vertical-v2 #app.c4 .p:nth-child(3){grid-column:1;grid-row:3}
 html.layout-vertical-v2 #app.c4 .p:nth-child(4){grid-column:2;grid-row:3}
-
 html.layout-vertical-v2 #app.c3 .p:nth-child(1){grid-column:1/3;grid-row:1}
 html.layout-vertical-v2 #app.c3 .p:nth-child(2){grid-column:1;grid-row:3}
 html.layout-vertical-v2 #app.c3 .p:nth-child(3){grid-column:2;grid-row:3}
-
 html.layout-vertical-v2 #app.c2{
   grid-template-columns:minmax(0,1fr)!important;
   grid-template-rows:minmax(0,1fr) var(--center-band-h) minmax(0,1fr)!important;
@@ -47,29 +44,27 @@ html.layout-vertical-v2 #app.c2{
 html.layout-vertical-v2 #app.c2 .p:nth-child(1){grid-column:1;grid-row:1}
 html.layout-vertical-v2 #app.c2 .p:nth-child(2){grid-column:1;grid-row:3}
 
-/* The center band owns shared controls, so bottom seats no longer reserve OS safe-area space. */
+/* Background reaches the edge, but playable content is symmetric.
+   Top seats already reserve safe-top on their physical top edge in v2.css.
+   Bottom seats reserve the same amount on the physical bottom edge. */
 html.layout-vertical-v2 #app.c4 .p:nth-child(3) .pc,
 html.layout-vertical-v2 #app.c4 .p:nth-child(4) .pc,
 html.layout-vertical-v2 #app.c3 .p:nth-child(2) .pc,
 html.layout-vertical-v2 #app.c3 .p:nth-child(3) .pc,
 html.layout-vertical-v2 #app.c2 .p:nth-child(2) .pc{
-  padding-bottom:var(--panel-pad)!important;
+  padding-bottom:calc(var(--panel-pad) + var(--safe-top))!important;
 }
 
-/* Long-press makes ±5 redundant. Life now gets one large control row only. */
+/* Long-press makes ±5 redundant. */
 html.layout-vertical-v2 .lifeRow{
   grid-template-rows:minmax(0,1fr) var(--control-h);
 }
-html.layout-vertical-v2 .lifeRow .quick5{
-  display:none!important;
-}
+html.layout-vertical-v2 .lifeRow .quick5{display:none!important}
 html.layout-vertical-v2 .lifeRow .delta[data-d="-1"]{grid-column:1;grid-row:2}
 html.layout-vertical-v2 .lifeRow .delta[data-d="1"]{grid-column:2;grid-row:2}
-html.layout-vertical-v2 .lifeRow .delta{
-  min-height:42px;
-}
+html.layout-vertical-v2 .lifeRow .delta{min-height:42px}
 
-/* Commander Damage: the card/partner row itself is the +1 control. */
+/* Commander Damage: card/partner row itself is the +1 control. */
 html.layout-vertical-v2 .cmdQuickPlus{display:none!important}
 html.layout-vertical-v2 .cmdTax.empty{display:none!important}
 html.layout-vertical-v2 .cc.commanderQuick{
@@ -80,9 +75,7 @@ html.layout-vertical-v2 .cc.commanderQuick{
   cursor:pointer;
   touch-action:manipulation;
 }
-html.layout-vertical-v2 .cc.commanderQuick .cw{
-  font-size:clamp(10px,3vw,13px);
-}
+html.layout-vertical-v2 .cc.commanderQuick .cw{font-size:clamp(10px,3vw,13px)}
 html.layout-vertical-v2 .cc.commanderQuick .commanderQuickRow{
   display:flex;
   align-items:center;
@@ -95,16 +88,9 @@ html.layout-vertical-v2 .cc.commanderQuick .cv{
   font-size:clamp(20px,5.8vw,27px);
 }
 html.layout-vertical-v2 .commanderTap:active,
-html.layout-vertical-v2 .commanderTapRow:active{
-  filter:brightness(1.18);
-}
-
-html.layout-vertical-v2 .partnerCc{
-  padding:4px 6px;
-}
-html.layout-vertical-v2 .partnerCc>.cw{
-  margin-bottom:3px;
-}
+html.layout-vertical-v2 .commanderTapRow:active{filter:brightness(1.18)}
+html.layout-vertical-v2 .partnerCc{padding:4px 6px}
+html.layout-vertical-v2 .partnerCc>.cw{margin-bottom:3px}
 html.layout-vertical-v2 .partnerRows{gap:3px}
 html.layout-vertical-v2 .partnerRow{
   grid-template-columns:16px minmax(28px,1fr) auto;
@@ -115,14 +101,10 @@ html.layout-vertical-v2 .partnerRow{
   cursor:pointer;
   touch-action:manipulation;
 }
-html.layout-vertical-v2 .partnerRow b{
-  font-size:clamp(18px,5vw,23px);
-}
-html.layout-vertical-v2 .partnerRow .cmdTax{
-  justify-self:end;
-}
+html.layout-vertical-v2 .partnerRow b{font-size:clamp(18px,5vw,23px)}
+html.layout-vertical-v2 .partnerRow .cmdTax{justify-self:end}
 
-/* Shared controls live in the middle, equally reachable from both sides of the table. */
+/* Shared controls have no enclosing tray, but every action remains visibly button-like. */
 html.layout-vertical-v2 #tools{
   left:50%!important;
   right:auto!important;
@@ -143,7 +125,15 @@ html.layout-vertical-v2 .dw>button{
   width:var(--tool-size);
   height:var(--tool-size);
   padding:8px;
+  border:1px solid rgba(255,255,255,.22)!important;
   border-radius:10px;
+  background:#111620e8!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 2px 6px rgba(0,0,0,.28)!important;
+}
+html.layout-vertical-v2 #tools>button:active,
+html.layout-vertical-v2 .dw>button:active{
+  background:#202735f2!important;
+  transform:translateY(1px);
 }
 html.layout-vertical-v2 #tools .dm{
   left:50%;
@@ -153,40 +143,16 @@ html.layout-vertical-v2 #tools .dm{
   transform:translateX(-50%);
 }
 
-/* The unified 1/8 Monarch / Initiative hub becomes a first-class item in the middle strip. */
-html.layout-vertical-v2 #tools #unifiedTableStateHub{
-  position:relative!important;
-  left:auto!important;
-  top:auto!important;
-  width:52px!important;
-  height:52px!important;
-  flex:0 0 52px;
-  transform:none!important;
-  margin:0 2px;
-}
-html.layout-vertical-v2 #tools #unifiedTableStateHub .tableStateCenter{
-  width:40px;
-  height:24px;
-}
-html.layout-vertical-v2 #tools #unifiedTableStateHint{
-  top:calc(100% + 4px);
-}
+/* Monarch / Initiative center displays are retired for now.
+   Their state fields remain available for a later per-player badge UI. */
+html.layout-vertical-v2 #tableStateHub,
+html.layout-vertical-v2 #unifiedTableStateHub{display:none!important}
 
 html.layout-vertical-v2.layout-short{
   --tool-size:36px;
-  --center-band-h:56px;
-}
-html.layout-vertical-v2.layout-short #tools #unifiedTableStateHub{
-  width:48px!important;
-  height:48px!important;
-  flex-basis:48px;
+  --center-band-h:50px;
 }
 html.layout-vertical-v2.layout-tablet{
   --tool-size:46px;
-  --center-band-h:72px;
-}
-html.layout-vertical-v2.layout-tablet #tools #unifiedTableStateHub{
-  width:60px!important;
-  height:60px!important;
-  flex-basis:60px;
+  --center-band-h:64px;
 }
