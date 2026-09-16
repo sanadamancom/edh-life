@@ -79,7 +79,7 @@
   if(!document.querySelector('link[data-v2-compact]')){
     const link=document.createElement('link');
     link.rel='stylesheet';
-    link.href='./v2-compact.css?v=11';
+    link.href='./v2-compact.css?v=12';
     link.dataset.v2Compact='1';
     head.appendChild(link);
   }
