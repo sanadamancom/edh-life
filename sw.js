@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v61-centerline-symmetric-seats';
+const CACHE_NAME='edh-life-v62-physical-stage-origin';
 const APP_SHELL=[
   './',
   './index.html',
