@@ -28,6 +28,15 @@
     stage.dataset.stageHeight=String(Math.ceil(fullHeight));
   }
 
+  function retireTableStateUi(){
+    document.getElementById('tableStateHub')?.remove();
+    document.getElementById('unifiedTableStateHub')?.remove();
+    document.getElementById('tableStateSettingRow')?.remove();
+    document.querySelectorAll('.table-state-pick-target,.table-state-pick-current,.state-pick-target,.state-pick-current')
+      .forEach(element=>element.classList.remove('table-state-pick-target','table-state-pick-current','state-pick-target','state-pick-current'));
+    window.__edhTableStatePickActive=()=>false;
+  }
+
   syncFullStageHeight();
   window.addEventListener('resize',syncFullStageHeight,{passive:true});
   window.addEventListener('orientationchange',syncFullStageHeight,{passive:true});
@@ -38,7 +47,7 @@
   if(!document.querySelector('link[data-v2-compact]')){
     const link=document.createElement('link');
     link.rel='stylesheet';
-    link.href='./v2-compact.css?v=4';
+    link.href='./v2-compact.css?v=5';
     link.dataset.v2Compact='1';
     head.appendChild(link);
   }
@@ -52,24 +61,13 @@
     document.body.appendChild(script);
   });
 
-  function dockTableStateHub(){
-    const tools=document.getElementById('tools');
-    const diceWrap=tools?.querySelector('.dw');
-    const hub=document.getElementById('unifiedTableStateHub');
-    if(!tools||!diceWrap||!hub)return;
-    if(hub.parentElement!==tools)diceWrap.after(hub);
-    hub.style.removeProperty('left');
-    hub.style.removeProperty('top');
-  }
-
   (async()=>{
     try{
-      if(!document.getElementById('unifiedTableStateHub'))await loadScript('table-state-hub.js');
-      dockTableStateHub();
+      retireTableStateUi();
       await loadScript('v2-compact-interactions.js');
       window.addEventListener('edh-v2-layout',()=>{
         syncFullStageHeight();
-        dockTableStateHub();
+        retireTableStateUi();
       });
     }catch(error){
       console.error('Failed to load v2 compact layer',error);
