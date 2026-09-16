@@ -4,234 +4,99 @@
   const app=document.getElementById('app');
   if(!root||!stage||!app)return;
 
+  root.classList.add('layout-vertical-v2','stage-native');
+  root.classList.remove('v2-portrait','v2-landscape','v2-compact','v2-device-landscape','stage-rotated');
+
   function setupHelp(){
     const tools=document.getElementById('tools');
     const settingsButton=document.getElementById('set');
     if(!tools||!settingsButton||document.getElementById('help'))return;
-
-    const style=document.createElement('style');
-    style.textContent=`
-      #helpOverlay{z-index:55}
-      #helpOverlay .helpPanel{width:min(720px,96%);padding:14px}
-      #helpOverlay .helpHead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:8px}
-      #helpOverlay .helpHead h2{margin:0;font-size:23px}
-      #helpOverlay .helpHead span{color:var(--mut);font-size:11px;font-weight:800;white-space:nowrap}
-      #helpOverlay .helpGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
-      #helpOverlay .helpCard{padding:8px 9px;border:1px solid var(--line);border-radius:11px;background:#0d1119}
-      #helpOverlay .helpCard h3{margin:0 0 4px;font-size:14px}
-      #helpOverlay .helpCard p{margin:2px 0;color:#d7dce6;font-size:11.5px;line-height:1.35}
-      #helpOverlay .helpCard b{color:#fff}
-      #helpOverlay .helpTools{grid-column:1/-1}
-      #helpOverlay .helpToolsGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin-top:5px}
-      #helpOverlay .helpTool{padding:5px 6px;border-radius:8px;background:#171c26;font-size:10.5px;line-height:1.25}
-      #helpOverlay .helpTool b{display:block;color:#fff;font-size:11px;margin-bottom:1px}
-      #helpOverlay .helpNote{margin:7px 0 0;color:var(--mut);font-size:10.5px;line-height:1.3}
-      #helpOverlay .acts{margin-top:8px}
-      #helpOverlay .acts button{min-width:88px}
-      #help .mi{overflow:visible}
-    `;
-    document.head.appendChild(style);
 
     const helpButton=document.createElement('button');
     helpButton.type='button';
     helpButton.id='help';
     helpButton.title='使い方';
     helpButton.setAttribute('aria-label','使い方');
-    helpButton.innerHTML=`<svg class="mi" viewBox="0 -960 960 960" aria-hidden="true"><path d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm2 160q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Zm4-172q25 0 43.5 16t18.5 40q0 22-13.5 39T502-525q-23 20-40.5 44T444-427q0 14 10.5 23.5T479-394q15 0 25.5-10t13.5-25q4-21 18-37.5t30-31.5q23-22 39.5-48t16.5-58q0-51-41.5-83.5T484-720q-38 0-72.5 16T359-655q-7 12-4.5 25.5T368-609q14 8 29 5t25-17q11-15 27.5-23t34.5-8Z"/></svg>`;
+    helpButton.innerHTML='<svg class="mi" viewBox="0 -960 960 960" aria-hidden="true"><path d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm2 160q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm4-492q25 0 43.5 16t18.5 40q0 22-13.5 39T502-525q-23 20-40.5 44T444-427q0 14 10.5 23.5T479-394q15 0 25.5-10t13.5-25q4-21 18-37.5t30-31.5q23-22 39.5-48t16.5-58q0-51-41.5-83.5T484-720q-38 0-72.5 16T359-655q-7 12-4.5 25.5T368-609q14 8 29 5t25-17q11-15 27.5-23t34.5-8Z"/></svg>';
     settingsButton.before(helpButton);
 
-    const helpOverlay=document.createElement('div');
-    helpOverlay.id='helpOverlay';
-    helpOverlay.className='ov';
-    helpOverlay.innerHTML=`
+    const overlay=document.createElement('div');
+    overlay.id='helpOverlay';
+    overlay.className='ov';
+    overlay.innerHTML=`
       <div class="modal helpPanel" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
         <div class="helpHead"><h2 id="helpTitle">使い方</h2><span>EDH LIFE v2</span></div>
         <div class="helpGrid">
-          <section class="helpCard"><h3>ライフ</h3><p><b>大きな数字</b>が現在ライフです。</p><p><b>−1 / +1 / −5 / +5</b>で増減し、長押しで連続入力できます。</p><p>ライフ数字長押しで毒・経験・速度を編集します。</p></section>
-          <section class="helpCard"><h3>統率者ダメージ</h3><p>各カードは、その名前のプレイヤーの統率者から受けたダメージです。</p><p><b>+1</b>で加算。減算・Partner・Commander Taxはカード長押しの詳細画面から編集します。</p></section>
-          <section class="helpCard"><h3>卓上状態</h3><p>中央の8分割ハブで<b>Monarch / Initiative</b>を管理します。</p><p>中央の記号を選んでから移動先プレイヤーをタップします。</p></section>
-          <section class="helpCard"><h3>敗北表示</h3><p>ライフ0以下、毒10、同一統率者から21点以上で<b>DEFEATED</b>を表示します。</p><p>敗北後も入力ミスは修正できます。</p></section>
+          <section class="helpCard"><h3>ライフ</h3><p><b>大きな数字</b>が現在ライフです。</p><p><b>−1 / +1 / −5 / +5</b>で増減。長押しで連続入力できます。</p><p>ライフ数字長押しで毒・経験・速度を編集します。</p></section>
+          <section class="helpCard"><h3>統率者ダメージ</h3><p>各カードは、そのプレイヤーの統率者から受けたダメージです。</p><p><b>+1</b>で加算。減算・Partner・Commander Taxはカード長押しで編集します。</p></section>
+          <section class="helpCard"><h3>卓上状態</h3><p>中央の8分割ハブで<b>Monarch / Initiative</b>を管理します。</p><p>中央の記号を選び、移動先プレイヤーをタップします。</p></section>
+          <section class="helpCard"><h3>特殊カウンター</h3><p>毒・経験・速度は値がある時だけプレイヤー名付近に表示します。</p><p>毒10、ライフ0、同一統率者から21点で敗北表示になります。</p></section>
           <section class="helpCard helpTools"><h3>操作ボタン</h3><div class="helpToolsGrid">
-            <div class="helpTool"><b>Undo</b>直前の変更を戻します。</div>
-            <div class="helpTool"><b>ダイス</b>D6 / D20 / コイン / プレイヤー抽選。</div>
-            <div class="helpTool"><b>リセット</b>長押しでゲーム値を初期化。</div>
-            <div class="helpTool"><b>フルスクリーン</b>対応ブラウザで切替。</div>
-            <div class="helpTool"><b>ヘルプ</b>この画面を表示。</div>
-            <div class="helpTool"><b>設定</b>人数・名前・色・卓状態UI。</div>
-          </div><p class="helpNote">v2は縦型レイアウトのみを使用します。PWAでは縦向きを基本に表示します。</p></section>
+            <div class="helpTool"><b>Undo</b>直前の変更を戻す</div>
+            <div class="helpTool"><b>ダイス</b>D6 / D20 / コイン / 抽選</div>
+            <div class="helpTool"><b>リセット</b>長押しでゲーム値を初期化</div>
+            <div class="helpTool"><b>フルスクリーン</b>対応環境で切替</div>
+            <div class="helpTool"><b>ヘルプ</b>この画面</div>
+            <div class="helpTool"><b>設定</b>人数・名前・色・卓状態UI</div>
+          </div></section>
         </div>
         <div class="acts"><button type="button" id="helpClose">閉じる</button></div>
       </div>`;
-    stage.appendChild(helpOverlay);
+    stage.appendChild(overlay);
 
-    const closeButton=helpOverlay.querySelector('#helpClose');
-    let returnFocus=null;
-    const openHelp=()=>{
+    const close=()=>overlay.classList.remove('show');
+    helpButton.addEventListener('click',event=>{
+      event.stopPropagation();
       document.getElementById('settings')?.classList.remove('show');
       document.getElementById('counters')?.classList.remove('show','counter-flipped');
       document.getElementById('dm')?.classList.remove('show');
-      returnFocus=document.activeElement;
-      helpOverlay.classList.add('show');
-      closeButton.focus({preventScroll:true});
+      overlay.classList.add('show');
+      overlay.querySelector('#helpClose')?.focus({preventScroll:true});
+    });
+    overlay.querySelector('#helpClose')?.addEventListener('click',close);
+    overlay.addEventListener('click',event=>{if(event.target===overlay)close()});
+    document.addEventListener('keydown',event=>{if(event.key==='Escape'&&overlay.classList.contains('show'))close()});
+  }
+
+  function readSafeArea(){
+    const probe=document.createElement('div');
+    probe.style.cssText='position:fixed;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)';
+    document.body.appendChild(probe);
+    const style=getComputedStyle(probe);
+    const safe={
+      top:parseFloat(style.paddingTop)||0,
+      right:parseFloat(style.paddingRight)||0,
+      bottom:parseFloat(style.paddingBottom)||0,
+      left:parseFloat(style.paddingLeft)||0
     };
-    const closeHelp=()=>{
-      helpOverlay.classList.remove('show');
-      if(returnFocus instanceof HTMLElement)returnFocus.focus({preventScroll:true});
-      returnFocus=null;
+    probe.remove();
+    return safe;
+  }
+
+  function syncViewport(){
+    const width=document.documentElement.clientWidth||window.innerWidth||1;
+    const height=document.documentElement.clientHeight||window.innerHeight||1;
+    const safe=readSafeArea();
+    root.classList.toggle('layout-short',height<700);
+    root.classList.toggle('layout-tablet',Math.min(width,height)>=600);
+    window.EDHStage={
+      state:{w:width,h:height,x:0,y:0,safe,rotated:false,portraitV2:true,portraitOnly:true,boardW:width,boardH:height,scale:1,gameW:width,gameH:height,playerW:app.classList.contains('c2')?width:width/2,playerH:height/2},
+      update:syncViewport
     };
-    helpButton.addEventListener('click',event=>{event.stopPropagation();openHelp()});
-    closeButton.addEventListener('click',closeHelp);
-    helpOverlay.addEventListener('click',event=>{if(event.target===helpOverlay)closeHelp()});
-    document.addEventListener('keydown',event=>{if(event.key==='Escape'&&helpOverlay.classList.contains('show'))closeHelp()});
+    window.dispatchEvent(new CustomEvent('edh-v2-layout'));
   }
 
   setupHelp();
-
-  const clamp=(min,value,max)=>Math.min(max,Math.max(min,value));
-
-  const viewportProbe=document.createElement('div');
-  Object.assign(viewportProbe.style,{position:'fixed',inset:'0',visibility:'hidden',pointerEvents:'none',margin:'0',padding:'0',border:'0'});
-  document.body.appendChild(viewportProbe);
-
-  const safeProbe=document.createElement('div');
-  Object.assign(safeProbe.style,{position:'fixed',visibility:'hidden',pointerEvents:'none',paddingTop:'env(safe-area-inset-top, 0px)',paddingRight:'env(safe-area-inset-right, 0px)',paddingBottom:'env(safe-area-inset-bottom, 0px)',paddingLeft:'env(safe-area-inset-left, 0px)'});
-  document.body.appendChild(safeProbe);
-
-  const px=value=>{
-    const number=parseFloat(value);
-    return Number.isFinite(number)?Math.max(0,number):0;
-  };
-
-  function getLayoutViewport(){
-    const rect=viewportProbe.getBoundingClientRect();
-    return {w:Math.max(1,rect.width),h:Math.max(1,rect.height),x:rect.left,y:rect.top};
-  }
-
-  function getVisibleViewport(){
-    const layout=getLayoutViewport();
-    const visual=window.visualViewport;
-    if(!visual)return layout;
-    const visible={w:Math.max(1,visual.width),h:Math.max(1,visual.height),x:Number(visual.offsetLeft)||0,y:Number(visual.offsetTop)||0};
-    const clipped=Math.abs(visible.x-layout.x)>.5||Math.abs(visible.y-layout.y)>.5||visible.w<layout.w-1||visible.h<layout.h-1;
-    return clipped?visible:layout;
-  }
-
-  function getSafeInsets(){
-    const style=getComputedStyle(safeProbe);
-    return {top:px(style.paddingTop),right:px(style.paddingRight),bottom:px(style.paddingBottom),left:px(style.paddingLeft)};
-  }
-
-  function getPlayerCount(){
-    if(app.classList.contains('c2'))return 2;
-    if(app.classList.contains('c3'))return 3;
-    return 4;
-  }
-
-  function setRoot(name,value){root.style.setProperty(name,value)}
-  function setStage(name,value){stage.style.setProperty(name,value)}
-
-  function syncCenterHub(){
-    const hub=document.getElementById('unifiedTableStateHub');
-    if(!hub)return;
-    hub.style.left=`${app.offsetLeft+app.offsetWidth/2}px`;
-    hub.style.top=`${app.offsetTop+app.offsetHeight/2}px`;
-  }
-
-  function applyLayout(){
-    const viewport=getVisibleViewport();
-    const safe=getSafeInsets();
-    const count=getPlayerCount();
-    const toolGap=clamp(3,viewport.w*.009,6);
-    const usableToolW=Math.max(220,viewport.w-safe.left-safe.right-18);
-    const toolSize=clamp(36,(usableToolW-toolGap*5)/6,48);
-    const gameBottom=safe.bottom+toolSize+12;
-    const gameW=Math.max(1,viewport.w-safe.left-safe.right);
-    const gameH=Math.max(1,viewport.h-safe.top-gameBottom);
-    const playerW=count===2?gameW:gameW/2;
-    const playerH=gameH/2;
-    const compact=playerH<310||playerW<175||viewport.w>viewport.h;
-
-    const uiScale=clamp(.76,Math.min(viewport.w,viewport.h)/390,1.42);
-    const lifeSize=clamp(compact?48:60,Math.min(playerW*.46,playerH*.28),132);
-    const controlH=clamp(compact?26:34,playerH*.105,compact?36:46);
-    const lifeMinH=clamp(compact?44:58,playerH*.19,118);
-    const cmdRowH=clamp(compact?26:34,playerH*(compact?.105:.10),compact?34:46);
-    const cmdButtonH=clamp(compact?22:27,cmdRowH*.82,38);
-    const partnerRowH=clamp(compact?19:23,cmdRowH*.72,32);
-    const partnerButtonH=clamp(compact?19:23,partnerRowH*.94,31);
-    const nameSize=clamp(compact?11:13,playerW*.075,22);
-    const cmdNameSize=clamp(8,playerW*.052,13);
-    const cmdValueSize=clamp(14,playerW*.095,25);
-    const cmdButtonSize=clamp(11,playerW*.072,18);
-    const quickSize=clamp(14,playerW*.085,23);
-    const iconSize=clamp(22,playerW*.17,44);
-    const panelPad=clamp(3,playerW*.028,10);
-    const panelGap=clamp(2,playerH*.012,7);
-    const controlGap=clamp(3,playerW*.025,7);
-
-    setRoot('--board-w',`${viewport.w.toFixed(3)}px`);
-    setRoot('--board-h',`${viewport.h.toFixed(3)}px`);
-    setRoot('--board-scale','1');
-    setRoot('--board-rot','0deg');
-    setRoot('--board-left',`${(viewport.x+viewport.w/2).toFixed(3)}px`);
-    setRoot('--board-top',`${(viewport.y+viewport.h/2).toFixed(3)}px`);
-    setRoot('--gutter-start','0px');
-    setRoot('--gutter-end','0px');
-    setRoot('--v2-safe-top',`${safe.top.toFixed(2)}px`);
-    setRoot('--v2-safe-right',`${safe.right.toFixed(2)}px`);
-    setRoot('--v2-safe-bottom',`${safe.bottom.toFixed(2)}px`);
-    setRoot('--v2-safe-left',`${safe.left.toFixed(2)}px`);
-    setRoot('--v2-game-bottom',`${gameBottom.toFixed(2)}px`);
-    setRoot('--v2-tool-gap',`${toolGap.toFixed(2)}px`);
-    setRoot('--v2-panel-pad',`${panelPad.toFixed(2)}px`);
-    setRoot('--v2-gap',`${panelGap.toFixed(2)}px`);
-    setRoot('--v2-control-gap',`${controlGap.toFixed(2)}px`);
-    setRoot('--v2-control-h',`${controlH.toFixed(2)}px`);
-    setRoot('--v2-life-min-h',`${lifeMinH.toFixed(2)}px`);
-    setRoot('--v2-control-radius',`${clamp(9,controlH*.32,16).toFixed(2)}px`);
-    setRoot('--v2-icon-size',`${iconSize.toFixed(2)}px`);
-    setRoot('--v2-quick-size',`${quickSize.toFixed(2)}px`);
-    setRoot('--v2-name-size',`${nameSize.toFixed(2)}px`);
-    setRoot('--v2-cmd-pad',`${compact?2:3}px`);
-    setRoot('--v2-cmd-gap',`${compact?2:3}px`);
-    setRoot('--v2-cmd-radius',`${compact?8:10}px`);
-    setRoot('--v2-cmd-card-radius',`${compact?6:8}px`);
-    setRoot('--v2-cmd-row-h',`${cmdRowH.toFixed(2)}px`);
-    setRoot('--v2-cmd-button-h',`${cmdButtonH.toFixed(2)}px`);
-    setRoot('--v2-partner-row-h',`${partnerRowH.toFixed(2)}px`);
-    setRoot('--v2-partner-button-h',`${partnerButtonH.toFixed(2)}px`);
-    setRoot('--v2-cmd-name-size',`${cmdNameSize.toFixed(2)}px`);
-    setRoot('--v2-cmd-value-size',`${cmdValueSize.toFixed(2)}px`);
-    setRoot('--v2-cmd-button-size',`${cmdButtonSize.toFixed(2)}px`);
-    setRoot('--v2-tax-size',`${clamp(7,playerW*.042,10).toFixed(2)}px`);
-
-    setStage('--ui-scale',uiScale.toFixed(4));
-    setStage('--control-scale','1');
-    setStage('--life-size',`${lifeSize.toFixed(2)}px`);
-    setStage('--tool-scale','1');
-    setStage('--tool-size',`${toolSize.toFixed(2)}px`);
-
-    root.classList.add('v2-portrait','stage-native');
-    root.classList.remove('v2-landscape','stage-rotated');
-    root.classList.toggle('v2-compact',compact);
-    root.classList.toggle('v2-device-landscape',viewport.w>viewport.h);
-
-    window.EDHStage={
-      state:{...viewport,safe,rotated:false,portraitV2:true,portraitOnly:true,boardW:viewport.w,boardH:viewport.h,scale:1,gutterStart:0,gutterEnd:0,gameW,gameH,playerW,playerH,uiScale,controlScale:1,lifeSize,toolScale:1},
-      update:applyLayout
-    };
-    requestAnimationFrame(syncCenterHub);
-  }
+  syncViewport();
 
   let resizeTimer=0;
-  function schedule(delay=90){clearTimeout(resizeTimer);resizeTimer=setTimeout(applyLayout,delay)}
-
-  window.addEventListener('resize',()=>schedule(),{passive:true});
-  window.visualViewport?.addEventListener('resize',()=>schedule(),{passive:true});
-  window.visualViewport?.addEventListener('scroll',()=>schedule(30),{passive:true});
-  window.addEventListener('orientationchange',()=>schedule(160),{passive:true});
-  window.addEventListener('pageshow',()=>{applyLayout();schedule(160);setTimeout(applyLayout,420)});
-  new MutationObserver(()=>schedule(0)).observe(app,{attributes:true,attributeFilter:['class']});
-
-  applyLayout();
+  const schedule=()=>{
+    clearTimeout(resizeTimer);
+    resizeTimer=setTimeout(syncViewport,80);
+  };
+  window.addEventListener('resize',schedule,{passive:true});
+  window.visualViewport?.addEventListener('resize',schedule,{passive:true});
+  window.addEventListener('orientationchange',schedule,{passive:true});
+  window.addEventListener('pageshow',syncViewport,{passive:true});
+  new MutationObserver(syncViewport).observe(app,{attributes:true,attributeFilter:['class']});
 })();

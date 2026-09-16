@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v48-full-bleed-safe-area';
+const CACHE_NAME='edh-life-v49-vertical-rebuild';
 const APP_SHELL=[
   './',
   './index.html',
