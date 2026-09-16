@@ -1,6 +1,7 @@
 (()=>{
   if(typeof state==='undefined'||typeof render!=='function'||typeof mutate!=='function'||typeof escapeHtml!=='function')return;
 
+  const TAP_MAX_MS=500;
   const app=document.getElementById('app');
   if(!app)return;
 
@@ -68,6 +69,7 @@
   }
 
   app.addEventListener('pointerdown',event=>{
+    if(!event.isTrusted)return;
     if(window.__edhTableStatePickActive?.())return;
     if(event.pointerType==='mouse'&&event.button!==0)return;
     if(event.target.closest('button'))return;
@@ -87,17 +89,19 @@
   },true);
 
   app.addEventListener('pointermove',event=>{
+    if(!event.isTrusted)return;
     if(!tapSession||tapSession.pointerId!==event.pointerId)return;
     if(Math.hypot(event.clientX-tapSession.x,event.clientY-tapSession.y)>12)tapSession.moved=true;
   },true);
 
   app.addEventListener('pointerup',event=>{
+    if(!event.isTrusted)return;
     if(!tapSession||tapSession.pointerId!==event.pointerId)return;
     const session=tapSession;
     tapSession=null;
     const held=performance.now()-session.started;
     const releasedCard=event.target.closest('.cc[data-cmd-card]');
-    if(session.moved||held>=360||releasedCard!==session.card||session.slot===null)return;
+    if(session.moved||held>=TAP_MAX_MS||releasedCard!==session.card||session.slot===null)return;
     event.preventDefault();
     event.stopImmediatePropagation();
     suppressClickUntil=performance.now()+400;
@@ -105,6 +109,7 @@
   },true);
 
   document.addEventListener('pointercancel',event=>{
+    if(!event.isTrusted)return;
     if(tapSession?.pointerId===event.pointerId)tapSession=null;
   },true);
 
@@ -143,7 +148,7 @@
   const commanderHelp=helpCards.find(card=>card.querySelector('h3')?.textContent==='統率者ダメージ');
   if(commanderHelp){
     const paragraphs=commanderHelp.querySelectorAll('p');
-    if(paragraphs[1])paragraphs[1].innerHTML='カードを<b>タップで+1</b>。減算・Partner・Commander Taxは長押しで編集します。';
+    if(paragraphs[1])paragraphs[1].innerHTML='カードを<b>タップで+1</b>。減算は長押し詳細から編集します。';
   }
 
   render();
