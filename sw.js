@@ -1,11 +1,11 @@
-const CACHE_NAME='edh-life-v55-balanced-seats';
+const CACHE_NAME='edh-life-v56-safe-height-balance';
 const APP_SHELL=[
   './',
   './index.html',
   './styles.css?v=33',
   './counters.css?v=34',
   './v2.css?v=1',
-  './v2-compact.css?v=5',
+  './v2-compact.css?v=6',
   './layout.js?v=30',
   './app.js?v=33',
   './edh-features.js?v=2',

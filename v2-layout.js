@@ -8,6 +8,17 @@
       navigator.standalone===true;
   }
 
+  function readSafeTop(){
+    const fromLayout=Number(window.EDHStage?.state?.safe?.top)||0;
+    if(fromLayout>0)return fromLayout;
+    const probe=document.createElement('div');
+    probe.style.cssText='position:fixed;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top,0px)';
+    document.body.appendChild(probe);
+    const value=parseFloat(getComputedStyle(probe).paddingTop)||0;
+    probe.remove();
+    return value;
+  }
+
   function syncFullStageHeight(){
     const root=document.documentElement;
     const stage=document.getElementById('stage');
@@ -20,12 +31,24 @@
       vv?(vv.height+Math.max(0,vv.offsetTop||0)):0
     );
     const screenHeight=Number(window.screen?.height)||0;
-    const fullHeight=isInstalledDisplay()&&screenHeight
+    const safeTop=readSafeTop();
+
+    let fullHeight=isInstalledDisplay()&&screenHeight
       ?Math.max(viewportHeight,screenHeight)
       :viewportHeight;
 
-    root.style.setProperty('--stage-full-height',`${Math.ceil(fullHeight)}px`);
-    stage.dataset.stageHeight=String(Math.ceil(fullHeight));
+    /* iOS standalone with black-translucent status bar can report the CSS viewport
+       shorter than the screenshot/physical display by exactly safe-area-inset-top.
+       Android standalone keeps the normal viewport/screen calculation above. */
+    if(navigator.standalone===true&&safeTop>0){
+      fullHeight=Math.max(fullHeight,viewportHeight+safeTop);
+    }
+
+    const measured=Math.ceil(fullHeight);
+    root.style.setProperty('--stage-full-height',`${measured}px`);
+    stage.dataset.stageHeight=String(measured);
+    stage.dataset.viewportHeight=String(Math.ceil(viewportHeight));
+    stage.dataset.safeTop=String(Math.ceil(safeTop));
   }
 
   function retireTableStateUi(){
@@ -50,7 +73,7 @@
   if(!document.querySelector('link[data-v2-compact]')){
     const link=document.createElement('link');
     link.rel='stylesheet';
-    link.href='./v2-compact.css?v=5';
+    link.href='./v2-compact.css?v=6';
     link.dataset.v2Compact='1';
     head.appendChild(link);
   }
