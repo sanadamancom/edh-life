@@ -1,0 +1,82 @@
+/* Continuous seat-driven sizing. Device categories are intentionally not used. */
+:root{
+  --seat-scale:1;
+  --fluid-life-font:124px;
+  --fluid-name-font:19px;
+  --fluid-cmd-name-font:13px;
+  --fluid-cmd-value-font:27px;
+  --fluid-partner-name-font:11px;
+  --fluid-partner-value-font:21px;
+  --fluid-partner-mark-font:9px;
+  --fluid-control-icon:34px;
+  --fluid-badge-height:21px;
+  --fluid-badge-font:12px;
+  --fluid-badge-icon:13px;
+  --fluid-die-size:92px;
+  --fluid-player-die-size:78px;
+}
+
+html.layout-vertical-v2 .name{
+  font-size:var(--fluid-name-font)!important;
+}
+
+html.layout-vertical-v2 .life,
+html.layout-vertical-v2 #app.c2 .life{
+  font-size:var(--fluid-life-font)!important;
+}
+
+html.layout-vertical-v2 .lifeRow .delta{
+  min-height:var(--control-h)!important;
+}
+html.layout-vertical-v2 .lifeRow .delta .mi{
+  width:var(--fluid-control-icon)!important;
+  height:var(--fluid-control-icon)!important;
+}
+
+html.layout-vertical-v2 .cc.commanderQuick,
+html.layout-vertical-v2 .cc.partnerCc{
+  height:var(--commander-card-h)!important;
+  min-height:var(--commander-card-h)!important;
+  max-height:var(--commander-card-h)!important;
+}
+html.layout-vertical-v2 .cc.commanderQuick .cw{
+  font-size:var(--fluid-cmd-name-font)!important;
+}
+html.layout-vertical-v2 .cc.commanderQuick .cv{
+  font-size:var(--fluid-cmd-value-font)!important;
+}
+html.layout-vertical-v2 .partnerCc>.cw{
+  font-size:var(--fluid-partner-name-font)!important;
+}
+html.layout-vertical-v2 .partnerRow b{
+  font-size:var(--fluid-partner-value-font)!important;
+}
+html.layout-vertical-v2 .partnerMark{
+  font-size:var(--fluid-partner-mark-font)!important;
+}
+
+html.layout-vertical-v2 .counterBadge{
+  min-width:var(--fluid-badge-height)!important;
+  height:var(--fluid-badge-height)!important;
+  font-size:var(--fluid-badge-font)!important;
+}
+html.layout-vertical-v2 .counterIcon{
+  width:var(--fluid-badge-icon)!important;
+  height:var(--fluid-badge-icon)!important;
+}
+
+html.layout-vertical-v2 #tools>button,
+html.layout-vertical-v2 .dw>button{
+  width:var(--tool-size)!important;
+  height:var(--tool-size)!important;
+  border-radius:calc(var(--tool-size) * .23)!important;
+}
+
+html.layout-vertical-v2 .die{
+  width:var(--fluid-die-size)!important;
+  height:var(--fluid-die-size)!important;
+}
+html.layout-vertical-v2 .die.player{
+  width:var(--fluid-player-die-size)!important;
+  height:var(--fluid-player-die-size)!important;
+}

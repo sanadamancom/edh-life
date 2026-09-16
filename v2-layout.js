@@ -88,6 +88,7 @@
   (async()=>{
     try{
       retireTableStateUi();
+      await loadScript('v2-fluid-scale.js',1);
       await loadScript('v2-compact-interactions.js',2);
       await loadScript('v2-utility-behavior.js',4);
       syncBottomBackdrop();
