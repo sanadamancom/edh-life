@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v50-compact-interactions';
+const CACHE_NAME='edh-life-v51-safe-area-debug';
 const APP_SHELL=[
   './',
   './index.html',

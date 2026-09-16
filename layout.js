@@ -7,6 +7,9 @@
   root.classList.add('layout-vertical-v2','stage-native');
   root.classList.remove('v2-portrait','v2-landscape','v2-compact','v2-device-landscape','stage-rotated');
 
+  const safeDebug=new URLSearchParams(location.search).get('debug')==='safe';
+  let safeDebugUi=null;
+
   function setupHelp(){
     const tools=document.getElementById('tools');
     const settingsButton=document.getElementById('set');
@@ -73,6 +76,37 @@
     return safe;
   }
 
+  function setupSafeDebug(){
+    if(!safeDebug)return;
+    const wrap=document.createElement('div');
+    wrap.id='safeAreaDebug';
+    wrap.style.cssText='position:fixed;inset:0;z-index:99999;pointer-events:none;font:700 11px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;color:#fff;text-shadow:0 1px 2px #000';
+    wrap.innerHTML='<div data-safe="top" style="position:absolute;left:0;right:0;top:0;background:rgba(255,50,50,.28);border-bottom:1px solid rgba(255,100,100,.9)"></div><div data-safe="bottom" style="position:absolute;left:0;right:0;bottom:0;background:rgba(60,130,255,.28);border-top:1px solid rgba(100,170,255,.9)"></div><pre data-safe="info" style="position:absolute;left:8px;top:8px;margin:0;padding:6px 8px;border-radius:8px;background:rgba(0,0,0,.72);white-space:pre-wrap"></pre>';
+    document.body.appendChild(wrap);
+    safeDebugUi={
+      top:wrap.querySelector('[data-safe="top"]'),
+      bottom:wrap.querySelector('[data-safe="bottom"]'),
+      info:wrap.querySelector('[data-safe="info"]')
+    };
+  }
+
+  function syncSafeDebug(width,height,safe){
+    if(!safeDebugUi)return;
+    const vv=window.visualViewport;
+    safeDebugUi.top.style.height=`${safe.top}px`;
+    safeDebugUi.bottom.style.height=`${safe.bottom}px`;
+    safeDebugUi.info.textContent=[
+      `safe top: ${safe.top.toFixed(1)}px`,
+      `safe bottom: ${safe.bottom.toFixed(1)}px`,
+      `safe left/right: ${safe.left.toFixed(1)} / ${safe.right.toFixed(1)}px`,
+      `client: ${Math.round(width)} × ${Math.round(height)}`,
+      `innerHeight: ${Math.round(window.innerHeight)}`,
+      `visualViewport: ${vv?`${Math.round(vv.width)} × ${Math.round(vv.height)} @ ${Math.round(vv.offsetTop)}`:'n/a'}`,
+      `screen: ${screen.width} × ${screen.height} @${devicePixelRatio}x`,
+      `standalone: ${matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}`
+    ].join('\n');
+  }
+
   function syncViewport(){
     const width=document.documentElement.clientWidth||window.innerWidth||1;
     const height=document.documentElement.clientHeight||window.innerHeight||1;
@@ -83,10 +117,12 @@
       state:{w:width,h:height,x:0,y:0,safe,rotated:false,portraitV2:true,portraitOnly:true,boardW:width,boardH:height,scale:1,gameW:width,gameH:height,playerW:app.classList.contains('c2')?width:width/2,playerH:height/2},
       update:syncViewport
     };
+    syncSafeDebug(width,height,safe);
     window.dispatchEvent(new CustomEvent('edh-v2-layout'));
   }
 
   setupHelp();
+  setupSafeDebug();
   syncViewport();
 
   let resizeTimer=0;
@@ -96,6 +132,7 @@
   };
   window.addEventListener('resize',schedule,{passive:true});
   window.visualViewport?.addEventListener('resize',schedule,{passive:true});
+  window.visualViewport?.addEventListener('scroll',schedule,{passive:true});
   window.addEventListener('orientationchange',schedule,{passive:true});
   window.addEventListener('pageshow',syncViewport,{passive:true});
   new MutationObserver(syncViewport).observe(app,{attributes:true,attributeFilter:['class']});
