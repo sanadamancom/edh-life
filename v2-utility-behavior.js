@@ -4,10 +4,36 @@
   const diceMenu=document.getElementById('dm');
   const randomPlayer=document.getElementById('randomPlayer');
   let randomDismissArmed=false;
+  let lifeHoldPanel=null;
+  let lifeHoldTimer=0;
+  let lifeHoldPointerId=null;
 
   function clearRandomSelection(){
     randomDismissArmed=false;
     document.querySelectorAll('#app .p.random-selected').forEach(player=>player.classList.remove('random-selected'));
+  }
+
+  function clearLifeHoldHighlight(){
+    clearTimeout(lifeHoldTimer);
+    lifeHoldTimer=0;
+    lifeHoldPanel?.classList.remove('life-hold-selected');
+    lifeHoldPanel=null;
+    lifeHoldPointerId=null;
+  }
+
+  function startLifeHoldHighlight(event){
+    const life=event.target.closest?.('#app .life[data-life]');
+    if(!life)return;
+    if(event.pointerType==='mouse'&&event.button!==0)return;
+
+    clearLifeHoldHighlight();
+    lifeHoldPanel=life.closest('.p');
+    lifeHoldPointerId=event.pointerId;
+    lifeHoldPanel?.classList.add('life-hold-selected');
+
+    /* app.js opens the special-counter dialog after 300ms. Keep the shared
+       panel glow only while that long press is being recognized. */
+    lifeHoldTimer=setTimeout(clearLifeHoldHighlight,320);
   }
 
   function randomInt(max){
@@ -20,11 +46,20 @@
     return Math.floor(Math.random()*max);
   }
 
-  /* A random-player highlight is only a temporary result indicator. The next tap
-     anywhere clears it without consuming or blocking that tap's normal action. */
-  document.addEventListener('pointerdown',()=>{
+  /* Random selection and life long-press use the same panel-level highlight.
+     A random result lasts until the next tap; a life hold lasts only for the hold. */
+  document.addEventListener('pointerdown',event=>{
     if(randomDismissArmed)clearRandomSelection();
+    startLifeHoldHighlight(event);
   },true);
+  document.addEventListener('pointerup',event=>{
+    if(lifeHoldPointerId===event.pointerId)clearLifeHoldHighlight();
+  },true);
+  document.addEventListener('pointercancel',event=>{
+    if(lifeHoldPointerId===event.pointerId)clearLifeHoldHighlight();
+  },true);
+  window.addEventListener('blur',clearLifeHoldHighlight);
+  window.addEventListener('pagehide',clearLifeHoldHighlight);
 
   if(diceMenu){
     diceMenu.addEventListener('click',event=>{
@@ -40,6 +75,7 @@
       diceMenu?.classList.remove('show');
       document.querySelectorAll('.die').forEach(die=>die.remove());
       clearRandomSelection();
+      clearLifeHoldHighlight();
 
       const players=[...document.querySelectorAll('#app .p:not(.hide)')];
       if(!players.length)return;
@@ -78,6 +114,7 @@
       clearTimeout(timer);
       armed=false;
       clearRandomSelection();
+      clearLifeHoldHighlight();
       document.querySelectorAll('.die').forEach(die=>die.remove());
 
       try{

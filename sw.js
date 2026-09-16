@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v69-random-dismiss-anywhere';
+const CACHE_NAME='edh-life-v70-shared-player-highlight';
 const APP_SHELL=[
   './',
   './index.html',

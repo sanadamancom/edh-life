@@ -1,5 +1,6 @@
-/* v2 utility behavior visuals */
-html.layout-vertical-v2 #app .p.random-selected::after{
+/* v2 shared player-panel highlight visuals */
+html.layout-vertical-v2 #app .p.random-selected::after,
+html.layout-vertical-v2 #app .p.life-hold-selected::after{
   content:"";
   position:absolute;
   inset:5px;
@@ -11,13 +12,22 @@ html.layout-vertical-v2 #app .p.random-selected::after{
     inset 0 0 28px color-mix(in srgb,var(--pc) 34%,transparent),
     0 0 20px color-mix(in srgb,var(--pc) 82%,transparent),
     0 0 42px color-mix(in srgb,var(--pc) 46%,transparent);
-  opacity:.88;
+  opacity:.94;
+}
+
+html.layout-vertical-v2 #app .p.random-selected::after{
   animation:random-player-glow .72s ease-in-out 2;
 }
+
+html.layout-vertical-v2 #app .p.life-hold-selected::after{
+  animation:none;
+}
+
 @keyframes random-player-glow{
   0%,100%{opacity:.62;filter:brightness(1)}
   50%{opacity:1;filter:brightness(1.28)}
 }
+
 @media (prefers-reduced-motion:reduce){
   html.layout-vertical-v2 #app .p.random-selected::after{animation:none}
 }
