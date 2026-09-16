@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v79-player-state-tax-badges';
+const CACHE_NAME='edh-life-v80-owner-badges-top-no-card-tax';
 const APP_SHELL=[
   './',
   './index.html',
@@ -9,6 +9,7 @@ const APP_SHELL=[
   './v2-compact.css?v=13',
   './v2-utility.css?v=4',
   './v2-responsive.css?v=1',
+  './v2-owner-status.css?v=1',
   './layout.js?v=30',
   './app.js?v=33',
   './edh-features.js?v=2',
