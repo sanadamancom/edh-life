@@ -1,11 +1,11 @@
-const CACHE_NAME='edh-life-v52-center-controls';
+const CACHE_NAME='edh-life-v53-center-controls-clean';
 const APP_SHELL=[
   './',
   './index.html',
   './styles.css?v=33',
   './counters.css?v=34',
   './v2.css?v=1',
-  './v2-compact.css?v=2',
+  './v2-compact.css?v=3',
   './layout.js?v=30',
   './app.js?v=33',
   './edh-features.js?v=2',
