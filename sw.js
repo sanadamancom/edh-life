@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v75-fluid-seat-scale';
+const CACHE_NAME='edh-life-v76-fluid-seat-scale-tuned';
 const APP_SHELL=[
   './',
   './index.html',
@@ -14,7 +14,7 @@ const APP_SHELL=[
   './edh-features.js?v=2',
   './multitouch.js?v=4',
   './dice-extra.js?v=1',
-  './v2-fluid-scale.js?v=1',
+  './v2-fluid-scale.js?v=2',
   './v2-compact-interactions.js?v=2',
   './v2-utility-behavior.js?v=4',
   './v2-layout.js?v=1',
