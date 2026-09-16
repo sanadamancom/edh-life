@@ -2,62 +2,20 @@
   const head=document.head;
   if(!head)return;
 
-  function isInstalledDisplay(){
-    return matchMedia('(display-mode: standalone)').matches||
-      matchMedia('(display-mode: fullscreen)').matches||
-      navigator.standalone===true;
-  }
-
-  function readSafeTop(){
-    const fromLayout=Number(window.EDHStage?.state?.safe?.top)||0;
-    if(fromLayout>0)return fromLayout;
-    const probe=document.createElement('div');
-    probe.style.cssText='position:fixed;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top,0px)';
-    document.body.appendChild(probe);
-    const value=parseFloat(getComputedStyle(probe).paddingTop)||0;
-    probe.remove();
-    return value;
-  }
-
-  function syncFullStageHeight(){
+  /* Layout geometry is CSS-only in v2.
+     The board is always the real 100dvh viewport, with the utility band centered
+     on 50%. Safe areas are handled only as inner player-content padding. */
+  function resetStageGeometry(){
     const root=document.documentElement;
     const stage=document.getElementById('stage');
-    if(!root||!stage)return;
-
-    const vv=window.visualViewport;
-    const viewportHeight=Math.max(
-      document.documentElement.clientHeight||0,
-      window.innerHeight||0,
-      vv?(vv.height+Math.max(0,vv.offsetTop||0)):0
-    );
-    const screenHeight=Number(window.screen?.height)||0;
-    const safeTop=readSafeTop();
-
-    let fullHeight=isInstalledDisplay()&&screenHeight
-      ?Math.max(viewportHeight,screenHeight)
-      :viewportHeight;
-
-    /* The physical board is sized to the device display, not the inset content
-       viewport. iOS standalone starts fixed-position content below the top safe
-       inset, so move the whole stage upward by that inset. This keeps the 50%
-       centerline truly physical and prevents the bottom safe padding from falling
-       below the visible screen. Android keeps a zero correction. */
-    if(navigator.standalone===true&&safeTop>0){
-      fullHeight=Math.max(fullHeight,viewportHeight+safeTop);
+    root?.style.removeProperty('--stage-full-height');
+    if(stage){
+      stage.style.removeProperty('top');
+      delete stage.dataset.stageHeight;
+      delete stage.dataset.viewportHeight;
+      delete stage.dataset.safeTop;
+      delete stage.dataset.stageOriginCorrection;
     }
-
-    const measured=Math.ceil(fullHeight);
-    const stageOriginCorrection=navigator.standalone===true
-      ?Math.ceil(safeTop)
-      :0;
-
-    root.style.setProperty('--stage-full-height',`${measured}px`);
-    stage.style.setProperty('top',`${-stageOriginCorrection}px`,'important');
-
-    stage.dataset.stageHeight=String(measured);
-    stage.dataset.viewportHeight=String(Math.ceil(viewportHeight));
-    stage.dataset.safeTop=String(Math.ceil(safeTop));
-    stage.dataset.stageOriginCorrection=String(stageOriginCorrection);
   }
 
   function syncBottomBackdrop(){
@@ -101,16 +59,13 @@
   }
 
   function syncVisualFrame(){
-    syncFullStageHeight();
+    resetStageGeometry();
     syncBottomBackdrop();
   }
 
   syncVisualFrame();
-  window.addEventListener('resize',syncVisualFrame,{passive:true});
   window.addEventListener('orientationchange',syncVisualFrame,{passive:true});
   window.addEventListener('pageshow',syncVisualFrame,{passive:true});
-  window.visualViewport?.addEventListener('resize',syncVisualFrame,{passive:true});
-  window.visualViewport?.addEventListener('scroll',syncVisualFrame,{passive:true});
 
   const app=document.getElementById('app');
   if(app){
