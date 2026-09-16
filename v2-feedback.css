@@ -1,0 +1,35 @@
+/* v2 interaction feedback overrides. */
+html.layout-vertical-v2 .life.holding{
+  text-shadow:0 0 14px rgba(255,204,102,.36),0 6px 18px #0006!important;
+}
+
+html.layout-vertical-v2 .life.holding::after{
+  content:"";
+  position:absolute!important;
+  inset:auto 16% 4px 16%!important;
+  height:4px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:999px!important;
+  background:linear-gradient(90deg,var(--warn),#ffe8a6)!important;
+  -webkit-mask:none!important;
+  mask:none!important;
+  -webkit-mask-composite:initial!important;
+  mask-composite:initial!important;
+  filter:drop-shadow(0 0 5px rgba(255,204,102,.38))!important;
+  transform:scaleX(0);
+  transform-origin:left center;
+  animation:v2-life-hold-bar 600ms linear forwards!important;
+}
+
+@keyframes v2-life-hold-bar{
+  from{transform:scaleX(0)}
+  to{transform:scaleX(1)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  html.layout-vertical-v2 .life.holding::after{
+    transform:scaleX(1);
+    animation:none!important;
+  }
+}
