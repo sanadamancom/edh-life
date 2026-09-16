@@ -1,11 +1,11 @@
-const CACHE_NAME='edh-life-v63-css-viewport-geometry';
+const CACHE_NAME='edh-life-v64-equal-commander-card-height';
 const APP_SHELL=[
   './',
   './index.html',
   './styles.css?v=33',
   './counters.css?v=34',
   './v2.css?v=1',
-  './v2-compact.css?v=11',
+  './v2-compact.css?v=12',
   './layout.js?v=30',
   './app.js?v=33',
   './edh-features.js?v=2',
