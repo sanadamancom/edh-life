@@ -5,6 +5,7 @@ const APP_SHELL=[
   './styles.css?v=33',
   './counters.css?v=34',
   './v2.css?v=1',
+  './v2-base.css?v=1',
   './v2-compact.css?v=13',
   './v2-feedback.css?v=1',
   './v2-utility.css?v=1',
