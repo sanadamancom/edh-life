@@ -1,10 +1,11 @@
-const CACHE_NAME='edh-life-v67-full-reset-random-glow';
+const CACHE_NAME='edh-life-v68-stable-boot-assets';
 const APP_SHELL=[
   './',
   './index.html',
   './styles.css?v=33',
   './counters.css?v=34',
   './v2.css?v=1',
+  './v2-base.css?v=1',
   './v2-compact.css?v=13',
   './v2-feedback.css?v=1',
   './v2-utility.css?v=1',
@@ -19,6 +20,7 @@ const APP_SHELL=[
   './manifest.webmanifest',
   './icon.svg'
 ];
+const NETWORK_FIRST_DESTINATIONS=new Set(['style','script','worker']);
 
 self.addEventListener('install',event=>{
   event.waitUntil(
@@ -52,6 +54,22 @@ self.addEventListener('fetch',event=>{
           return response;
         })
         .catch(()=>caches.match('./index.html'))
+    );
+    return;
+  }
+
+  const requestUrl=new URL(event.request.url);
+  if(requestUrl.origin===self.location.origin&&NETWORK_FIRST_DESTINATIONS.has(event.request.destination)){
+    event.respondWith(
+      fetch(event.request)
+        .then(response=>{
+          if(response&&response.status===200&&response.type!=='opaque'){
+            const copy=response.clone();
+            caches.open(CACHE_NAME).then(cache=>cache.put(event.request,copy));
+          }
+          return response;
+        })
+        .catch(()=>caches.match(event.request))
     );
     return;
   }
