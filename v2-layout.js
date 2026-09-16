@@ -34,6 +34,9 @@
     document.getElementById('tableStateSettingRow')?.remove();
     document.querySelectorAll('.table-state-pick-target,.table-state-pick-current,.state-pick-target,.state-pick-current')
       .forEach(element=>element.classList.remove('table-state-pick-target','table-state-pick-current','state-pick-target','state-pick-current'));
+    const tableHelp=[...document.querySelectorAll('#helpOverlay .helpCard')]
+      .find(card=>card.querySelector('h3')?.textContent.trim()==='卓上状態');
+    tableHelp?.remove();
     window.__edhTableStatePickActive=()=>false;
   }
 
