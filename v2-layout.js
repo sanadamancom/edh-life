@@ -37,18 +37,27 @@
       ?Math.max(viewportHeight,screenHeight)
       :viewportHeight;
 
-    /* Keep the physical board full bleed. The gameplay grid itself is centered
-       from the exact 50% line of this height; safe areas never change seat size. */
+    /* The physical board is sized to the device display, not the inset content
+       viewport. iOS standalone starts fixed-position content below the top safe
+       inset, so move the whole stage upward by that inset. This keeps the 50%
+       centerline truly physical and prevents the bottom safe padding from falling
+       below the visible screen. Android keeps a zero correction. */
     if(navigator.standalone===true&&safeTop>0){
       fullHeight=Math.max(fullHeight,viewportHeight+safeTop);
     }
 
     const measured=Math.ceil(fullHeight);
+    const stageOriginCorrection=navigator.standalone===true
+      ?Math.ceil(safeTop)
+      :0;
+
     root.style.setProperty('--stage-full-height',`${measured}px`);
+    stage.style.setProperty('top',`${-stageOriginCorrection}px`,'important');
 
     stage.dataset.stageHeight=String(measured);
     stage.dataset.viewportHeight=String(Math.ceil(viewportHeight));
     stage.dataset.safeTop=String(Math.ceil(safeTop));
+    stage.dataset.stageOriginCorrection=String(stageOriginCorrection);
   }
 
   function syncBottomBackdrop(){
