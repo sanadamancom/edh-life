@@ -76,10 +76,10 @@
     }).observe(app,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style']});
   }
 
-  const loadScript=src=>new Promise((resolve,reject)=>{
+  const loadScript=(src,version)=>new Promise((resolve,reject)=>{
     if([...document.scripts].some(script=>script.src.includes(src))){resolve();return}
     const script=document.createElement('script');
-    script.src=`./${src}?v=2`;
+    script.src=`./${src}?v=${version}`;
     script.onload=resolve;
     script.onerror=reject;
     document.body.appendChild(script);
@@ -88,8 +88,8 @@
   (async()=>{
     try{
       retireTableStateUi();
-      await loadScript('v2-compact-interactions.js');
-      await loadScript('v2-utility-behavior.js');
+      await loadScript('v2-compact-interactions.js',2);
+      await loadScript('v2-utility-behavior.js',3);
       syncBottomBackdrop();
       window.addEventListener('edh-v2-layout',()=>{
         syncVisualFrame();
