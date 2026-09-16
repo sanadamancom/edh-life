@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v42-edh-states';
+const CACHE_NAME='edh-life-v43-pointer-release';
 const APP_SHELL=[
   './',
   './index.html',
