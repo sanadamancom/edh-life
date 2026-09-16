@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v46-portrait-v2';
+const CACHE_NAME='edh-life-v47-portrait-only';
 const APP_SHELL=[
   './',
   './index.html',
