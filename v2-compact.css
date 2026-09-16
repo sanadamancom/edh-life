@@ -33,13 +33,13 @@ html.layout-vertical-v2 #app.c2{
 html.layout-vertical-v2 #app.c2 .p:nth-child(1){grid-column:1;grid-row:1}
 html.layout-vertical-v2 #app.c2 .p:nth-child(2){grid-column:1;grid-row:3}
 
-/* The bottom seats no longer reserve toolbar space. Only the real device safe area remains. */
+/* The center band owns shared controls, so bottom seats no longer reserve OS safe-area space. */
 html.layout-vertical-v2 #app.c4 .p:nth-child(3) .pc,
 html.layout-vertical-v2 #app.c4 .p:nth-child(4) .pc,
 html.layout-vertical-v2 #app.c3 .p:nth-child(2) .pc,
 html.layout-vertical-v2 #app.c3 .p:nth-child(3) .pc,
 html.layout-vertical-v2 #app.c2 .p:nth-child(2) .pc{
-  padding-bottom:calc(var(--panel-pad) + var(--safe-bottom))!important;
+  padding-bottom:var(--panel-pad)!important;
 }
 
 /* Long-press makes ±5 redundant. Life now gets one large control row only. */
@@ -116,11 +116,13 @@ html.layout-vertical-v2 #tools{
   bottom:auto!important;
   gap:var(--tool-gap);
   max-width:calc(100vw - var(--safe-left) - var(--safe-right) - 8px);
-  padding:3px 5px;
+  padding:0;
   transform:translate(-50%,-50%)!important;
-  border-radius:15px;
-  background:#0d121be6;
-  box-shadow:0 4px 16px rgba(0,0,0,.38);
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  backdrop-filter:none;
 }
 html.layout-vertical-v2 #tools>button,
 html.layout-vertical-v2 .dw>button{
