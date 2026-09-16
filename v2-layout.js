@@ -89,7 +89,7 @@
     try{
       retireTableStateUi();
       await loadScript('v2-compact-interactions.js',2);
-      await loadScript('v2-utility-behavior.js',3);
+      await loadScript('v2-utility-behavior.js',4);
       syncBottomBackdrop();
       window.addEventListener('edh-v2-layout',()=>{
         syncVisualFrame();
