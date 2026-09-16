@@ -84,6 +84,14 @@
     head.appendChild(link);
   }
 
+  if(!document.querySelector('link[data-v2-feedback]')){
+    const link=document.createElement('link');
+    link.rel='stylesheet';
+    link.href='./v2-feedback.css?v=1';
+    link.dataset.v2Feedback='1';
+    head.appendChild(link);
+  }
+
   const loadScript=src=>new Promise((resolve,reject)=>{
     if([...document.scripts].some(script=>script.src.includes(src))){resolve();return}
     const script=document.createElement('script');
