@@ -7,23 +7,27 @@ EDH（Commander）用の卓上ライフカウンターWebアプリです。
 - 2〜4人対応
 - 初期ライフ40
 - ライフ操作は `−5 / −1 / LIFE / +1 / +5`
-- `±1 / ±5 / Commander Damage` は長押しで連続入力、複数箇所の同時タッチにも対応
+- ライフの `±1 / ±5` とCommander Damage `+1` は長押し連続入力、複数箇所の同時タッチにも対応
 - ライフ数字・Commander Damage・各種ボタンを表示領域に合わせて自動調整
 - 相手統率者ごとのCommander Damage管理
+- 通常画面のCommander Damage操作は大きい `+1` のみに絞り、減算は詳細画面で実施
 - Commander Damageの増減をライフへ自動反映
-- Commander Damageカード長押しで統率者詳細を表示
+- Commander Damageカード本体を長押しすると統率者詳細を表示
   - 単一統率者 / Partner 切り替え
   - Partner時は統率者A/BのCommander Damageを別々に管理
   - 統率者A/BのCommander Taxを別々に管理（2点刻み）
+- Commander Taxは0より大きいときだけ通常のCommander Damageカードにも `T+2` などで表示
 - Life 0以下 / 各Commander Damage 21以上 / Poison 10以上の敗北判定
 - 敗北時は `DEFEATED` の下に敗北理由を表示
 - ライフ数字長押しで特殊カウンター画面を開く
   - 毒カウンター
   - 経験カウンター
   - 速度（0〜4）
-  - Monarch
-  - Initiative
-- Monarch / Initiative は卓上でそれぞれ1人だけが保持し、通常画面には小さな状態バッジを表示
+- Monarch / Initiative は盤面中央の4分割パイで管理
+  - パイをタップして移動先選択モードへ
+  - プレイヤー領域をタップすると所有者を移動
+  - 現在の所有者を再度選ぶと解除
+  - 4人戦では所有者方向の1/4、3人戦・2人戦ではレイアウトに合わせて上半分 / 下半分を使用
 - 特殊カウンターは有効なものだけ通常画面にアイコン付きで表示
 - Undo
 - 右ツールバーのリセットは長押し時のみ実行
@@ -69,8 +73,10 @@ manifestの向き指定は `any` です。アプリ側では、横向きはそ�
 - 4人表示は常に2×2の均等分割
 - ライフ数字の大きさは値そのものではなく、プレイヤー領域の実幅から決定
 - 特殊カウンターは通常操作を圧迫しないよう長押し画面で編集し、通常画面には有効な値だけ表示
-- 単一統率者の通常UIは従来どおりとし、Partnerを有効にしたプレイヤーだけCommander DamageカードをA/Bの2段表示にする
-- Commander Taxは通常画面へ常設せず、Commander Damage長押しの詳細UI内だけで管理する
+- 単一統率者は大きいCommander Damage `+1` を1個だけ表示し、PartnerはA/Bそれぞれに大きい `+1` を1個ずつ表示
+- Commander Damageの減算、Partner切り替え、Commander Tax編集はCommander Damageカード長押しの詳細UIへまとめる
+- Commander Taxは通常画面では非0時だけ表示する
+- Monarch / Initiative はプレイヤー個別UIから切り離し、卓全体の中央UIとして扱う
 
 ## オフライン
 
