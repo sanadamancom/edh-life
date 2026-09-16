@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v85-sticky-counter-close';
+const CACHE_NAME='edh-life-v86-player-state-polish';
 const APP_SHELL=[
   './',
   './index.html',
@@ -9,7 +9,7 @@ const APP_SHELL=[
   './v2-compact.css?v=13',
   './v2-utility.css?v=4',
   './v2-responsive.css?v=2',
-  './v2-owner-status.css?v=3',
+  './v2-owner-status.css?v=4',
   './layout.js?v=30',
   './app.js?v=33',
   './edh-features.js?v=2',
