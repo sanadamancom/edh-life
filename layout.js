@@ -58,7 +58,7 @@
             <div class="helpTool"><b>フルスクリーン</b>対応ブラウザで切替。</div>
             <div class="helpTool"><b>ヘルプ</b>この画面を表示。</div>
             <div class="helpTool"><b>設定</b>人数・名前・色・卓状態UI。</div>
-          </div><p class="helpNote">縦向きはv2ネイティブレイアウト、横向きは従来レイアウトを使用します。</p></section>
+          </div><p class="helpNote">v2は縦型レイアウトのみを使用します。PWAでは縦向きを基本に表示します。</p></section>
         </div>
         <div class="acts"><button type="button" id="helpClose">閉じる</button></div>
       </div>`;
@@ -87,9 +87,6 @@
 
   setupHelp();
 
-  const DESIGN_W=844;
-  const BOARD_H=390;
-  const BASE_GAME_W=740;
   const clamp=(min,value,max)=>Math.min(max,Math.max(min,value));
 
   const viewportProbe=document.createElement('div');
@@ -124,11 +121,6 @@
     return {top:px(style.paddingTop),right:px(style.paddingRight),bottom:px(style.paddingBottom),left:px(style.paddingLeft)};
   }
 
-  function isPortraitLayout(){
-    const layout=getLayoutViewport();
-    return layout.h>layout.w;
-  }
-
   function getPlayerCount(){
     if(app.classList.contains('c2'))return 2;
     if(app.classList.contains('c3'))return 3;
@@ -145,7 +137,9 @@
     hub.style.top=`${app.offsetTop+app.offsetHeight/2}px`;
   }
 
-  function applyPortrait(viewport,safe){
+  function applyLayout(){
+    const viewport=getVisibleViewport();
+    const safe=getSafeInsets();
     const count=getPlayerCount();
     const toolGap=clamp(3,viewport.w*.009,6);
     const usableToolW=Math.max(220,viewport.w-safe.left-safe.right-18);
@@ -155,24 +149,24 @@
     const gameH=Math.max(1,viewport.h-safe.top-gameBottom);
     const playerW=count===2?gameW:gameW/2;
     const playerH=gameH/2;
-    const compact=playerH<310||playerW<175;
+    const compact=playerH<310||playerW<175||viewport.w>viewport.h;
 
-    const uiScale=clamp(.76,viewport.w/390,1.42);
-    const lifeSize=clamp(compact?52:60,Math.min(playerW*.46,playerH*.28),132);
-    const controlH=clamp(compact?28:34,playerH*.105,compact?36:46);
-    const lifeMinH=clamp(compact?48:58,playerH*.19,118);
-    const cmdRowH=clamp(compact?28:34,playerH*(compact?.105:.10),compact?34:46);
-    const cmdButtonH=clamp(compact?23:27,cmdRowH*.82,38);
-    const partnerRowH=clamp(compact?20:23,cmdRowH*.72,32);
-    const partnerButtonH=clamp(compact?20:23,partnerRowH*.94,31);
-    const nameSize=clamp(compact?12:13,playerW*.075,22);
-    const cmdNameSize=clamp(8.5,playerW*.052,13);
-    const cmdValueSize=clamp(15,playerW*.095,25);
-    const cmdButtonSize=clamp(12,playerW*.072,18);
-    const quickSize=clamp(15,playerW*.085,23);
-    const iconSize=clamp(24,playerW*.17,44);
-    const panelPad=clamp(4,playerW*.028,10);
-    const panelGap=clamp(3,playerH*.012,7);
+    const uiScale=clamp(.76,Math.min(viewport.w,viewport.h)/390,1.42);
+    const lifeSize=clamp(compact?48:60,Math.min(playerW*.46,playerH*.28),132);
+    const controlH=clamp(compact?26:34,playerH*.105,compact?36:46);
+    const lifeMinH=clamp(compact?44:58,playerH*.19,118);
+    const cmdRowH=clamp(compact?26:34,playerH*(compact?.105:.10),compact?34:46);
+    const cmdButtonH=clamp(compact?22:27,cmdRowH*.82,38);
+    const partnerRowH=clamp(compact?19:23,cmdRowH*.72,32);
+    const partnerButtonH=clamp(compact?19:23,partnerRowH*.94,31);
+    const nameSize=clamp(compact?11:13,playerW*.075,22);
+    const cmdNameSize=clamp(8,playerW*.052,13);
+    const cmdValueSize=clamp(14,playerW*.095,25);
+    const cmdButtonSize=clamp(11,playerW*.072,18);
+    const quickSize=clamp(14,playerW*.085,23);
+    const iconSize=clamp(22,playerW*.17,44);
+    const panelPad=clamp(3,playerW*.028,10);
+    const panelGap=clamp(2,playerH*.012,7);
     const controlGap=clamp(3,playerW*.025,7);
 
     setRoot('--board-w',`${viewport.w.toFixed(3)}px`);
@@ -220,61 +214,13 @@
     root.classList.add('v2-portrait','stage-native');
     root.classList.remove('v2-landscape','stage-rotated');
     root.classList.toggle('v2-compact',compact);
+    root.classList.toggle('v2-device-landscape',viewport.w>viewport.h);
 
-    window.EDHStage={state:{...viewport,safe,rotated:false,portraitV2:true,boardW:viewport.w,boardH:viewport.h,scale:1,gutterStart:0,gutterEnd:0,gameW,gameH,playerW,playerH,uiScale,controlScale:1,lifeSize,toolScale:1},update:applyLayout};
+    window.EDHStage={
+      state:{...viewport,safe,rotated:false,portraitV2:true,portraitOnly:true,boardW:viewport.w,boardH:viewport.h,scale:1,gutterStart:0,gutterEnd:0,gameW,gameH,playerW,playerH,uiScale,controlScale:1,lifeSize,toolScale:1},
+      update:applyLayout
+    };
     requestAnimationFrame(syncCenterHub);
-  }
-
-  function applyLandscape(viewport,safe){
-    const scale=Math.min(viewport.w,viewport.h)/BOARD_H;
-    const boardW=Math.min(DESIGN_W,Math.max(viewport.w,viewport.h)/Math.max(scale,.001));
-    const gutterStart=Math.max(8,Math.ceil(safe.left/Math.max(scale,.001))+4);
-    const initialEnd=Math.max(46,Math.ceil(safe.right/Math.max(scale,.001))+4);
-    const initialGameW=Math.max(1,boardW-gutterStart-initialEnd);
-    const initialUi=clamp(.48,initialGameW/BASE_GAME_W,1);
-    const initialTool=Math.max(.68,initialUi);
-    const gutterEnd=Math.max(initialEnd,42*initialTool+8);
-    const gameW=Math.max(1,boardW-gutterStart-gutterEnd);
-    const uiScale=clamp(.48,gameW/BASE_GAME_W,1);
-    const toolScale=Math.max(.68,uiScale);
-    const toolSize=42*toolScale;
-    const count=getPlayerCount();
-    const playerW=count===2?gameW:gameW/2;
-    const rowW=Math.max(1,playerW*.96);
-    const baseLife=96*uiScale;
-    const textWidthFactor=1.55;
-    const sideBudget=220;
-    const controlScale=Math.max(.38,Math.min(uiScale,(rowW-baseLife*textWidthFactor)/sideBudget));
-    const lifeSlot=Math.max(1,rowW-sideBudget*controlScale);
-    const lifeSize=Math.max(22,Math.min(baseLife,lifeSlot/textWidthFactor));
-
-    setRoot('--board-w',`${boardW.toFixed(3)}px`);
-    setRoot('--board-h',`${BOARD_H}px`);
-    setRoot('--board-scale',scale.toFixed(6));
-    setRoot('--board-rot','0deg');
-    setRoot('--board-left',`${(viewport.x+viewport.w/2).toFixed(3)}px`);
-    setRoot('--board-top',`${(viewport.y+viewport.h/2).toFixed(3)}px`);
-    setRoot('--gutter-start',`${gutterStart.toFixed(3)}px`);
-    setRoot('--gutter-end',`${gutterEnd.toFixed(3)}px`);
-
-    setStage('--ui-scale',uiScale.toFixed(4));
-    setStage('--control-scale',controlScale.toFixed(4));
-    setStage('--life-size',`${lifeSize.toFixed(3)}px`);
-    setStage('--tool-scale',toolScale.toFixed(4));
-    setStage('--tool-size',`${toolSize.toFixed(3)}px`);
-
-    root.classList.add('v2-landscape','stage-native');
-    root.classList.remove('v2-portrait','v2-compact','stage-rotated');
-
-    window.EDHStage={state:{...viewport,safe,rotated:false,portraitV2:false,boardW,boardH:BOARD_H,scale,gutterStart,gutterEnd,gameW,playerW,rowW,uiScale,controlScale,lifeSlot,lifeSize,toolScale},update:applyLayout};
-    requestAnimationFrame(syncCenterHub);
-  }
-
-  function applyLayout(){
-    const viewport=getVisibleViewport();
-    const safe=getSafeInsets();
-    if(isPortraitLayout())applyPortrait(viewport,safe);
-    else applyLandscape(viewport,safe);
   }
 
   let resizeTimer=0;
