@@ -92,6 +92,14 @@
     head.appendChild(link);
   }
 
+  if(!document.querySelector('link[data-v2-utility]')){
+    const link=document.createElement('link');
+    link.rel='stylesheet';
+    link.href='./v2-utility.css?v=1';
+    link.dataset.v2Utility='1';
+    head.appendChild(link);
+  }
+
   const loadScript=src=>new Promise((resolve,reject)=>{
     if([...document.scripts].some(script=>script.src.includes(src))){resolve();return}
     const script=document.createElement('script');
@@ -105,6 +113,7 @@
     try{
       retireTableStateUi();
       await loadScript('v2-compact-interactions.js');
+      await loadScript('v2-utility-behavior.js');
       syncBottomBackdrop();
       window.addEventListener('edh-v2-layout',()=>{
         syncVisualFrame();
