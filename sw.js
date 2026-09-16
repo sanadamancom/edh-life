@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v71-hold-progress-highlight';
+const CACHE_NAME='edh-life-v72-life-hold-refactor';
 const APP_SHELL=[
   './',
   './index.html',
@@ -7,15 +7,14 @@ const APP_SHELL=[
   './v2.css?v=1',
   './v2-base.css?v=1',
   './v2-compact.css?v=13',
-  './v2-feedback.css?v=2',
-  './v2-utility.css?v=2',
+  './v2-utility.css?v=3',
   './layout.js?v=30',
   './app.js?v=33',
   './edh-features.js?v=2',
   './multitouch.js?v=4',
   './dice-extra.js?v=1',
   './v2-compact-interactions.js?v=2',
-  './v2-utility-behavior.js?v=2',
+  './v2-utility-behavior.js?v=3',
   './v2-layout.js?v=1',
   './manifest.webmanifest',
   './icon.svg'
