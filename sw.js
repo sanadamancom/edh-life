@@ -1,10 +1,11 @@
-const CACHE_NAME='edh-life-v118-ui-polish-pass-2';
+const CACHE_NAME='edh-life-v119-startup-splash';
 const APP_SHELL=[
   './',
   './index.html',
   './styles.css?v=33',
   './counters.css?v=34',
   './v2.css?v=2',
+  './boot-splash.css?v=1',
   './v2-base.css?v=1',
   './v2-compact.css?v=13',
   './v2-utility.css?v=4',
