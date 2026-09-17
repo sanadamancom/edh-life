@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v117-ui-polish-pass-1';
+const CACHE_NAME='edh-life-v118-ui-polish-pass-2';
 const APP_SHELL=[
   './',
   './index.html',
@@ -10,7 +10,8 @@ const APP_SHELL=[
   './v2-utility.css?v=4',
   './v2-responsive.css?v=4',
   './v2-owner-status.css?v=5',
-  './v2-polish.css?v=1',
+  './v2-polish.css?v=2',
+  './v2-results.css?v=1',
   './layout.js?v=30',
   './app.js?v=33',
   './edh-features.js?v=2',
