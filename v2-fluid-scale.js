@@ -66,9 +66,10 @@
     const partnerValueFont=fit(17,21*nameScale,32);
     const partnerMarkFont=fit(9,9*nameScale,13);
 
-    /* Life is primary. Budget the real seat height after all persistent controls,
-       then let the number consume that remainder. 0.76 accounts for the actual
-       glyph box being shorter than the CSS font-size. Width remains the other cap. */
+    /* Life is primary. Budget the real seat height after all persistent controls.
+       Larger seats get a little extra glyph headroom because the very large life
+       numerals visually approach Commander Damage sooner than the nominal font box
+       suggests. This stays continuous: phone-sized seats keep the original ratio. */
     const opponents=Math.max(1,count-1);
     const commanderGap=fit(3,3*commanderScale,5);
     const commanderPadding=fit(4,6*commanderScale,9);
@@ -77,7 +78,9 @@
     const innerHeight=Math.max(1,seatHeight-safeEdge-panelPad*2);
     const fixedHeight=commanderBlock+(nameFont*1.05)+(panelGap*3)+controlHeight;
     const lifeSlot=Math.max(64,innerHeight-fixedHeight);
-    const lifeByHeight=lifeSlot/.76;
+    const largeSeatProgress=clamp((density-1)/.75,0,1);
+    const lifeGlyphRatio=.76+(.06*largeSeatProgress);
+    const lifeByHeight=lifeSlot/lifeGlyphRatio;
     const lifeByWidth=seatWidth*(count===2?.76:.68);
     const lifeFont=clamp(Math.min(lifeByHeight,lifeByWidth),64,320);
 
