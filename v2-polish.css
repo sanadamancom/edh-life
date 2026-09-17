@@ -13,11 +13,7 @@
   --fluid-player-die-size:70px;
 }
 
-/* Player presentation: preserve the existing four equal outer rectangles while
-   making their internal hierarchy clearer and more consistent. */
-html.layout-vertical-v2 #app .p{
-  border-color:rgba(0,0,0,.34);
-}
+html.layout-vertical-v2 #app .p{border-color:rgba(0,0,0,.34)}
 html.layout-vertical-v2 #app .name{
   max-width:78%;
   min-height:1.08em;
@@ -31,41 +27,29 @@ html.layout-vertical-v2 #app .lifeValue{
   text-shadow:0 5px 17px rgba(0,0,0,.38);
 }
 
-/* Life controls: one shared visual language with stronger press feedback but no
-   transform/size change, so repeated taps never make the layout jump. */
 html.layout-vertical-v2 #app .lifeRow .delta{
   border-color:var(--v2-control-line)!important;
   background:linear-gradient(180deg,var(--v2-control-bg-strong),var(--v2-control-bg))!important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.045),
-    0 3px 10px rgba(0,0,0,.14)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045),0 3px 10px rgba(0,0,0,.14)!important;
   transition:background-color 70ms linear,filter 70ms linear,border-color 70ms linear!important;
 }
-html.layout-vertical-v2 #app .lifeRow .delta .mi{
-  opacity:.92;
-}
+html.layout-vertical-v2 #app .lifeRow .delta .mi{opacity:.92}
 html.layout-vertical-v2 #app .lifeRow .delta:active{
   background:var(--v2-control-pressed)!important;
   border-color:rgba(255,255,255,.21)!important;
   filter:brightness(1.08);
 }
 
-/* Commander block: reduce nested-box noise while keeping each opponent clearly
-   separated. The outer frame is quiet; the tappable opponent cards carry focus. */
 html.layout-vertical-v2 #app .cmd{
   border-color:rgba(255,255,255,.09)!important;
   background:rgba(4,7,11,.28)!important;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
 }
-html.layout-vertical-v2 #app .cg{
-  gap:4px!important;
-}
+html.layout-vertical-v2 #app .cg{gap:4px!important}
 html.layout-vertical-v2 #app .cc{
   border-color:color-mix(in srgb,var(--c) 40%,rgba(255,255,255,.14))!important;
   background:linear-gradient(180deg,color-mix(in srgb,var(--c) 12%,#161b24),rgba(9,12,18,.92))!important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.035),
-    0 2px 7px rgba(0,0,0,.13);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 2px 7px rgba(0,0,0,.13);
 }
 html.layout-vertical-v2 #app .cc.commanderQuick .cw,
 html.layout-vertical-v2 #app .partnerCc>.cw{
@@ -88,7 +72,6 @@ html.layout-vertical-v2 #app .partnerRow{
   background:rgba(255,255,255,.04)!important;
 }
 
-/* Counter badges should read as compact status chips instead of floating text. */
 html.layout-vertical-v2 #app .counterBadge{
   border:1px solid rgba(255,255,255,.13)!important;
   border-radius:999px!important;
@@ -97,38 +80,24 @@ html.layout-vertical-v2 #app .counterBadge{
   backdrop-filter:blur(5px);
 }
 
-/* Center tools: keep the tray-free layout, but normalize every icon button to the
-   same surface and press state. */
-html.layout-vertical-v2 #tools{
-  gap:max(3px,var(--tool-gap))!important;
-}
+html.layout-vertical-v2 #tools{gap:max(3px,var(--tool-gap))!important}
 html.layout-vertical-v2 #tools>button,
 html.layout-vertical-v2 #tools>.dw>button{
   border-color:var(--v2-control-line)!important;
   background:linear-gradient(180deg,var(--v2-control-bg-strong),var(--v2-control-bg))!important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.045),
-    0 3px 10px rgba(0,0,0,.16)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045),0 3px 10px rgba(0,0,0,.16)!important;
   transition:background-color 70ms linear,filter 70ms linear,border-color 70ms linear!important;
 }
 html.layout-vertical-v2 #tools>button .mi,
-html.layout-vertical-v2 #tools>.dw>button .mi{
-  opacity:.9!important;
-}
+html.layout-vertical-v2 #tools>.dw>button .mi{opacity:.9!important}
 html.layout-vertical-v2 #tools>button:active,
 html.layout-vertical-v2 #tools>.dw>button:active{
   background:var(--v2-control-pressed)!important;
   border-color:rgba(255,255,255,.21)!important;
   filter:brightness(1.08);
 }
+html.layout-vertical-v2.layout-tablet{--tool-size:56px}
 
-/* On larger screens the old 60px tools read too heavily against the thin center
-   band. Keep the band geometry untouched and only quiet the button surfaces. */
-html.layout-vertical-v2.layout-tablet{
-  --tool-size:56px;
-}
-
-/* Menus launched from the center bar visually belong to the same control family. */
 html.layout-vertical-v2 #tools .dm{
   padding:5px!important;
   border:1px solid rgba(255,255,255,.14)!important;
@@ -142,22 +111,13 @@ html.layout-vertical-v2 #tools .dm button{
   border-radius:8px!important;
 }
 
-/* Roll results should be obvious without masking a large part of a player's UI. */
-html.layout-vertical-v2 .diceLayer .die:not(.coinTossResult){
-  box-shadow:0 8px 22px rgba(0,0,0,.34)!important;
-}
-html.layout-vertical-v2 .d20Die .face{
-  font-size:42px!important;
-}
+html.layout-vertical-v2 .diceLayer .die:not(.coinTossResult){box-shadow:0 8px 22px rgba(0,0,0,.34)!important}
+html.layout-vertical-v2 .d20Die .face{font-size:42px!important}
 html.layout-vertical-v2 #app .p.random-selected::after{
   border-width:3px!important;
-  box-shadow:
-    inset 0 0 20px color-mix(in srgb,var(--pc) 26%,transparent),
-    0 0 16px color-mix(in srgb,var(--pc) 68%,transparent)!important;
+  box-shadow:inset 0 0 20px color-mix(in srgb,var(--pc) 26%,transparent),0 0 16px color-mix(in srgb,var(--pc) 68%,transparent)!important;
 }
 
-/* Defeat state: keep underlying information readable, but make the state label
-   cleaner and easier to scan without enlarging its 90% safety box. */
 html.layout-vertical-v2 #app .p.defeated .pc::after{
   color:rgba(255,255,255,.88)!important;
   font-weight:950!important;
@@ -169,7 +129,10 @@ html.layout-vertical-v2 #app .p.defeated .pc>*:not(.dead){
   filter:saturate(.5) brightness(.84);
 }
 
-/* Dialogs: preserve existing dimensions, but tighten hierarchy and wording surfaces. */
+/* Table-state UI is intentionally retired in v2. Keep its stored data, but do not
+   expose a setting that has no visible control on the board. */
+html.layout-vertical-v2 #tableStateSettingRow{display:none!important}
+
 html.layout-vertical-v2 .commanderPanel .commanderContext{
   margin:3px auto 12px!important;
   padding:4px 10px;
@@ -184,7 +147,6 @@ html.layout-vertical-v2 .commanderUnit{
   background:rgba(7,10,15,.72)!important;
 }
 
-/* Pointer devices get discoverable focus/hover without changing touch geometry. */
 @media (hover:hover) and (pointer:fine){
   html.layout-vertical-v2 #app .lifeRow .delta:hover,
   html.layout-vertical-v2 #tools>button:hover,
@@ -192,15 +154,11 @@ html.layout-vertical-v2 .commanderUnit{
     border-color:rgba(255,255,255,.22)!important;
     filter:brightness(1.08);
   }
-  html.layout-vertical-v2 #app .cc:hover{
-    border-color:color-mix(in srgb,var(--c) 52%,rgba(255,255,255,.2))!important;
-  }
+  html.layout-vertical-v2 #app .cc:hover{border-color:color-mix(in srgb,var(--c) 52%,rgba(255,255,255,.2))!important}
 }
 
 @media (prefers-reduced-motion:reduce){
   html.layout-vertical-v2 #app .lifeRow .delta,
   html.layout-vertical-v2 #tools>button,
-  html.layout-vertical-v2 #tools>.dw>button{
-    transition:none!important;
-  }
+  html.layout-vertical-v2 #tools>.dw>button{transition:none!important}
 }
