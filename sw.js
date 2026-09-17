@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v106-defeated-dim-full-width';
+const CACHE_NAME='edh-life-v107-ipad-bottom-safe-area-fill';
 const APP_SHELL=[
   './',
   './index.html',
