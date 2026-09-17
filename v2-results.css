@@ -1,0 +1,29 @@
+/* Transient result overlays only. Never participates in board/player geometry. */
+html.layout-vertical-v2 .diceLayer .die.coinTossResult{
+  width:138px!important;
+  height:176px!important;
+  top:calc(50% - 22px)!important;
+}
+html.layout-vertical-v2 .diceLayer .die.coinTossResult .coinFlight,
+html.layout-vertical-v2 .diceLayer .die.coinTossResult .coinSettled{
+  width:120px!important;
+  height:120px!important;
+}
+html.layout-vertical-v2 .diceLayer .die.coinTossResult .coinGroundShadow{
+  width:86px!important;
+  height:18px!important;
+  filter:blur(7px)!important;
+}
+html.layout-vertical-v2 .diceLayer .die.coinTossResult .coinResultLabel{
+  min-width:62px!important;
+  padding:4px 11px 5px!important;
+  font-size:19px!important;
+}
+
+/* D6/D20 stay readable but no longer dominate the center utility band. */
+html.layout-vertical-v2 .diceLayer .die.center:not(.coinTossResult){
+  border-radius:18px!important;
+}
+html.layout-vertical-v2 .diceLayer .d20Die .face{
+  font-size:42px!important;
+}
