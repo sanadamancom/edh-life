@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v109-equal-visible-seat-geometry';
+const CACHE_NAME='edh-life-v110-safe-area-fill-equal-seats';
 const APP_SHELL=[
   './',
   './index.html',
