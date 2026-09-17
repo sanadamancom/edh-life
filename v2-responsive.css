@@ -25,6 +25,34 @@ html.layout-vertical-v2 #app.c2 .life{
   font-size:var(--fluid-life-font)!important;
 }
 
+/* Life digits must never participate in grid sizing. Keeping the value absolutely
+   centered prevents 3+ digits from changing the Commander Damage block geometry
+   before the JS width-fit has run. */
+html.layout-vertical-v2 .life{
+  position:relative!important;
+  min-width:0!important;
+  contain:layout paint;
+}
+html.layout-vertical-v2 .lifeValue{
+  position:absolute;
+  left:50%;
+  top:50%;
+  display:block;
+  width:max-content;
+  max-width:none;
+  margin:0;
+  padding:0!important;
+  white-space:nowrap;
+  line-height:.88;
+  transform:translate(-50%,-50%);
+  transform-origin:center center;
+  transition:none!important;
+}
+html.layout-vertical-v2 .life:active .lifeValue,
+html.layout-vertical-v2 .life.holding .lifeValue{
+  transform:translate(-50%,-50%);
+}
+
 html.layout-vertical-v2 .lifeRow .delta{
   min-height:var(--control-h)!important;
 }

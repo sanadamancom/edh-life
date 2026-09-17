@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v97-life-center-anchor';
+const CACHE_NAME='edh-life-v98-stable-life-fit';
 const APP_SHELL=[
   './',
   './index.html',
@@ -8,14 +8,14 @@ const APP_SHELL=[
   './v2-base.css?v=1',
   './v2-compact.css?v=13',
   './v2-utility.css?v=4',
-  './v2-responsive.css?v=2',
+  './v2-responsive.css?v=3',
   './v2-owner-status.css?v=5',
   './layout.js?v=30',
   './app.js?v=33',
   './edh-features.js?v=2',
   './multitouch.js?v=4',
   './dice-extra.js?v=1',
-  './v2-fluid-scale.js?v=6',
+  './v2-fluid-scale.js?v=7',
   './v2-compact-interactions.js?v=4',
   './v2-utility-behavior.js?v=5',
   './v2-quick-dice-coin.js?v=5',
@@ -67,7 +67,7 @@ self.addEventListener('fetch',event=>{
   const requestUrl=new URL(event.request.url);
   if(requestUrl.origin===self.location.origin&&NETWORK_FIRST_DESTINATIONS.has(event.request.destination)){
     event.respondWith(
-      fetch(event.request)
+      fetch(event.request,{cache:'reload'})
         .then(response=>{
           if(response&&response.status===200&&response.type!=='opaque'){
             const copy=response.clone();

@@ -21,57 +21,55 @@
     return {top:0,right:0,bottom:0,left:0};
   }
 
-  /* Use the rendered life slot as the final authority. The life glyph is pinned to
-     the exact center of that slot, then compressed only on X when necessary. This
-     avoids the previous behavior where the unscaled text box stayed left-anchored
-     and the visually scaled digits drifted toward / beyond the right edge. */
+  /* Apply the fitted life geometry in one layout pass. The CSS keeps .lifeValue
+     absolute from the start, so even before this runs a 3-digit total cannot alter
+     grid sizing or the Commander Damage panel. Reading width after the font write
+     forces the new size to resolve before the transform is applied. */
+  function applyRenderedLifeFit(){
+    const lives=[...app.querySelectorAll('.life')].filter(life=>life.clientWidth>0&&life.clientHeight>0);
+    if(!lives.length)return;
+
+    let fittedFont=lifeBaseFont;
+    for(const life of lives){
+      const verticalInset=clamp(life.clientHeight*.045,4,12);
+      fittedFont=Math.min(fittedFont,Math.max(1,life.clientHeight-verticalInset)/.96);
+    }
+    fittedFont=clamp(fittedFont,64,320);
+    root.style.setProperty('--fluid-life-font',px(fittedFont));
+
+    for(const life of lives){
+      const value=life.querySelector('.lifeValue');
+      if(!value)continue;
+
+      life.style.position='relative';
+      life.style.overflow='hidden';
+
+      value.style.position='absolute';
+      value.style.left='50%';
+      value.style.top='50%';
+      value.style.display='block';
+      value.style.width='max-content';
+      value.style.maxWidth='none';
+      value.style.margin='0';
+      value.style.padding='0';
+      value.style.whiteSpace='nowrap';
+      value.style.lineHeight='.88';
+      value.style.transformOrigin='center center';
+      value.style.transition='none';
+
+      const naturalWidth=Math.max(value.scrollWidth||0,value.offsetWidth||0,1);
+      const availableWidth=Math.max(1,life.clientWidth-12);
+      const xScale=clamp(availableWidth/naturalWidth,.30,1);
+      value.style.transform=`translate(-50%,-50%) scaleX(${xScale.toFixed(3)})`;
+      value.dataset.lifeXScale=xScale.toFixed(3);
+    }
+  }
+
   function syncRenderedLifeFit(){
     if(lifeFitFrame)cancelAnimationFrame(lifeFitFrame);
     lifeFitFrame=requestAnimationFrame(()=>{
       lifeFitFrame=0;
-      const lives=[...app.querySelectorAll('.life')].filter(life=>life.clientWidth>0&&life.clientHeight>0);
-      if(!lives.length)return;
-
-      let fittedFont=lifeBaseFont;
-      for(const life of lives){
-        /* Keep a small real rendered inset on both sides of the glyph. The parent
-           clips as a hard boundary, so life can never paint into +/- or Commander
-           Damage even when very large fonts have unusual glyph metrics. */
-        const verticalInset=clamp(life.clientHeight*.045,4,12);
-        fittedFont=Math.min(fittedFont,Math.max(1,life.clientHeight-verticalInset)/.96);
-      }
-      fittedFont=clamp(fittedFont,64,320);
-      root.style.setProperty('--fluid-life-font',px(fittedFont));
-
-      requestAnimationFrame(()=>{
-        for(const life of lives){
-          const value=life.querySelector('.lifeValue');
-          if(!value)continue;
-
-          life.style.position='relative';
-          life.style.overflow='hidden';
-
-          value.style.position='absolute';
-          value.style.left='50%';
-          value.style.top='50%';
-          value.style.display='block';
-          value.style.width='max-content';
-          value.style.maxWidth='none';
-          value.style.margin='0';
-          value.style.padding='0';
-          value.style.whiteSpace='nowrap';
-          value.style.lineHeight='.88';
-          value.style.transformOrigin='center center';
-
-          /* Layout width is measured before transform, so the fit is stable even
-             after repeated rerenders. Keep vertical size untouched; only X shrinks. */
-          const naturalWidth=Math.max(value.scrollWidth||0,value.offsetWidth||0,1);
-          const availableWidth=Math.max(1,life.clientWidth-12);
-          const xScale=clamp(availableWidth/naturalWidth,.42,1);
-          value.style.transform=`translate(-50%,-50%) scaleX(${xScale.toFixed(3)})`;
-          value.dataset.lifeXScale=xScale.toFixed(3);
-        }
-      });
+      applyRenderedLifeFit();
     });
   }
 
@@ -191,7 +189,20 @@
     syncRenderedLifeFit();
   }
 
+  /* app.js rebuilds #app for each mutation. Fit the new life nodes synchronously
+     before the browser can paint them; the observer below remains a safety net for
+     other code that changes life text directly. */
+  if(typeof render==='function'){
+    const renderBeforeLifeFit=render;
+    render=function(...args){
+      const result=renderBeforeLifeFit(...args);
+      applyRenderedLifeFit();
+      return result;
+    };
+  }
+
   syncFluidScale();
+  applyRenderedLifeFit();
   window.addEventListener('edh-v2-layout',syncFluidScale);
   window.addEventListener('resize',syncFluidScale,{passive:true});
   window.visualViewport?.addEventListener('resize',syncFluidScale,{passive:true});
