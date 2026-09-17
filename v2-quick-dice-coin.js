@@ -41,8 +41,10 @@
     #dm.dm{grid-template-columns:repeat(2,minmax(0,1fr))}
     #dm #randomPlayer{grid-column:1/-1}
 
-    /* Coin rendering is fully independent from the D6 result box. */
+    /* Coin rendering is fully independent from the D6 result box. Its horizontal
+       center is fixed for the whole lifetime of the toss. */
     .die.coinTossResult{
+      left:50%!important;
       top:calc(50% - 36px)!important;
       width:clamp(150px,calc(var(--tool-size) * 3.65),190px)!important;
       height:clamp(196px,calc(var(--tool-size) * 4.65),236px)!important;
@@ -51,6 +53,8 @@
       border-radius:0!important;
       background:transparent!important;
       box-shadow:none!important;
+      transform:translate(-50%,-50%)!important;
+      transition:none!important;
       animation:none!important;
       pointer-events:none
     }
@@ -58,21 +62,22 @@
       position:relative;
       width:100%;
       height:100%;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center
+      display:block
     }
     .coinFlight,
     .coinSettled{
-      position:relative;
+      position:absolute;
+      left:50%;
+      top:50%;
       z-index:2;
       width:clamp(132px,calc(var(--tool-size) * 3.18),164px);
       height:clamp(132px,calc(var(--tool-size) * 3.18),164px);
-      flex:0 0 auto
+      transform:translate(-50%,-50%)
     }
     .coinFlight{
       transform-origin:center;
+      transition:none!important;
+      animation:none!important;
       will-change:transform
     }
     .coinSettled{display:none}
@@ -148,10 +153,11 @@
       will-change:transform,opacity
     }
     .coinResultLabel{
-      position:relative;
+      position:absolute;
+      left:50%;
+      bottom:0;
       z-index:3;
       min-width:72px;
-      margin-top:10px;
       padding:5px 13px 6px;
       border:2px solid rgba(255,255,255,.72);
       border-radius:999px;
@@ -164,10 +170,10 @@
       letter-spacing:.08em;
       text-align:center;
       opacity:0;
-      transform:translateY(-3px) scale(.94);
+      transform:translateX(-50%) translateY(-3px) scale(.94);
       transition:opacity 150ms ease-out,transform 150ms ease-out
     }
-    .coinResultLabel.show{opacity:1;transform:translateY(0) scale(1)}
+    .coinResultLabel.show{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}
     .coinTossResult[data-side="heads"] .coinResultLabel{border-color:#f2d57f;color:#ffe7a5}
     .coinTossResult[data-side="tails"] .coinResultLabel{border-color:#d7ca98;color:#eee4b9}
     @media (prefers-reduced-motion:reduce){.coinResultLabel{transition:none}}
@@ -234,7 +240,7 @@
       /* Never reuse the animated transform for the result. The flight element is
          hidden and a separate untouched square element becomes the final coin. */
       flight.style.display='none';
-      flight.style.transform='';
+      flight.style.transform='translate(-50%,-50%)';
       flight.style.willChange='auto';
       settled.innerHTML=coinFaceMarkup(side);
       coin.classList.add('settled');
@@ -271,10 +277,10 @@
       }
       flight.classList.toggle('edge-on',projected<.22);
 
-      /* One simple motion: straight up from center and straight back down. */
+      /* Vertical-only toss: X is fixed at 50% by CSS and never animated. */
       const arc=Math.sin(Math.PI*t);
       const y=-(122*arc);
-      flight.style.transform=`translateY(${y.toFixed(1)}px) scaleY(${projected.toFixed(3)})`;
+      flight.style.transform=`translate(-50%,-50%) translateY(${y.toFixed(1)}px) scaleY(${projected.toFixed(3)})`;
 
       if(shadow){
         const shadowScale=.44+(.56*(1-arc));
