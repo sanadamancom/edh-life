@@ -74,8 +74,15 @@
   }
 
   function syncFluidScale(){
-    const width=Number(window.EDHStage?.state?.w)||(document.documentElement.clientWidth||window.innerWidth||1);
-    const height=Number(window.EDHStage?.state?.h)||(document.documentElement.clientHeight||window.innerHeight||1);
+    /* Use the real rendered board instead of documentElement.clientHeight. On iOS
+       standalone those values can differ by the safe-area/status-bar region; sizing
+       from the stage guarantees that the four equal CSS grid rows and all typography
+       are based on the same full-screen geometry. */
+    const stage=document.getElementById('stage');
+    const stageRect=stage?.getBoundingClientRect();
+    const appRect=app.getBoundingClientRect();
+    const width=Math.max(1,stageRect?.width||appRect.width||window.innerWidth||document.documentElement.clientWidth||1);
+    const height=Math.max(1,stageRect?.height||appRect.height||window.innerHeight||document.documentElement.clientHeight||1);
     const count=playerCount();
     const columns=count===2?1:2;
     const seatWidth=width/columns;
@@ -165,6 +172,12 @@
 
     if(window.EDHStage?.state){
       Object.assign(window.EDHStage.state,{
+        w:width,
+        h:height,
+        boardW:width,
+        boardH:height,
+        gameW:width,
+        gameH:height,
         seatScale:density,
         seatW:seatWidth,
         seatH:seatHeight,
