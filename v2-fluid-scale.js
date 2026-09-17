@@ -6,6 +6,8 @@
   const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
   const fit=(min,value,max)=>clamp(value,min,max);
   const px=value=>`${Math.round(value*100)/100}px`;
+  let lifeBaseFont=124;
+  let lifeFitFrame=0;
 
   function playerCount(){
     if(app.classList.contains('c2'))return 2;
@@ -17,6 +19,47 @@
     const known=window.EDHStage?.state?.safe;
     if(known)return known;
     return {top:0,right:0,bottom:0,left:0};
+  }
+
+  /* Use the rendered life slot as the final authority. The layout math below is
+     still useful for the base scale, but actual DOM geometry prevents large tablet
+     numerals from visually crowding the +/- row or Commander Damage. Multi-digit
+     values keep the same height and are compressed only on the X axis when needed. */
+  function syncRenderedLifeFit(){
+    if(lifeFitFrame)cancelAnimationFrame(lifeFitFrame);
+    lifeFitFrame=requestAnimationFrame(()=>{
+      lifeFitFrame=0;
+      const lives=[...app.querySelectorAll('.life')].filter(life=>life.clientWidth>0&&life.clientHeight>0);
+      if(!lives.length)return;
+
+      let fittedFont=lifeBaseFont;
+      for(const life of lives){
+        /* line-height is .88; .96 leaves visible breathing room around the glyphs. */
+        fittedFont=Math.min(fittedFont,life.clientHeight/.96);
+      }
+      fittedFont=clamp(fittedFont,64,320);
+      root.style.setProperty('--fluid-life-font',px(fittedFont));
+
+      requestAnimationFrame(()=>{
+        for(const life of lives){
+          const value=life.querySelector('.lifeValue');
+          if(!value)continue;
+          value.style.display='inline-block';
+          value.style.width='max-content';
+          value.style.maxWidth='none';
+          value.style.whiteSpace='nowrap';
+          value.style.transformOrigin='center center';
+
+          /* offsetWidth/scrollWidth are layout widths and are not changed by a
+             previous scaleX transform, so repeated fitting remains stable. */
+          const naturalWidth=Math.max(value.scrollWidth||0,value.offsetWidth||0,1);
+          const availableWidth=Math.max(1,life.clientWidth-12);
+          const xScale=clamp(availableWidth/naturalWidth,.42,1);
+          value.style.transform=`scaleX(${xScale.toFixed(3)})`;
+          value.dataset.lifeXScale=xScale.toFixed(3);
+        }
+      });
+    });
   }
 
   function syncFluidScale(){
@@ -67,9 +110,8 @@
     const partnerMarkFont=fit(9,9*nameScale,13);
 
     /* Life is primary. Budget the real seat height after all persistent controls.
-       Larger seats get a little extra glyph headroom because the very large life
-       numerals visually approach Commander Damage sooner than the nominal font box
-       suggests. This stays continuous: phone-sized seats keep the original ratio. */
+       Larger seats get a little extra glyph headroom; rendered geometry below is
+       the final cap, so this estimate can never force the number into other UI. */
     const opponents=Math.max(1,count-1);
     const commanderGap=fit(3,3*commanderScale,5);
     const commanderPadding=fit(4,6*commanderScale,9);
@@ -83,6 +125,7 @@
     const lifeByHeight=lifeSlot/lifeGlyphRatio;
     const lifeByWidth=seatWidth*(count===2?.76:.68);
     const lifeFont=clamp(Math.min(lifeByHeight,lifeByWidth),64,320);
+    lifeBaseFont=lifeFont;
 
     const toolSize=fit(46,52*toolScale,86);
     const toolGap=fit(3,4*toolScale,8);
@@ -131,6 +174,8 @@
         playerH:seatHeight
       });
     }
+
+    syncRenderedLifeFit();
   }
 
   syncFluidScale();
@@ -140,4 +185,5 @@
   window.addEventListener('orientationchange',syncFluidScale,{passive:true});
   window.addEventListener('pageshow',syncFluidScale,{passive:true});
   new MutationObserver(syncFluidScale).observe(app,{attributes:true,attributeFilter:['class']});
+  new MutationObserver(syncRenderedLifeFit).observe(app,{childList:true,subtree:true,characterData:true});
 })();
