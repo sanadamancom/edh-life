@@ -21,10 +21,35 @@
     return {top:0,right:0,bottom:0,left:0};
   }
 
-  /* Apply the fitted life geometry in one layout pass. The CSS keeps .lifeValue
-     absolute from the start, so even before this runs a 3-digit total cannot alter
-     grid sizing or the Commander Damage panel. Reading width after the font write
-     forces the new size to resolve before the transform is applied. */
+  function fitLifeElement(life){
+    if(!life||life.clientWidth<=0||life.clientHeight<=0)return;
+    const value=life.querySelector('.lifeValue');
+    if(!value)return;
+
+    life.style.position='relative';
+    life.style.overflow='hidden';
+
+    value.style.position='absolute';
+    value.style.left='50%';
+    value.style.top='50%';
+    value.style.display='block';
+    value.style.width='max-content';
+    value.style.maxWidth='none';
+    value.style.margin='0';
+    value.style.padding='0';
+    value.style.whiteSpace='nowrap';
+    value.style.lineHeight='.88';
+    value.style.transformOrigin='center center';
+    value.style.transition='none';
+
+    const naturalWidth=Math.max(value.scrollWidth||0,value.offsetWidth||0,1);
+    const availableWidth=Math.max(1,life.clientWidth-8);
+    const xScale=clamp(availableWidth/naturalWidth,.30,1);
+    value.style.transform=`translate(-50%,-50%) scaleX(${xScale.toFixed(3)})`;
+    value.dataset.lifeXScale=xScale.toFixed(3);
+  }
+
+  /* Full pass is needed only when seat geometry changes or #app is rebuilt. */
   function applyRenderedLifeFit(){
     const lives=[...app.querySelectorAll('.life')].filter(life=>life.clientWidth>0&&life.clientHeight>0);
     if(!lives.length)return;
@@ -37,32 +62,7 @@
     fittedFont=clamp(fittedFont,64,320);
     root.style.setProperty('--fluid-life-font',px(fittedFont));
 
-    for(const life of lives){
-      const value=life.querySelector('.lifeValue');
-      if(!value)continue;
-
-      life.style.position='relative';
-      life.style.overflow='hidden';
-
-      value.style.position='absolute';
-      value.style.left='50%';
-      value.style.top='50%';
-      value.style.display='block';
-      value.style.width='max-content';
-      value.style.maxWidth='none';
-      value.style.margin='0';
-      value.style.padding='0';
-      value.style.whiteSpace='nowrap';
-      value.style.lineHeight='.88';
-      value.style.transformOrigin='center center';
-      value.style.transition='none';
-
-      const naturalWidth=Math.max(value.scrollWidth||0,value.offsetWidth||0,1);
-      const availableWidth=Math.max(1,life.clientWidth-12);
-      const xScale=clamp(availableWidth/naturalWidth,.30,1);
-      value.style.transform=`translate(-50%,-50%) scaleX(${xScale.toFixed(3)})`;
-      value.dataset.lifeXScale=xScale.toFixed(3);
-    }
+    for(const life of lives)fitLifeElement(life);
   }
 
   function syncRenderedLifeFit(){
@@ -82,9 +82,6 @@
     const safe=currentSafeArea();
     const safeEdge=Math.max(Number(safe.top)||0,Number(safe.bottom)||0);
 
-    /* Phone reference seat. Scale continuously by how much of that complete seat
-       fits in the current seat. The limiting axis wins, so a wider tablet never
-       over-scales vertically. No phone/tablet device classification is involved. */
     let density=1;
     for(let i=0;i<4;i++){
       const toolProbe=fit(.88,density,1.68);
@@ -96,9 +93,6 @@
       density=clamp(Math.min(widthRatio,heightRatio),.86,1.75);
     }
 
-    /* Secondary UI grows with the seat too, but at slightly different rates.
-       Commander Damage grows a little slower so three opponent cards cannot steal
-       the life area; life itself is calculated from the remaining real space. */
     const toolScale=clamp(density,.88,1.68);
     const controlScale=clamp(density,.86,1.58);
     const commanderScale=clamp(1+(density-1)*.80,.90,1.48);
@@ -109,7 +103,7 @@
 
     const centerBand=fit(54,60*toolScale,96);
     const seatHeight=Math.max(1,(height-centerBand)/2);
-    const panelPad=fit(4,6*chromeScale,12);
+    const panelPad=fit(3,5*chromeScale,10);
     const panelGap=fit(3,4*chromeScale,8);
     const controlHeight=fit(40,46*controlScale,72);
     const commanderCardHeight=fit(44,50*commanderScale,74);
@@ -120,9 +114,6 @@
     const partnerValueFont=fit(17,21*nameScale,32);
     const partnerMarkFont=fit(9,9*nameScale,13);
 
-    /* Life is primary. Budget the real seat height after all persistent controls.
-       Larger seats get a little extra glyph headroom; rendered geometry below is
-       the final cap, so this estimate can never force the number into other UI. */
     const opponents=Math.max(1,count-1);
     const commanderGap=fit(3,3*commanderScale,5);
     const commanderPadding=fit(4,6*commanderScale,9);
@@ -134,20 +125,16 @@
     const largeSeatProgress=clamp((density-1)/.75,0,1);
     const lifeGlyphRatio=.76+(.06*largeSeatProgress);
     const lifeByHeight=lifeSlot/lifeGlyphRatio;
-    const lifeByWidth=seatWidth*(count===2?.76:.68);
+    const lifeByWidth=seatWidth*(count===2?.82:.80);
     const lifeFont=clamp(Math.min(lifeByHeight,lifeByWidth),64,320);
     lifeBaseFont=lifeFont;
 
     const toolSize=fit(46,52*toolScale,86);
     const toolGap=fit(3,4*toolScale,8);
     const controlIcon=fit(26,34*controlScale,52);
-
-    /* Status badges are intentionally more legible than before. They still use
-       the same continuous seat scale, so tablets grow them without device checks. */
     const badgeHeight=fit(24,26*badgeScale,40);
     const badgeFont=fit(12,14*badgeScale,21);
     const badgeIcon=fit(16,18*badgeScale,28);
-
     const dieSize=fit(84,92*diceScale,150);
     const playerDieSize=fit(72,78*diceScale,126);
 
@@ -189,9 +176,13 @@
     syncRenderedLifeFit();
   }
 
-  /* app.js rebuilds #app for each mutation. Fit the new life nodes synchronously
-     before the browser can paint them; the observer below remains a safety net for
-     other code that changes life text directly. */
+  /* Direct life changes can fit the edited value immediately, without waiting for
+     a MutationObserver/rAF round trip. */
+  window.__edhFitLifeValue=target=>{
+    const life=target?.classList?.contains('life')?target:target?.closest?.('.life');
+    fitLifeElement(life);
+  };
+
   if(typeof render==='function'){
     const renderBeforeLifeFit=render;
     render=function(...args){
@@ -209,5 +200,4 @@
   window.addEventListener('orientationchange',syncFluidScale,{passive:true});
   window.addEventListener('pageshow',syncFluidScale,{passive:true});
   new MutationObserver(syncFluidScale).observe(app,{attributes:true,attributeFilter:['class']});
-  new MutationObserver(syncRenderedLifeFit).observe(app,{childList:true,subtree:true,characterData:true});
 })();
