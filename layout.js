@@ -27,17 +27,16 @@
       <div class="modal helpPanel" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
         <div class="helpHead"><h2 id="helpTitle">使い方</h2><span>EDH LIFE v2</span></div>
         <div class="helpGrid">
-          <section class="helpCard"><h3>ライフ</h3><p><b>大きな数字</b>が現在ライフです。</p><p><b>−1 / +1 / −5 / +5</b>で増減。長押しで連続入力できます。</p><p>ライフ数字長押しで毒・経験・速度を編集します。</p></section>
-          <section class="helpCard"><h3>統率者ダメージ</h3><p>各カードは、そのプレイヤーの統率者から受けたダメージです。</p><p><b>+1</b>で加算。減算・Partner・Commander Taxはカード長押しで編集します。</p></section>
-          <section class="helpCard"><h3>卓上状態</h3><p>中央の8分割ハブで<b>Monarch / Initiative</b>を管理します。</p><p>中央の記号を選び、移動先プレイヤーをタップします。</p></section>
-          <section class="helpCard"><h3>特殊カウンター</h3><p>毒・経験・速度は値がある時だけプレイヤー名付近に表示します。</p><p>毒10、ライフ0、同一統率者から21点で敗北表示になります。</p></section>
+          <section class="helpCard"><h3>ライフ</h3><p><b>大きな数字</b>が現在ライフです。</p><p><b>− / ＋</b>で1点ずつ増減。長押しで連続入力できます。</p><p>ライフ数字を長押しすると、毒・経験・速度を編集できます。</p></section>
+          <section class="helpCard"><h3>統率者ダメージ</h3><p>各カードは、そのプレイヤーが相手の統率者から受けたダメージです。</p><p>カードをタップで+1。長押しすると減算・Partner・Commander Taxを編集できます。</p></section>
+          <section class="helpCard"><h3>特殊カウンター</h3><p>毒・経験・速度は、値がある時だけプレイヤー名付近に表示します。</p><p>毒10、ライフ0、同一統率者から21点で敗北表示になります。</p></section>
           <section class="helpCard helpTools"><h3>操作ボタン</h3><div class="helpToolsGrid">
             <div class="helpTool"><b>Undo</b>直前の変更を戻す</div>
-            <div class="helpTool"><b>ダイス</b>D6 / D20 / コイン / 抽選</div>
+            <div class="helpTool"><b>ダイス</b>タップでD6、長押しでその他</div>
+            <div class="helpTool"><b>コイン</b>コイントス</div>
             <div class="helpTool"><b>リセット</b>長押しでゲーム値を初期化</div>
             <div class="helpTool"><b>フルスクリーン</b>対応環境で切替</div>
-            <div class="helpTool"><b>ヘルプ</b>この画面</div>
-            <div class="helpTool"><b>設定</b>人数・名前・色・卓状態UI</div>
+            <div class="helpTool"><b>設定</b>人数・名前・色を変更</div>
           </div></section>
         </div>
         <div class="acts"><button type="button" id="helpClose">閉じる</button></div>
