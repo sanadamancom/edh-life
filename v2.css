@@ -4,19 +4,19 @@
 @import url('./v2-responsive.css?v=4');
 @import url('./v2-owner-status.css?v=5');
 
-/* Final horizontal-density override. Keep player content close to the seat edges. */
+/* Final horizontal-density override. Keep a modest gutter around player controls. */
 html.layout-vertical-v2 #app .pc{
   padding-left:4px!important;
   padding-right:4px!important;
 }
 html.layout-vertical-v2 #app .pc>.lifeRow,
 html.layout-vertical-v2 #app .pc>.cmd{
-  width:100%!important;
+  width:90%!important;
   max-width:none!important;
-  margin-left:0!important;
-  margin-right:0!important;
-  justify-self:stretch!important;
-  align-self:stretch!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  justify-self:center!important;
+  align-self:center!important;
 }
 html.layout-vertical-v2 #app .pc>.lifeRow{
   grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
