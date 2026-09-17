@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v103-full-grid-track-80-content';
+const CACHE_NAME='edh-life-v104-full-grid-track-86-content';
 const APP_SHELL=[
   './',
   './index.html',
