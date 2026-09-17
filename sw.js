@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v119-startup-splash';
+const CACHE_NAME='edh-life-v120-life-hold-acceleration';
 const APP_SHELL=[
   './',
   './index.html',
