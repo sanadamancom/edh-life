@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v100-full-width-player-panels';
+const CACHE_NAME='edh-life-v101-mid-width-player-panels';
 const APP_SHELL=[
   './',
   './index.html',
