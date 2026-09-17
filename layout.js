@@ -7,9 +7,6 @@
   root.classList.add('layout-vertical-v2','stage-native');
   root.classList.remove('v2-portrait','v2-landscape','v2-compact','v2-device-landscape','stage-rotated');
 
-  const safeDebug=new URLSearchParams(location.search).get('debug')==='safe';
-  let safeDebugUi=null;
-
   function setupHelp(){
     const tools=document.getElementById('tools');
     const settingsButton=document.getElementById('set');
@@ -61,115 +58,34 @@
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&overlay.classList.contains('show'))close()});
   }
 
-  function readSafeArea(){
-    const probe=document.createElement('div');
-    probe.style.cssText='position:fixed;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)';
-    document.body.appendChild(probe);
-    const style=getComputedStyle(probe);
-    const safe={
-      top:parseFloat(style.paddingTop)||0,
-      right:parseFloat(style.paddingRight)||0,
-      bottom:parseFloat(style.paddingBottom)||0,
-      left:parseFloat(style.paddingLeft)||0
+  function setupGeometryDebug(){
+    if(new URLSearchParams(location.search).get('debug')!=='safe')return;
+    const debug=document.createElement('pre');
+    debug.id='safeAreaDebug';
+    debug.style.cssText='position:fixed;left:8px;top:8px;z-index:99999;pointer-events:none;margin:0;padding:6px 8px;border-radius:8px;background:rgba(0,0,0,.72);color:#fff;font:700 11px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap';
+    document.body.appendChild(debug);
+
+    const update=()=>{
+      const state=window.EDHStage?.state;
+      const vv=window.visualViewport;
+      if(!state){debug.textContent='geometry: waiting';return}
+      debug.textContent=[
+        `board: ${Math.round(state.boardW)} × ${Math.round(state.boardH)}`,
+        `visible: ${Math.round(state.w)} × ${Math.round(state.viewportH)}`,
+        `tail: ${Math.round(state.omittedBottomSafe||0)}`,
+        `safe: ${Math.round(state.safe?.top||0)} / ${Math.round(state.safe?.right||0)} / ${Math.round(state.safe?.bottom||0)} / ${Math.round(state.safe?.left||0)}`,
+        `player: ${Math.round(state.playerW)} × ${Math.round(state.playerH)}`,
+        `visualViewport: ${vv?`${Math.round(vv.width)} × ${Math.round(vv.height)}`:'n/a'}`,
+        `screen: ${screen.width} × ${screen.height}`,
+        `standalone: ${state.standalone}`
+      ].join('\n');
     };
-    probe.remove();
-    return safe;
+    window.addEventListener('edh-v2-layout',update);
+    update();
   }
 
-  function setupSafeDebug(){
-    if(!safeDebug)return;
-    const wrap=document.createElement('div');
-    wrap.id='safeAreaDebug';
-    wrap.style.cssText='position:fixed;inset:0;z-index:99999;pointer-events:none;font:700 11px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;color:#fff;text-shadow:0 1px 2px #000';
-    wrap.innerHTML='<div data-safe="top" style="position:absolute;left:0;right:0;top:0;background:rgba(255,50,50,.28);border-bottom:1px solid rgba(255,100,100,.9)"></div><div data-safe="bottom" style="position:absolute;left:0;right:0;bottom:0;background:rgba(60,130,255,.28);border-top:1px solid rgba(100,170,255,.9)"></div><pre data-safe="info" style="position:absolute;left:8px;top:8px;margin:0;padding:6px 8px;border-radius:8px;background:rgba(0,0,0,.72);white-space:pre-wrap"></pre>';
-    document.body.appendChild(wrap);
-    safeDebugUi={
-      top:wrap.querySelector('[data-safe="top"]'),
-      bottom:wrap.querySelector('[data-safe="bottom"]'),
-      info:wrap.querySelector('[data-safe="info"]')
-    };
-  }
-
-  function syncSafeDebug(width,height,safe,boardHeight=height){
-    if(!safeDebugUi)return;
-    const vv=window.visualViewport;
-    safeDebugUi.top.style.height=`${safe.top}px`;
-    safeDebugUi.bottom.style.height=`${safe.bottom}px`;
-    safeDebugUi.info.textContent=[
-      `safe top: ${safe.top.toFixed(1)}px`,
-      `safe bottom: ${safe.bottom.toFixed(1)}px`,
-      `safe left/right: ${safe.left.toFixed(1)} / ${safe.right.toFixed(1)}px`,
-      `client: ${Math.round(width)} × ${Math.round(height)}`,
-      `board height: ${Math.round(boardHeight)}`,
-      `innerHeight: ${Math.round(window.innerHeight)}`,
-      `visualViewport: ${vv?`${Math.round(vv.width)} × ${Math.round(vv.height)} @ ${Math.round(vv.offsetTop)}`:'n/a'}`,
-      `screen: ${screen.width} × ${screen.height} @${devicePixelRatio}x`,
-      `standalone: ${matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}`
-    ].join('\n');
-  }
-
-  function syncViewport(){
-    const width=document.documentElement.clientWidth||window.innerWidth||1;
-    const viewportHeight=document.documentElement.clientHeight||window.innerHeight||1;
-    const safe=readSafeArea();
-    const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
-    const physicalScreenHeight=Number(window.screen?.height)||0;
-    const screenGap=Math.max(0,physicalScreenHeight-viewportHeight);
-    const reportedBottomSafe=Math.max(0,Number(safe.bottom)||0);
-    const smallUnreportedGap=screenGap>0&&screenGap<=48?screenGap:0;
-    const omittedBottomSafe=standalone
-      ?Math.min(screenGap,Math.max(reportedBottomSafe,smallUnreportedGap))
-      :0;
-    const height=viewportHeight+omittedBottomSafe;
-
-    /* The game geometry uses the full visible screen. When iOS omits the lower
-       safe-area strip from the CSS viewport, CSS paints that strip as the clipped
-       continuation of the two lower player panels. */
-    root.style.setProperty('--stage-full-height',`${height}px`);
-    root.style.setProperty('--safe-fill-gap',`${omittedBottomSafe}px`);
-    root.classList.toggle('has-omitted-bottom-safe',omittedBottomSafe>.5);
-
-    root.classList.toggle('layout-short',height<700);
-    root.classList.toggle('layout-tablet',Math.min(width,height)>=600);
-    window.EDHStage={
-      state:{
-        w:width,
-        h:height,
-        viewportH:viewportHeight,
-        omittedBottomSafe,
-        x:0,
-        y:0,
-        safe,
-        rotated:false,
-        portraitV2:true,
-        portraitOnly:true,
-        boardW:width,
-        boardH:height,
-        scale:1,
-        gameW:width,
-        gameH:height,
-        playerW:app.classList.contains('c2')?width:width/2,
-        playerH:height/2
-      },
-      update:syncViewport
-    };
-    syncSafeDebug(width,viewportHeight,safe,height);
-    window.dispatchEvent(new CustomEvent('edh-v2-layout'));
-  }
-
+  /* Geometry is deliberately not calculated here. viewport-sync.js is the one
+     owner of board size, player size and safe-area geometry. */
   setupHelp();
-  setupSafeDebug();
-  syncViewport();
-
-  let resizeTimer=0;
-  const schedule=()=>{
-    clearTimeout(resizeTimer);
-    resizeTimer=setTimeout(syncViewport,80);
-  };
-  window.addEventListener('resize',schedule,{passive:true});
-  window.visualViewport?.addEventListener('resize',schedule,{passive:true});
-  window.visualViewport?.addEventListener('scroll',schedule,{passive:true});
-  window.addEventListener('orientationchange',schedule,{passive:true});
-  window.addEventListener('pageshow',syncViewport,{passive:true});
-  new MutationObserver(syncViewport).observe(app,{attributes:true,attributeFilter:['class']});
+  setupGeometryDebug();
 })();
