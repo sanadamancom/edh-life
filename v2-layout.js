@@ -4,7 +4,8 @@
 
   /* The board height is owned by layout.js. It represents the full visible table,
      including any bottom safe-area strip omitted from 100dvh. v2.css keeps the
-     renderable stage at 100dvh and accounts for that strip in the bottom row. */
+     renderable stage at 100dvh and paints the omitted strip as a continuation of
+     the lower seats. */
   function resetStageGeometry(){
     const stage=document.getElementById('stage');
     if(stage){
@@ -37,16 +38,22 @@
         player.style.getPropertyValue('--pc').trim()||'#0d0f14';
       return `linear-gradient(${color},${color})`;
     };
+    const dimOf=player=>player?.classList.contains('defeated')
+      ?'rgba(4,6,9,.24)'
+      :'rgba(0,0,0,0)';
 
-    const left=backgroundImageOf(bottom[0]);
-    const right=backgroundImageOf(bottom[1]||bottom[0]);
+    const leftPlayer=bottom[0];
+    const rightPlayer=bottom[1]||bottom[0];
+    const left=backgroundImageOf(leftPlayer);
+    const right=backgroundImageOf(rightPlayer);
     root.style.setProperty('--safe-fill-left-bg',left);
     root.style.setProperty('--safe-fill-right-bg',right);
+    root.style.setProperty('--safe-fill-left-dim',dimOf(leftPlayer));
+    root.style.setProperty('--safe-fill-right-dim',dimOf(rightPlayer));
 
-    /* iPad standalone can expose the omitted home-indicator strip using the page
-       canvas rather than a DOM box. Give html/body the same two lower-seat halves
-       so that canvas is painted too, while the pseudo-element handles engines that
-       allow drawing into the omitted safe-area strip directly. */
+    /* Keep the page canvas as a fallback for iOS variants that expose the system
+       safe area through the root canvas. The stage pseudo-element is the primary
+       renderer and preserves the exact lower-seat gradient continuation. */
     const pageBackground=`${left}, ${right}`;
     const applyPageBackdrop=element=>{
       if(!element)return;
