@@ -88,7 +88,8 @@
   (async()=>{
     try{
       retireTableStateUi();
-      await loadScript('v2-fluid-scale.js',7);
+      await loadScript('v2-fluid-scale.js',8);
+      await loadScript('v2-life-stability.js',1);
       await loadScript('v2-compact-interactions.js',4);
       await loadScript('v2-utility-behavior.js',5);
       await loadScript('v2-quick-dice-coin.js',5);
