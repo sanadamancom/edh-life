@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v107-ipad-bottom-safe-area-fill';
+const CACHE_NAME='edh-life-v108-equal-player-geometry';
 const APP_SHELL=[
   './',
   './index.html',
@@ -15,7 +15,7 @@ const APP_SHELL=[
   './edh-features.js?v=2',
   './multitouch.js?v=5',
   './dice-extra.js?v=1',
-  './v2-fluid-scale.js?v=8',
+  './v2-fluid-scale.js?v=9',
   './v2-life-stability.js?v=1',
   './v2-compact-interactions.js?v=4',
   './v2-utility-behavior.js?v=5',
