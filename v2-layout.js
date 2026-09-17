@@ -2,9 +2,8 @@
   const head=document.head;
   if(!head)return;
 
-  /* The board height is owned by layout.js. It represents the full visible table,
-     including any bottom safe-area strip omitted from 100dvh. v2.css keeps the
-     renderable stage at 100dvh and paints the omitted strip as a continuation of
+  /* The board height is owned by viewport-sync.js. layout.js still provides
+     setup/help behavior, while this layer keeps the page backdrop aligned with
      the lower seats. */
   function resetStageGeometry(){
     const stage=document.getElementById('stage');
@@ -51,9 +50,6 @@
     root.style.setProperty('--safe-fill-left-dim',dimOf(leftPlayer));
     root.style.setProperty('--safe-fill-right-dim',dimOf(rightPlayer));
 
-    /* Keep the page canvas as a fallback for iOS variants that expose the system
-       safe area through the root canvas. The stage pseudo-element is the primary
-       renderer and preserves the exact lower-seat gradient continuation. */
     const pageBackground=`${left}, ${right}`;
     const applyPageBackdrop=element=>{
       if(!element)return;
@@ -82,6 +78,7 @@
 
   function syncVisualFrame(){
     resetStageGeometry();
+    window.EDHViewportSync?.();
     syncBottomBackdrop();
   }
 
@@ -110,6 +107,8 @@
   (async()=>{
     try{
       retireTableStateUi();
+      await loadScript('viewport-sync.js',1);
+      window.EDHViewportSync?.();
       await loadScript('v2-fluid-scale.js',9);
       await loadScript('v2-life-stability.js',1);
       await loadScript('v2-compact-interactions.js',4);
