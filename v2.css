@@ -36,8 +36,18 @@ html.layout-vertical-v2 #app .pc>.cmd .cc{
   max-width:none!important;
 }
 
-/* Keep the defeat banner inside each player's panel instead of letting the word
-   extend into the neighboring seat. */
+/* Defeat dimming covers the entire player panel, while the DEFEATED word itself
+   stays constrained to 90% so it never spills into the neighboring seat. */
+html.layout-vertical-v2 #app .p.defeated .pc::before{
+  content:"";
+  position:absolute;
+  inset:0!important;
+  z-index:7;
+  width:100%!important;
+  height:100%!important;
+  pointer-events:none;
+  background:rgba(4,6,9,.24);
+}
 html.layout-vertical-v2 #app .p.defeated .pc::after{
   left:5%!important;
   right:auto!important;
@@ -50,4 +60,5 @@ html.layout-vertical-v2 #app .p.defeated .pc::after{
   text-align:center!important;
   font-size:clamp(24px,7.2vw,32px)!important;
   letter-spacing:.08em!important;
+  background:transparent!important;
 }
