@@ -74,8 +74,8 @@
   }
 
   function syncFluidScale(){
-    const width=document.documentElement.clientWidth||window.innerWidth||1;
-    const height=document.documentElement.clientHeight||window.innerHeight||1;
+    const width=Number(window.EDHStage?.state?.w)||(document.documentElement.clientWidth||window.innerWidth||1);
+    const height=Number(window.EDHStage?.state?.h)||(document.documentElement.clientHeight||window.innerHeight||1);
     const count=playerCount();
     const columns=count===2?1:2;
     const seatWidth=width/columns;
