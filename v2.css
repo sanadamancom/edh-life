@@ -4,6 +4,21 @@
 @import url('./v2-responsive.css?v=4');
 @import url('./v2-owner-status.css?v=5');
 
+/* Some iPad standalone/web-app viewports report 100dvh only up to the top of the
+   bottom safe area. Paint that external safe-area strip without changing the game's
+   layout height, so tablet geometry remains identical to the phone layout. */
+html.layout-vertical-v2 body::after{
+  content:"";
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:calc(-1 * env(safe-area-inset-bottom,0px));
+  height:env(safe-area-inset-bottom,0px);
+  z-index:2147483647;
+  pointer-events:none;
+  background:var(--bg);
+}
+
 /* Player content must use the full grid track. Legacy .pc kept justify-content:center,
    which made the implicit grid column shrink to its contents and created large unused
    gutters. Keep the grid track full-width and use a modest inset for controls/cards. */
