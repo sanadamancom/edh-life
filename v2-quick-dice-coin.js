@@ -11,6 +11,7 @@
      in the long-press menu. */
   document.getElementById('one')?.remove();
   document.getElementById('coin')?.remove();
+  document.getElementById('coinQuick')?.remove();
 
   const style=document.createElement('style');
   style.id='v2-quick-dice-coin-style';
@@ -40,8 +41,9 @@
     #dm.dm{grid-template-columns:repeat(2,minmax(0,1fr))}
     #dm #randomPlayer{grid-column:1/-1}
 
-    /* Coin result has its own geometry. It does not inherit the D6 box. */
+    /* Coin rendering is fully independent from the D6 result box. */
     .die.coinTossResult{
+      top:calc(50% - 36px)!important;
       width:clamp(150px,calc(var(--tool-size) * 3.65),190px)!important;
       height:clamp(196px,calc(var(--tool-size) * 4.65),236px)!important;
       overflow:visible!important;
@@ -61,15 +63,23 @@
       align-items:center;
       justify-content:center
     }
-    .coinRotor{
+    .coinFlight,
+    .coinSettled{
       position:relative;
       z-index:2;
       width:clamp(132px,calc(var(--tool-size) * 3.18),164px);
       height:clamp(132px,calc(var(--tool-size) * 3.18),164px);
+      flex:0 0 auto
+    }
+    .coinFlight{
       transform-origin:center;
       will-change:transform
     }
-    .coinStaticFace{
+    .coinSettled{display:none}
+    .coinTossResult.settled .coinFlight{display:none}
+    .coinTossResult.settled .coinSettled{display:block}
+
+    .coinFaceVisual{
       position:absolute;
       inset:0;
       display:grid;
@@ -83,7 +93,7 @@
         inset 0 0 22px rgba(61,31,2,.62),
         0 7px 14px rgba(0,0,0,.26)
     }
-    .coinStaticFace::before{
+    .coinFaceVisual::before{
       content:"";
       position:absolute;
       inset:9px;
@@ -91,24 +101,24 @@
       border-radius:50%;
       opacity:.42
     }
-    .coinStaticFace.heads{
+    .coinFaceVisual.heads{
       color:#5a3308;
       background:
         radial-gradient(circle at 34% 27%,rgba(255,255,255,.76) 0 4%,transparent 5%),
         radial-gradient(circle at 38% 34%,#ffe7aa 0 8%,#dbaa42 36%,#a66d17 68%,#683d08 100%)
     }
-    .coinStaticFace.tails{
+    .coinFaceVisual.tails{
       color:#332d12;
       border-color:#d8c683;
       background:
         radial-gradient(circle at 34% 27%,rgba(255,255,255,.62) 0 4%,transparent 5%),
         radial-gradient(circle at 38% 34%,#e4d79c 0 8%,#b49a50 36%,#75602c 68%,#433613 100%)
     }
-    .coinStaticFace svg{
+    .coinFaceVisual svg{
       position:relative;
       z-index:1;
-      width:57%;
-      height:57%;
+      width:58%;
+      height:58%;
       fill:none;
       stroke:currentColor;
       stroke-width:34;
@@ -116,24 +126,7 @@
       stroke-linejoin:round;
       filter:drop-shadow(0 2px 0 rgba(255,244,201,.42))
     }
-    .coinFaceWord{
-      position:absolute;
-      left:50%;
-      bottom:17%;
-      z-index:2;
-      min-width:46px;
-      padding:3px 9px 4px;
-      transform:translateX(-50%);
-      border:1px solid currentColor;
-      border-radius:999px;
-      background:rgba(255,242,194,.28);
-      font-size:clamp(17px,calc(var(--tool-size) * .46),22px);
-      font-weight:950;
-      line-height:1;
-      text-align:center;
-      text-shadow:0 1px 0 rgba(255,255,255,.42)
-    }
-    .coinRotor.edge-on .coinStaticFace{
+    .coinFlight.edge-on .coinFaceVisual{
       box-shadow:
         inset 0 0 0 3px rgba(83,45,5,.62),
         inset 0 0 0 8px rgba(255,232,164,.34),
@@ -143,7 +136,7 @@
     .coinGroundShadow{
       position:absolute;
       left:50%;
-      top:62%;
+      top:61%;
       z-index:0;
       width:clamp(96px,calc(var(--tool-size) * 2.4),126px);
       height:22px;
@@ -157,9 +150,9 @@
     .coinResultLabel{
       position:relative;
       z-index:3;
-      min-width:80px;
+      min-width:72px;
       margin-top:10px;
-      padding:5px 14px 6px;
+      padding:5px 13px 6px;
       border:2px solid rgba(255,255,255,.72);
       border-radius:999px;
       background:rgba(8,11,16,.92);
@@ -222,82 +215,79 @@
       </svg>`;
   }
 
-  function coinFaceMarkup(type,label,showWord=true){
-    return `
-      <div class="coinStaticFace ${type}">
-        ${coinArt(type)}
-        ${showWord?`<span class="coinFaceWord">${label}</span>`:''}
-      </div>`;
+  function coinFaceMarkup(type){
+    return `<div class="coinFaceVisual ${type}">${coinArt(type)}</div>`;
   }
 
-  function animateCoin(coin,side,label){
-    const rotor=coin.querySelector('.coinRotor');
+  function animateCoin(coin,side){
+    const flight=coin.querySelector('.coinFlight');
+    const settled=coin.querySelector('.coinSettled');
     const shadow=coin.querySelector('.coinGroundShadow');
     const resultLabel=coin.querySelector('.coinResultLabel');
-    if(!rotor)return;
+    if(!flight||!settled)return;
 
-    const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    const settle=()=>{
-      if(!coin.isConnected)return;
-      rotor.classList.remove('edge-on');
-      rotor.style.transform='none';
-      rotor.style.willChange='auto';
-      rotor.innerHTML=coinFaceMarkup(side,label,true);
+    let finished=false;
+    const finish=()=>{
+      if(finished||!coin.isConnected)return;
+      finished=true;
+
+      /* Never reuse the animated transform for the result. The flight element is
+         hidden and a separate untouched square element becomes the final coin. */
+      flight.style.display='none';
+      flight.style.transform='';
+      flight.style.willChange='auto';
+      settled.innerHTML=coinFaceMarkup(side);
+      coin.classList.add('settled');
+
       if(shadow){
-        shadow.style.transform='translate(-50%,-50%) scale(1)';
+        shadow.style.transform='translate(-50%,-50%) scaleX(1)';
         shadow.style.opacity='.68';
         shadow.style.willChange='auto';
       }
       resultLabel?.classList.add('show');
     };
 
-    if(reduced){
-      settle();
-      return;
-    }
+    const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if(reduced){finish();return}
 
-    const duration=980;
-    const turns=3.5;
+    const duration=920;
+    const turns=side==='heads'?4:4.5;
     const started=performance.now();
     let shownFace='heads';
-    rotor.innerHTML=coinFaceMarkup('heads','表',false);
+    flight.innerHTML=coinFaceMarkup(shownFace);
 
     const frame=now=>{
-      if(!coin.isConnected)return;
+      if(finished||!coin.isConnected)return;
       const t=Math.min(1,(now-started)/duration);
-
-      /* A projected spinning disc repeatedly becomes an edge-on ellipse. Using
-         scaleY here is deliberate: it is much more legible and reliable on iOS
-         Safari than preserving a CSS 3D transform after the animation. */
       const phase=t*turns*2*Math.PI;
       const cosine=Math.cos(phase);
-      const projected=Math.max(.075,Math.abs(cosine));
+
+      /* Keep a visible metallic edge instead of collapsing to a one-pixel line. */
+      const projected=Math.max(.16,Math.abs(cosine));
       const nextFace=cosine>=0?'heads':'tails';
       if(nextFace!==shownFace){
         shownFace=nextFace;
-        rotor.innerHTML=coinFaceMarkup(shownFace,shownFace==='heads'?'表':'裏',false);
+        flight.innerHTML=coinFaceMarkup(shownFace);
       }
-      rotor.classList.toggle('edge-on',projected<.18);
+      flight.classList.toggle('edge-on',projected<.22);
 
-      /* Toss arc: leave the table, reach an obvious apex, then fall back. */
+      /* One simple motion: straight up from center and straight back down. */
       const arc=Math.sin(Math.PI*t);
-      const y=26-(142*arc);
-      const x=Math.sin(Math.PI*2*t)*12;
-      const tilt=Math.sin(Math.PI*4*t)*5;
-      const size=.82+(.18*Math.sin(Math.PI*t/2));
-      rotor.style.transform=`translate(${x.toFixed(1)}px,${y.toFixed(1)}px) rotate(${tilt.toFixed(1)}deg) scale(${size.toFixed(3)}) scaleY(${projected.toFixed(3)})`;
+      const y=-(122*arc);
+      flight.style.transform=`translateY(${y.toFixed(1)}px) scaleY(${projected.toFixed(3)})`;
 
       if(shadow){
-        const shadowScale=.42+(.58*(1-arc));
+        const shadowScale=.44+(.56*(1-arc));
         shadow.style.transform=`translate(-50%,-50%) scaleX(${shadowScale.toFixed(3)})`;
         shadow.style.opacity=String((.22+.46*(1-arc)).toFixed(3));
       }
 
       if(t<1)requestAnimationFrame(frame);
-      else settle();
+      else finish();
     };
 
     requestAnimationFrame(frame);
+    setTimeout(finish,duration+100);
   }
 
   function flipCoin(){
@@ -313,11 +303,12 @@
     coin.innerHTML=`
       <div class="coinTossScene">
         <div class="coinGroundShadow" aria-hidden="true"></div>
-        <div class="coinRotor" aria-hidden="true"></div>
+        <div class="coinFlight" aria-hidden="true"></div>
+        <div class="coinSettled" aria-hidden="true"></div>
         <div class="coinResultLabel">${label}</div>
       </div>`;
     diceLayer.appendChild(coin);
-    requestAnimationFrame(()=>animateCoin(coin,side,label));
+    requestAnimationFrame(()=>animateCoin(coin,side));
     navigator.vibrate?.(18);
   }
 
