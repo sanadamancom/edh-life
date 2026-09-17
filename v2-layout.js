@@ -1,66 +1,46 @@
 (()=>{
   const head=document.head;
-  if(!head)return;
+  const root=document.documentElement;
+  const app=document.getElementById('app');
+  const stage=document.getElementById('stage');
+  if(!head||!root||!app)return;
 
-  /* The board height is owned by viewport-sync.js. layout.js still provides
-     setup/help behavior, while this layer keeps the page backdrop aligned with
-     the lower seats. */
-  function resetStageGeometry(){
-    const stage=document.getElementById('stage');
-    if(stage){
-      stage.style.removeProperty('top');
-      delete stage.dataset.stageHeight;
-      delete stage.dataset.viewportHeight;
-      delete stage.dataset.safeTop;
-      delete stage.dataset.stageOriginCorrection;
-    }
+  function bottomPlayers(){
+    const players=[...app.querySelectorAll('.p:not(.hide)')];
+    if(app.classList.contains('c4'))return [players[2],players[3]];
+    if(app.classList.contains('c3'))return [players[1],players[2]];
+    if(app.classList.contains('c2'))return [players[1]];
+    return [];
   }
 
-  function syncBottomBackdrop(){
-    const root=document.documentElement;
-    const app=document.getElementById('app');
-    const stage=document.getElementById('stage');
-    if(!app)return;
+  function backgroundImageOf(player){
+    if(!player)return 'linear-gradient(var(--bg),var(--bg))';
+    const style=getComputedStyle(player);
+    const image=(style.backgroundImage||'').trim();
+    if(image&&image!=='none')return image;
+    const color=(style.backgroundColor||'').trim()||
+      player.style.getPropertyValue('--pc').trim()||'#0d0f14';
+    return `linear-gradient(${color},${color})`;
+  }
 
-    const players=[...app.querySelectorAll('.p:not(.hide)')];
-    let bottom=[];
-    if(app.classList.contains('c4'))bottom=[players[2],players[3]];
-    else if(app.classList.contains('c3'))bottom=[players[1],players[2]];
-    else if(app.classList.contains('c2'))bottom=[players[1]];
+  function syncPageBackdrop(){
+    const bottom=bottomPlayers();
+    if(!bottom.length)return;
+    const left=backgroundImageOf(bottom[0]);
+    const right=backgroundImageOf(bottom[1]||bottom[0]);
+    const background=`${left}, ${right}`;
 
-    const backgroundImageOf=player=>{
-      if(!player)return 'linear-gradient(var(--bg),var(--bg))';
-      const style=getComputedStyle(player);
-      const image=(style.backgroundImage||'').trim();
-      if(image&&image!=='none')return image;
-      const color=(style.backgroundColor||'').trim()||
-        player.style.getPropertyValue('--pc').trim()||'#0d0f14';
-      return `linear-gradient(${color},${color})`;
-    };
-    const dimOf=player=>player?.classList.contains('defeated')
-      ?'rgba(4,6,9,.24)'
-      :'rgba(0,0,0,0)';
-
-    const leftPlayer=bottom[0];
-    const rightPlayer=bottom[1]||bottom[0];
-    const left=backgroundImageOf(leftPlayer);
-    const right=backgroundImageOf(rightPlayer);
-    root.style.setProperty('--safe-fill-left-bg',left);
-    root.style.setProperty('--safe-fill-right-bg',right);
-    root.style.setProperty('--safe-fill-left-dim',dimOf(leftPlayer));
-    root.style.setProperty('--safe-fill-right-dim',dimOf(rightPlayer));
-
-    const pageBackground=`${left}, ${right}`;
-    const applyPageBackdrop=element=>{
-      if(!element)return;
+    /* WebKit standalone can expose a few bottom pixels through the root canvas
+       instead of the DOM viewport. Paint that canvas with the exact lower-player
+       backgrounds, sized to one player panel and aligned to the physical bottom. */
+    for(const element of [root,document.body]){
+      if(!element)continue;
       element.style.backgroundColor=getComputedStyle(root).getPropertyValue('--bg').trim()||'#0d0f14';
-      element.style.backgroundImage=pageBackground;
-      element.style.backgroundSize='50% 100%,50% 100%';
-      element.style.backgroundPosition='left top,right top';
+      element.style.backgroundImage=background;
+      element.style.backgroundSize='50% var(--player-panel-h),50% var(--player-panel-h)';
+      element.style.backgroundPosition='left bottom,right bottom';
       element.style.backgroundRepeat='no-repeat';
-    };
-    applyPageBackdrop(root);
-    applyPageBackdrop(document.body);
+    }
     if(stage)stage.style.background='var(--bg)';
   }
 
@@ -76,25 +56,6 @@
     window.__edhTableStatePickActive=()=>false;
   }
 
-  function syncVisualFrame(){
-    resetStageGeometry();
-    window.EDHViewportSync?.();
-    syncBottomBackdrop();
-  }
-
-  syncVisualFrame();
-  window.addEventListener('orientationchange',syncVisualFrame,{passive:true});
-  window.addEventListener('pageshow',syncVisualFrame,{passive:true});
-
-  const app=document.getElementById('app');
-  if(app){
-    let backdropTimer=0;
-    new MutationObserver(()=>{
-      clearTimeout(backdropTimer);
-      backdropTimer=setTimeout(syncBottomBackdrop,0);
-    }).observe(app,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style']});
-  }
-
   const loadScript=(src,version)=>new Promise((resolve,reject)=>{
     if([...document.scripts].some(script=>script.src.includes(src))){resolve();return}
     const script=document.createElement('script');
@@ -104,10 +65,25 @@
     document.body.appendChild(script);
   });
 
+  let backdropTimer=0;
+  const scheduleBackdrop=()=>{
+    clearTimeout(backdropTimer);
+    backdropTimer=setTimeout(syncPageBackdrop,0);
+  };
+
+  new MutationObserver(scheduleBackdrop)
+    .observe(app,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style']});
+  window.addEventListener('edh-v2-layout',scheduleBackdrop);
+  window.addEventListener('orientationchange',scheduleBackdrop,{passive:true});
+  window.addEventListener('pageshow',scheduleBackdrop,{passive:true});
+
   (async()=>{
     try{
       retireTableStateUi();
-      await loadScript('viewport-sync.js',1);
+
+      /* Load order is intentional: viewport-sync owns geometry; every later layer
+         consumes EDHStage and CSS variables produced by it. */
+      await loadScript('viewport-sync.js',2);
       window.EDHViewportSync?.();
       await loadScript('v2-fluid-scale.js',9);
       await loadScript('v2-life-stability.js',1);
@@ -117,11 +93,7 @@
       await loadScript('v2-coin-overlay-fix.js',3);
       await loadScript('v2-commander-owner-settings.js',4);
       await loadScript('v2-counter-sticky-header.js',1);
-      syncBottomBackdrop();
-      window.addEventListener('edh-v2-layout',()=>{
-        syncVisualFrame();
-        retireTableStateUi();
-      });
+      syncPageBackdrop();
     }catch(error){
       console.error('Failed to load v2 compact layer',error);
     }
