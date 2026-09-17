@@ -4,10 +4,41 @@
 @import url('./v2-responsive.css?v=4');
 @import url('./v2-owner-status.css?v=5');
 
-/* The board itself now includes the full standalone safe-area height. Do not paint
-   an extra strip outside the board: that would make the lower players look taller
-   than the upper players even though the logical grid rows are equal. */
-html.layout-vertical-v2 body::after{content:none!important}
+/* Some iPad standalone viewports omit the bottom safe-area strip from 100dvh.
+   Keep the actual stage inside the renderable viewport, reserve an equal visible
+   seat height using the physical board height reported by layout.js, then paint
+   the omitted strip separately. This keeps all four visible player areas equal. */
+:root{
+  --safe-fill-gap:max(0px,calc(var(--stage-full-height,100dvh) - 100dvh));
+  --visible-seat-h:calc((var(--stage-full-height,100dvh) - var(--center-band-h,60px))/2);
+  --rendered-bottom-seat-h:max(0px,calc(var(--visible-seat-h) - var(--safe-fill-gap)));
+  --safe-fill-left-bg:linear-gradient(var(--bg),var(--bg));
+  --safe-fill-right-bg:linear-gradient(var(--bg),var(--bg));
+}
+html.layout-vertical-v2 #stage{
+  height:100dvh!important;
+}
+html.layout-vertical-v2 #app{
+  grid-template-rows:var(--visible-seat-h) var(--center-band-h) var(--rendered-bottom-seat-h)!important;
+}
+html.layout-vertical-v2 #app.c2{
+  grid-template-rows:var(--visible-seat-h) var(--center-band-h) var(--rendered-bottom-seat-h)!important;
+}
+html.layout-vertical-v2 body::after{
+  content:""!important;
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:calc(-1 * var(--safe-fill-gap));
+  height:var(--safe-fill-gap);
+  z-index:2147483647;
+  pointer-events:none;
+  background-color:var(--bg);
+  background-image:var(--safe-fill-left-bg),var(--safe-fill-right-bg);
+  background-size:50% 100%,50% 100%;
+  background-position:left top,right top;
+  background-repeat:no-repeat;
+}
 
 /* Player content must use the full grid track. Legacy .pc kept justify-content:center,
    which made the implicit grid column shrink to its contents and created large unused
