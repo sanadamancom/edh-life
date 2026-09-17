@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v113-true-full-screen-equal-seats';
+const CACHE_NAME='edh-life-v114-visual-viewport-vh100';
 const APP_SHELL=[
   './',
   './index.html',
