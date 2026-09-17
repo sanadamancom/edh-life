@@ -29,7 +29,7 @@
     #coinOverlay .coinOverlayAnchor{
       position:absolute;
       left:50%;
-      top:calc(50% - 36px);
+      top:50%;
       width:clamp(132px,calc(var(--tool-size) * 3.18),164px);
       height:clamp(132px,calc(var(--tool-size) * 3.18),164px);
       transform:translate(-50%,-50%)
@@ -85,8 +85,9 @@
     #coinOverlay .coinOverlayFace svg{
       position:relative;
       z-index:1;
-      width:58%;
-      height:58%;
+      width:54%;
+      height:54%;
+      transform:translateY(-8%);
       fill:none;
       stroke:currentColor;
       stroke-width:34;
@@ -94,10 +95,28 @@
       stroke-linejoin:round;
       filter:drop-shadow(0 2px 0 rgba(255,244,201,.42))
     }
+    #coinOverlay .coinOverlayWord{
+      position:absolute;
+      left:50%;
+      bottom:13%;
+      z-index:2;
+      min-width:44px;
+      padding:3px 9px 4px;
+      transform:translateX(-50%);
+      border:1px solid currentColor;
+      border-radius:999px;
+      background:rgba(255,242,194,.32);
+      box-shadow:0 1px 0 rgba(255,255,255,.18);
+      font-size:clamp(17px,calc(var(--tool-size) * .46),22px);
+      font-weight:950;
+      line-height:1;
+      text-align:center;
+      text-shadow:0 1px 0 rgba(255,255,255,.42)
+    }
     #coinOverlay .coinOverlayShadow{
       position:absolute;
       left:50%;
-      top:calc(50% + 38px);
+      top:calc(50% + 78px);
       width:clamp(96px,calc(var(--tool-size) * 2.4),126px);
       height:22px;
       transform:translate(-50%,-50%);
@@ -106,41 +125,6 @@
       filter:blur(8px);
       opacity:.68;
       will-change:transform,opacity
-    }
-    #coinOverlay .coinOverlayLabel{
-      position:absolute;
-      left:50%;
-      top:calc(50% + 62px);
-      min-width:72px;
-      padding:5px 13px 6px;
-      transform:translateX(-50%) translateY(-3px) scale(.94);
-      border:2px solid rgba(255,255,255,.72);
-      border-radius:999px;
-      background:rgba(8,11,16,.92);
-      box-shadow:0 7px 18px rgba(0,0,0,.42);
-      color:#fff;
-      font-size:clamp(20px,calc(var(--tool-size) * .58),28px);
-      font-weight:950;
-      line-height:1;
-      letter-spacing:.08em;
-      text-align:center;
-      opacity:0;
-      transition:opacity 150ms ease-out,transform 150ms ease-out
-    }
-    #coinOverlay .coinOverlayLabel.show{
-      opacity:1;
-      transform:translateX(-50%) translateY(0) scale(1)
-    }
-    #coinOverlay .coinOverlayResult[data-side="heads"] .coinOverlayLabel{
-      border-color:#f2d57f;
-      color:#ffe7a5
-    }
-    #coinOverlay .coinOverlayResult[data-side="tails"] .coinOverlayLabel{
-      border-color:#d7ca98;
-      color:#eee4b9
-    }
-    @media (prefers-reduced-motion:reduce){
-      #coinOverlay .coinOverlayLabel{transition:none}
     }
   `;
   document.head.appendChild(style);
@@ -158,7 +142,10 @@
     ?`<svg viewBox="0 0 512 512" aria-hidden="true"><circle cx="256" cy="220" r="72"></circle><path d="M256 43v55M256 342v55M79 220h55M378 220h55M131 95l39 39M342 306l39 39M381 95l-39 39M170 306l-39 39"></path></svg>`
     :`<svg viewBox="0 0 512 512" aria-hidden="true"><path d="M329 77c-96 19-168 103-168 204 0 61 27 117 70 155-93-12-165-91-165-187 0-103 83-186 186-186 28 0 54 5 77 14Z"></path><path d="M341 181l17 36 39 6-28 27 7 39-35-18-35 18 7-39-28-27 39-6 17-36Z"></path></svg>`;
 
-  const face=side=>`<div class="coinOverlayFace ${side}">${art(side)}</div>`;
+  const face=side=>{
+    const label=side==='heads'?'表':'裏';
+    return `<div class="coinOverlayFace ${side}">${art(side)}<span class="coinOverlayWord">${label}</span></div>`;
+  };
   const clearCoin=()=>{overlay.replaceChildren()};
 
   function toss(){
@@ -175,14 +162,12 @@
       <div class="coinOverlayAnchor">
         <div class="coinOverlayFlight">${face('heads')}</div>
         <div class="coinOverlaySettled"></div>
-      </div>
-      <div class="coinOverlayLabel">${label}</div>`;
+      </div>`;
     overlay.appendChild(result);
 
     const flight=result.querySelector('.coinOverlayFlight');
     const settled=result.querySelector('.coinOverlaySettled');
     const shadow=result.querySelector('.coinOverlayShadow');
-    const resultLabel=result.querySelector('.coinOverlayLabel');
     const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
     let finished=false;
@@ -197,7 +182,6 @@
       shadow.style.transform='translate(-50%,-50%) scaleX(1)';
       shadow.style.opacity='.68';
       shadow.style.willChange='auto';
-      resultLabel.classList.add('show');
       result.setAttribute('aria-label',`コイントス ${label}`);
     };
 
