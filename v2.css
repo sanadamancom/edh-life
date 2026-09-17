@@ -5,9 +5,8 @@
 @import url('./v2-owner-status.css?v=5');
 
 /* Player content must use the full grid track. Legacy .pc kept justify-content:center,
-   which made the implicit grid column shrink to its contents and created the large
-   unused gutters marked in the screenshot. Make the grid column explicitly full-width,
-   then keep a moderate content inset inside it. */
+   which made the implicit grid column shrink to its contents and created large unused
+   gutters. Keep the grid track full-width and use a modest inset for controls/cards. */
 html.layout-vertical-v2 #app .pc{
   grid-template-columns:minmax(0,1fr)!important;
   justify-content:stretch!important;
@@ -17,7 +16,7 @@ html.layout-vertical-v2 #app .pc{
 }
 html.layout-vertical-v2 #app .pc>.lifeRow,
 html.layout-vertical-v2 #app .pc>.cmd{
-  width:80%!important;
+  width:86%!important;
   max-width:none!important;
   margin-left:auto!important;
   margin-right:auto!important;
