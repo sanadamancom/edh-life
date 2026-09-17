@@ -3,9 +3,11 @@
   if(!app)return;
 
   const HOLD_DELAY=350;
-  const REPEAT_INTERVAL=120;
-  const ACCELERATE_AFTER=1500;
-  const FAST_REPEAT_INTERVAL=80;
+  const REPEAT_INTERVAL=130;
+  const LIFE_STEP_5_AFTER=1100;
+  const LIFE_STEP_10_AFTER=2200;
+  const LIFE_STEP_5_INTERVAL=160;
+  const LIFE_STEP_10_INTERVAL=190;
   const MAX_HOLD_MS=15000;
 
   const activePointers=new Map();
@@ -21,22 +23,54 @@
       -webkit-touch-callout:none;
     }
     #app button.repeat-held{
+      position:relative;
       filter:brightness(1.16);
       box-shadow:inset 0 0 0 2px rgba(255,255,255,.22);
+    }
+    #app button.repeat-held[data-repeat-label]::after{
+      content:attr(data-repeat-label);
+      position:absolute;
+      right:5px;
+      top:5px;
+      z-index:3;
+      min-width:24px;
+      padding:2px 5px;
+      border:1px solid rgba(255,255,255,.26);
+      border-radius:999px;
+      background:rgba(5,8,13,.82);
+      color:#fff;
+      font-size:10px;
+      font-weight:950;
+      line-height:1.15;
+      letter-spacing:.01em;
+      pointer-events:none;
+      box-shadow:0 2px 7px rgba(0,0,0,.35);
     }
   `;
   document.head.appendChild(style);
 
+  function heldButtonFor(session){
+    let selector='';
+    if(session.action.kind==='life'){
+      selector=`[data-life="${session.action.index}"][data-d="${session.action.delta}"]`;
+    }else{
+      selector=`[data-cmd="${session.action.delta}"][data-slot="${session.action.slot}"][data-t="${session.action.target}"][data-s="${session.action.source}"]`;
+    }
+    return app.querySelector(selector);
+  }
+
   function markHeldControls(){
-    app.querySelectorAll('.repeat-held').forEach(button=>button.classList.remove('repeat-held'));
+    app.querySelectorAll('.repeat-held').forEach(button=>{
+      button.classList.remove('repeat-held');
+      button.removeAttribute('data-repeat-label');
+    });
     activePointers.forEach(session=>{
-      let selector='';
-      if(session.action.kind==='life'){
-        selector=`[data-life="${session.action.index}"][data-d="${session.action.delta}"]`;
-      }else{
-        selector=`[data-cmd="${session.action.delta}"][data-slot="${session.action.slot}"][data-t="${session.action.target}"][data-s="${session.action.source}"]`;
+      const button=heldButtonFor(session);
+      if(!button)return;
+      button.classList.add('repeat-held');
+      if(session.action.kind==='life'&&Math.abs(session.action.delta)===1){
+        button.dataset.repeatLabel=`×${session.lifeStep||1}`;
       }
-      app.querySelector(selector)?.classList.add('repeat-held');
     });
   }
 
@@ -75,9 +109,9 @@
     return {kind:'commander',target,source,slot:slot===1?1:0,delta};
   }
 
-  function applyAction(action){
+  function applyAction(action,multiplier=1){
     if(action.kind==='life'){
-      state.players[action.index].life+=action.delta;
+      state.players[action.index].life+=action.delta*multiplier;
       return true;
     }
 
@@ -106,8 +140,10 @@
   }
 
   function syncLife(index){
-    const value=app.querySelector(`.life[data-life="${index}"] .lifeValue`);
+    const life=app.querySelector(`.life[data-life="${index}"]`);
+    const value=life?.querySelector('.lifeValue');
     if(value)value.textContent=String(state.players[index].life);
+    window.__edhFitLifeValue?.(life);
     syncDefeat(index);
   }
 
@@ -162,7 +198,10 @@
        Recreating every player on pointer-up caused the one-frame life "twitch" on
        iOS even when the resulting layout was identical. */
     if(activePointers.size===0){
-      app.querySelectorAll('.repeat-held').forEach(button=>button.classList.remove('repeat-held'));
+      app.querySelectorAll('.repeat-held').forEach(button=>{
+        button.classList.remove('repeat-held');
+        button.removeAttribute('data-repeat-label');
+      });
     }else{
       markHeldControls();
     }
@@ -176,14 +215,39 @@
       }catch{}
     });
     activePointers.clear();
-    app.querySelectorAll('.repeat-held').forEach(button=>button.classList.remove('repeat-held'));
+    app.querySelectorAll('.repeat-held').forEach(button=>{
+      button.classList.remove('repeat-held');
+      button.removeAttribute('data-repeat-label');
+    });
+  }
+
+  function lifeRepeatStep(session,elapsed){
+    if(session.action.kind!=='life'||Math.abs(session.action.delta)!==1)return 1;
+    if(elapsed>=LIFE_STEP_10_AFTER)return 10;
+    if(elapsed>=LIFE_STEP_5_AFTER)return 5;
+    return 1;
+  }
+
+  function repeatDelay(session){
+    if(session.action.kind!=='life'||Math.abs(session.action.delta)!==1)return REPEAT_INTERVAL;
+    if(session.lifeStep>=10)return LIFE_STEP_10_INTERVAL;
+    if(session.lifeStep>=5)return LIFE_STEP_5_INTERVAL;
+    return REPEAT_INTERVAL;
   }
 
   function repeatPointer(pointerId){
     const session=activePointers.get(pointerId);
     if(!session)return;
 
-    if(!applyAction(session.action)){
+    const elapsed=performance.now()-session.startedAt;
+    const nextStep=lifeRepeatStep(session,elapsed);
+    if(nextStep!==session.lifeStep){
+      session.lifeStep=nextStep;
+      markHeldControls();
+      navigator.vibrate?.(nextStep===10?22:16);
+    }
+
+    if(!applyAction(session.action,session.lifeStep)){
       stopPointer(pointerId);
       return;
     }
@@ -195,10 +259,7 @@
 
     saveOnly();
     syncActionDisplay(session.action);
-
-    const elapsed=performance.now()-session.startedAt;
-    const delay=elapsed>=ACCELERATE_AFTER?FAST_REPEAT_INTERVAL:REPEAT_INTERVAL;
-    session.timer=setTimeout(()=>repeatPointer(pointerId),delay);
+    session.timer=setTimeout(()=>repeatPointer(pointerId),repeatDelay(session));
   }
 
   app.addEventListener('pointerdown',event=>{
@@ -223,6 +284,7 @@
       action,
       startedAt:performance.now(),
       repeating:false,
+      lifeStep:1,
       timer:0,
       guardTimer:0
     };
