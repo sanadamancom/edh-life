@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v108-equal-player-geometry';
+const CACHE_NAME='edh-life-v109-equal-visible-seat-geometry';
 const APP_SHELL=[
   './',
   './index.html',
