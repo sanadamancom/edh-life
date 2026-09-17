@@ -20,7 +20,7 @@
     helpButton.id='help';
     helpButton.title='使い方';
     helpButton.setAttribute('aria-label','使い方');
-    helpButton.innerHTML='<svg class="mi" viewBox="0 -960 960 960" aria-hidden="true"><path d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm2 160q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm4-492q25 0 43.5 16t18.5 40q0 22-13.5 39T502-525q-23 20-40.5 44T444-427q0 14 10.5 23.5T479-394q15 0 25.5-10t13.5-25q4-21 18-37.5t30-31.5q23-22 39.5-48t16.5-58q0-51-41.5-83.5T484-720q-38 0-72.5 16T359-655q-7 12-4.5 25.5T368-609q14 8 29 5t25-17q11-15 27.5-23t34.5-8Z"/></svg>';
+    helpButton.innerHTML='<svg class="mi" viewBox="0 -960 960 960" aria-hidden="true"><path d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 10.5 23.5T479-394q15 0 25.5-10t13.5-25q4-21 18-37.5t30-31.5q23-22 39.5-48t16.5-58q0-51-41.5-83.5T484-720q-38 0-72.5 16T359-655q-7 12-4.5 25.5T368-609q14 8 29 5t25-17q11-15 27.5-23t34.5-8Z"/></svg>';
     settingsButton.before(helpButton);
 
     const overlay=document.createElement('div');
@@ -111,16 +111,20 @@
   function syncViewport(){
     const width=document.documentElement.clientWidth||window.innerWidth||1;
     const viewportHeight=document.documentElement.clientHeight||window.innerHeight||1;
+    const safe=readSafeArea();
     const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
     const physicalScreenHeight=Number(window.screen?.height)||0;
-    const height=standalone&&physicalScreenHeight>viewportHeight
-      ? physicalScreenHeight
-      : viewportHeight;
-    const safe=readSafeArea();
+    const screenGap=Math.max(0,physicalScreenHeight-viewportHeight);
+    const reportedBottomSafe=Math.max(0,Number(safe.bottom)||0);
+    const smallUnreportedGap=screenGap>0&&screenGap<=48?screenGap:0;
+    const omittedBottomSafe=standalone
+      ?Math.min(screenGap,Math.max(reportedBottomSafe,smallUnreportedGap))
+      :0;
+    const height=viewportHeight+omittedBottomSafe;
 
-    /* In standalone mode the CSS viewport can stop above the bottom safe area on
-       some iPads. The board uses the full physical CSS-pixel screen height so the
-       center line is the real screen center and both player rows are exactly equal. */
+    /* Only the safe-area strip omitted by the standalone CSS viewport is added to
+       the board. This keeps the center on the true visible screen center without
+       treating browser chrome or multitasking space as part of the game board. */
     root.style.setProperty('--stage-full-height',`${height}px`);
 
     root.classList.toggle('layout-short',height<700);
@@ -130,6 +134,7 @@
         w:width,
         h:height,
         viewportH:viewportHeight,
+        omittedBottomSafe,
         x:0,
         y:0,
         safe,
