@@ -4,17 +4,19 @@
 @import url('./v2-responsive.css?v=4');
 @import url('./v2-owner-status.css?v=5');
 
-/* Some iPad standalone viewports omit the bottom safe-area strip from 100dvh.
-   Keep the actual stage inside the renderable viewport, reserve an equal visible
-   seat height using the physical board height reported by layout.js, then paint
-   the omitted strip separately. This keeps all four visible player areas equal. */
+/* The visible board includes the iPad home-indicator safe area. When iOS omits
+   that strip from the CSS viewport, the lower DOM row is shortened by exactly the
+   omitted amount and #stage::after paints the missing continuation. The composed
+   lower panel therefore has exactly the same visible height as the upper panel. */
 :root{
-  --safe-fill-gap:max(0px,calc(var(--stage-full-height,100dvh) - 100dvh));
+  --safe-fill-gap:0px;
   --visible-seat-h:calc((var(--stage-full-height,100dvh) - var(--center-band-h,60px))/2);
   --rendered-bottom-seat-h:max(0px,calc(var(--visible-seat-h) - var(--safe-fill-gap)));
   --seat-edge-safe:max(var(--safe-top),var(--safe-bottom),var(--safe-fill-gap));
   --safe-fill-left-bg:linear-gradient(var(--bg),var(--bg));
   --safe-fill-right-bg:linear-gradient(var(--bg),var(--bg));
+  --safe-fill-left-dim:rgba(0,0,0,0);
+  --safe-fill-right-dim:rgba(0,0,0,0);
 }
 html.layout-vertical-v2 #stage{
   height:100dvh!important;
@@ -25,19 +27,54 @@ html.layout-vertical-v2 #app{
 html.layout-vertical-v2 #app.c2{
   grid-template-rows:var(--visible-seat-h) var(--center-band-h) var(--rendered-bottom-seat-h)!important;
 }
-html.layout-vertical-v2 body::after{
-  content:""!important;
-  position:fixed;
+
+/* Size the lower-seat gradients as if the missing safe-area strip were physically
+   part of the .p element. The stage fill below then displays the final clipped slice
+   of exactly the same gradient, so there is no visual seam at the safe-area boundary. */
+html.layout-vertical-v2 #app.c4 .p:nth-child(3),
+html.layout-vertical-v2 #app.c4 .p:nth-child(4),
+html.layout-vertical-v2 #app.c3 .p:nth-child(2),
+html.layout-vertical-v2 #app.c3 .p:nth-child(3),
+html.layout-vertical-v2 #app.c2 .p:nth-child(2){
+  background-size:100% var(--visible-seat-h)!important;
+  background-position:left top!important;
+  background-repeat:no-repeat!important;
+}
+html.layout-vertical-v2.has-omitted-bottom-safe #app.c4 .p:nth-child(3),
+html.layout-vertical-v2.has-omitted-bottom-safe #app.c4 .p:nth-child(4),
+html.layout-vertical-v2.has-omitted-bottom-safe #app.c3 .p:nth-child(2),
+html.layout-vertical-v2.has-omitted-bottom-safe #app.c3 .p:nth-child(3),
+html.layout-vertical-v2.has-omitted-bottom-safe #app.c2 .p:nth-child(2){
+  border-bottom-color:transparent!important;
+}
+
+/* Paint inside #stage, not outside the viewport. The previous body::after approach
+   could not cover iPad's omitted strip because it was clipped by the viewport. */
+html.layout-vertical-v2 body::after{content:none!important}
+html.layout-vertical-v2 #stage::after{
+  content:"";
+  position:absolute;
   left:0;
   right:0;
-  bottom:calc(-1 * var(--safe-fill-gap));
+  bottom:0;
   height:var(--safe-fill-gap);
-  z-index:2147483647;
+  z-index:2;
   pointer-events:none;
-  background-color:var(--bg);
-  background-image:var(--safe-fill-left-bg),var(--safe-fill-right-bg);
-  background-size:50% 100%,50% 100%;
-  background-position:left top,right top;
+  background-image:
+    linear-gradient(var(--safe-fill-left-dim),var(--safe-fill-left-dim)),
+    linear-gradient(var(--safe-fill-right-dim),var(--safe-fill-right-dim)),
+    var(--safe-fill-left-bg),
+    var(--safe-fill-right-bg);
+  background-size:
+    50% 100%,
+    50% 100%,
+    50% var(--visible-seat-h),
+    50% var(--visible-seat-h);
+  background-position:
+    left top,
+    right top,
+    left bottom,
+    right bottom;
   background-repeat:no-repeat;
 }
 
