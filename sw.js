@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v96-life-fit';
+const CACHE_NAME='edh-life-v97-life-center-anchor';
 const APP_SHELL=[
   './',
   './index.html',
@@ -15,7 +15,7 @@ const APP_SHELL=[
   './edh-features.js?v=2',
   './multitouch.js?v=4',
   './dice-extra.js?v=1',
-  './v2-fluid-scale.js?v=5',
+  './v2-fluid-scale.js?v=6',
   './v2-compact-interactions.js?v=4',
   './v2-utility-behavior.js?v=5',
   './v2-quick-dice-coin.js?v=5',
