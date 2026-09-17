@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v114-visual-viewport-vh100';
+const CACHE_NAME='edh-life-v115-viewport-grid-geometry';
 const APP_SHELL=[
   './',
   './index.html',
@@ -15,6 +15,7 @@ const APP_SHELL=[
   './edh-features.js?v=2',
   './multitouch.js?v=5',
   './dice-extra.js?v=1',
+  './viewport-sync.js?v=1',
   './v2-fluid-scale.js?v=9',
   './v2-life-stability.js?v=1',
   './v2-compact-interactions.js?v=4',
@@ -65,8 +66,7 @@ self.addEventListener('fetch',event=>{
     return;
   }
 
-  const requestUrl=new URL(event.request.url);
-  if(requestUrl.origin===self.location.origin&&NETWORK_FIRST_DESTINATIONS.has(event.request.destination)){
+  if(event.request.url.startsWith(self.location.origin)&&NETWORK_FIRST_DESTINATIONS.has(event.request.destination)){
     event.respondWith(
       fetch(event.request,{cache:'reload'})
         .then(response=>{
@@ -82,14 +82,6 @@ self.addEventListener('fetch',event=>{
   }
 
   event.respondWith(
-    caches.match(event.request).then(cached=>{
-      if(cached)return cached;
-      return fetch(event.request).then(response=>{
-        if(!response||response.status!==200||response.type==='opaque')return response;
-        const copy=response.clone();
-        caches.open(CACHE_NAME).then(cache=>cache.put(event.request,copy));
-        return response;
-      });
-    })
+    caches.match(event.request).then(cached=>cached||fetch(event.request))
   );
 });
