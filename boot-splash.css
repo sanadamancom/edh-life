@@ -1,0 +1,67 @@
+/* Startup mask for iOS/iPadOS viewport and fluid-layout settling.
+   This file is imported by the render-blocking v2.css so the player UI is never
+   painted at its pre-measurement size. Geometry itself is untouched. */
+
+html::before,
+html::after{
+  position:fixed;
+  z-index:2147483646;
+  pointer-events:none;
+  opacity:1;
+}
+
+html::before{
+  content:"EDH LIFE";
+  inset:0;
+  display:grid;
+  place-items:center;
+  padding-bottom:42px;
+  background:
+    radial-gradient(circle at 50% 47%,rgba(255,255,255,.045),transparent 31%),
+    #0d0f14;
+  color:#f7f8fb;
+  font:950 clamp(27px,6vw,46px)/1 system-ui,-apple-system,"Segoe UI",sans-serif;
+  letter-spacing:.14em;
+  text-indent:.14em;
+  text-shadow:0 4px 18px rgba(0,0,0,.48);
+}
+
+html::after{
+  content:"";
+  left:50%;
+  top:calc(50% + 34px);
+  width:24px;
+  height:24px;
+  margin:-12px 0 0 -12px;
+  border:3px solid rgba(255,255,255,.16);
+  border-top-color:rgba(255,255,255,.82);
+  border-radius:50%;
+  animation:edh-boot-spin .72s linear infinite;
+}
+
+/* Do not let any of the legacy/default geometry flash before viewport-sync and
+   fluid sizing have completed. The splash itself remains visible during this time. */
+html:not(.edh-ready) #stage{
+  visibility:hidden!important;
+}
+
+html.edh-ready::before,
+html.edh-ready::after{
+  opacity:0;
+  visibility:hidden;
+  transition:opacity 140ms ease-out,visibility 0s linear 140ms;
+}
+
+html.edh-ready::after{
+  animation:none;
+}
+
+@keyframes edh-boot-spin{
+  to{transform:rotate(360deg)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  html::after{animation:none}
+  html.edh-ready::before,
+  html.edh-ready::after{transition:none}
+}
