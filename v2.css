@@ -12,6 +12,7 @@
   --safe-fill-gap:max(0px,calc(var(--stage-full-height,100dvh) - 100dvh));
   --visible-seat-h:calc((var(--stage-full-height,100dvh) - var(--center-band-h,60px))/2);
   --rendered-bottom-seat-h:max(0px,calc(var(--visible-seat-h) - var(--safe-fill-gap)));
+  --seat-edge-safe:max(var(--safe-top),var(--safe-bottom),var(--safe-fill-gap));
   --safe-fill-left-bg:linear-gradient(var(--bg),var(--bg));
   --safe-fill-right-bg:linear-gradient(var(--bg),var(--bg));
 }
