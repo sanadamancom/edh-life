@@ -9,7 +9,6 @@
   const MAX_HOLD_MS=15000;
 
   const activePointers=new Map();
-  let renderFrame=0;
 
   const style=document.createElement('style');
   style.textContent=`
@@ -38,18 +37,6 @@
         selector=`[data-cmd="${session.action.delta}"][data-slot="${session.action.slot}"][data-t="${session.action.target}"][data-s="${session.action.source}"]`;
       }
       app.querySelector(selector)?.classList.add('repeat-held');
-    });
-  }
-
-  function scheduleRender(){
-    if(renderFrame)return;
-    renderFrame=requestAnimationFrame(()=>{
-      renderFrame=0;
-      if(activePointers.size){
-        markHeldControls();
-        return;
-      }
-      render();
     });
   }
 
@@ -107,9 +94,21 @@
     return true;
   }
 
+  function syncDefeat(index){
+    const panel=app.querySelectorAll('.p')[index];
+    if(!panel)return;
+    const result=typeof defeatState==='function'
+      ?defeatState(state.players[index],index)
+      :{defeated:state.players[index].life<=0,reason:state.players[index].life<=0?'LIFE 0':''};
+    panel.classList.toggle('defeated',Boolean(result.defeated));
+    const dead=panel.querySelector('.dead');
+    if(dead)dead.textContent=result.reason||'';
+  }
+
   function syncLife(index){
     const value=app.querySelector(`.life[data-life="${index}"] .lifeValue`);
     if(value)value.textContent=String(state.players[index].life);
+    syncDefeat(index);
   }
 
   function syncCommander(action){
@@ -118,25 +117,24 @@
     const player=state.players[action.target];
     const store=action.slot===1?player.cmdB:player.cmd;
     const value=store?.[action.source]||0;
-    const selector=`[data-cmd="1"][data-slot="${action.slot}"][data-t="${action.target}"][data-s="${action.source}"]`;
-    const button=app.querySelector(selector);
-    if(!button)return;
 
-    const partnerRow=button.closest('.partnerRow');
-    if(partnerRow){
-      const number=partnerRow.querySelector('b');
+    const card=app.querySelector(`.cc[data-cmd-card][data-t="${action.target}"][data-s="${action.source}"]`);
+    if(!card)return;
+
+    if(state.players[action.source]?.partner){
+      const row=card.querySelector(`[data-cmd-slot="${action.slot}"]`);
+      const number=row?.querySelector('b');
       if(number)number.textContent=String(value);
-      partnerRow.classList.toggle('hot',value>=18);
-      button.closest('.cc')?.classList.toggle('hot',
+      row?.classList.toggle('hot',value>=18);
+      card.classList.toggle('hot',
         (player.cmd?.[action.source]||0)>=18||(player.cmdB?.[action.source]||0)>=18
       );
       return;
     }
 
-    const card=button.closest('.cc');
-    const number=card?.querySelector('.cv');
+    const number=card.querySelector('.cv');
     if(number)number.textContent=String(value);
-    card?.classList.toggle('hot',value>=18);
+    card.classList.toggle('hot',value>=18);
   }
 
   function syncActionDisplay(action){
@@ -160,8 +158,14 @@
       if(app.hasPointerCapture?.(pointerId))app.releasePointerCapture(pointerId);
     }catch{}
 
-    if(activePointers.size===0)scheduleRender();
-    else markHeldControls();
+    /* Do not rebuild #app here. The visible values were already patched in place.
+       Recreating every player on pointer-up caused the one-frame life "twitch" on
+       iOS even when the resulting layout was identical. */
+    if(activePointers.size===0){
+      app.querySelectorAll('.repeat-held').forEach(button=>button.classList.remove('repeat-held'));
+    }else{
+      markHeldControls();
+    }
   }
 
   function stopAllPointers(){
@@ -172,7 +176,7 @@
       }catch{}
     });
     activePointers.clear();
-    scheduleRender();
+    app.querySelectorAll('.repeat-held').forEach(button=>button.classList.remove('repeat-held'));
   }
 
   function repeatPointer(pointerId){
