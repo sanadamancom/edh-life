@@ -5,6 +5,63 @@
   const stage=document.getElementById('stage');
   if(!head||!root||!app)return;
 
+  const bootStarted=performance.now();
+  let bootFinished=false;
+
+  function finishBoot(){
+    if(bootFinished)return;
+    bootFinished=true;
+    root.classList.add('edh-ready');
+    window.dispatchEvent(new CustomEvent('edh-app-ready'));
+  }
+
+  /* Never leave the splash stuck if an optional enhancement fails to load. */
+  const bootFallback=setTimeout(finishBoot,1800);
+
+  function revealWhenStable(){
+    let previous='';
+    let stableFrames=0;
+    let attempts=0;
+
+    window.EDHViewportSync?.();
+
+    const sample=()=>{
+      if(bootFinished)return;
+      attempts++;
+
+      const state=window.EDHStage?.state;
+      const style=getComputedStyle(root);
+      const signature=state?[
+        state.boardW,
+        state.boardH,
+        state.playerW,
+        state.playerH,
+        style.getPropertyValue('--center-band-h'),
+        style.getPropertyValue('--fluid-life-font'),
+        style.getPropertyValue('--tool-size'),
+        app.className,
+        app.querySelectorAll('.p:not(.hide)').length
+      ].map(value=>String(value).trim()).join('|'):'';
+
+      if(signature&&signature===previous)stableFrames++;
+      else stableFrames=0;
+      previous=signature;
+
+      /* Three identical painted frames allow viewport-sync, fluid typography and
+         life-value fitting to finish before the player board becomes visible. */
+      if(stableFrames>=3&&performance.now()-bootStarted>=120){
+        clearTimeout(bootFallback);
+        requestAnimationFrame(()=>requestAnimationFrame(finishBoot));
+        return;
+      }
+
+      if(attempts<45)requestAnimationFrame(sample);
+      else finishBoot();
+    };
+
+    requestAnimationFrame(sample);
+  }
+
   function bottomPlayers(){
     const players=[...app.querySelectorAll('.p:not(.hide)')];
     if(app.classList.contains('c4'))return [players[2],players[3]];
@@ -94,8 +151,10 @@
       await loadScript('v2-commander-owner-settings.js',4);
       await loadScript('v2-counter-sticky-header.js',1);
       syncPageBackdrop();
+      revealWhenStable();
     }catch(error){
       console.error('Failed to load v2 compact layer',error);
+      finishBoot();
     }
   })();
 })();
