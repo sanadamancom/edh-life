@@ -90,7 +90,7 @@
     };
   }
 
-  function syncSafeDebug(width,height,safe){
+  function syncSafeDebug(width,height,safe,boardHeight=height){
     if(!safeDebugUi)return;
     const vv=window.visualViewport;
     safeDebugUi.top.style.height=`${safe.top}px`;
@@ -100,6 +100,7 @@
       `safe bottom: ${safe.bottom.toFixed(1)}px`,
       `safe left/right: ${safe.left.toFixed(1)} / ${safe.right.toFixed(1)}px`,
       `client: ${Math.round(width)} × ${Math.round(height)}`,
+      `board height: ${Math.round(boardHeight)}`,
       `innerHeight: ${Math.round(window.innerHeight)}`,
       `visualViewport: ${vv?`${Math.round(vv.width)} × ${Math.round(vv.height)} @ ${Math.round(vv.offsetTop)}`:'n/a'}`,
       `screen: ${screen.width} × ${screen.height} @${devicePixelRatio}x`,
@@ -109,15 +110,43 @@
 
   function syncViewport(){
     const width=document.documentElement.clientWidth||window.innerWidth||1;
-    const height=document.documentElement.clientHeight||window.innerHeight||1;
+    const viewportHeight=document.documentElement.clientHeight||window.innerHeight||1;
+    const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+    const physicalScreenHeight=Number(window.screen?.height)||0;
+    const height=standalone&&physicalScreenHeight>viewportHeight
+      ? physicalScreenHeight
+      : viewportHeight;
     const safe=readSafeArea();
+
+    /* In standalone mode the CSS viewport can stop above the bottom safe area on
+       some iPads. The board uses the full physical CSS-pixel screen height so the
+       center line is the real screen center and both player rows are exactly equal. */
+    root.style.setProperty('--stage-full-height',`${height}px`);
+
     root.classList.toggle('layout-short',height<700);
     root.classList.toggle('layout-tablet',Math.min(width,height)>=600);
     window.EDHStage={
-      state:{w:width,h:height,x:0,y:0,safe,rotated:false,portraitV2:true,portraitOnly:true,boardW:width,boardH:height,scale:1,gameW:width,gameH:height,playerW:app.classList.contains('c2')?width:width/2,playerH:height/2},
+      state:{
+        w:width,
+        h:height,
+        viewportH:viewportHeight,
+        x:0,
+        y:0,
+        safe,
+        rotated:false,
+        portraitV2:true,
+        portraitOnly:true,
+        boardW:width,
+        boardH:height,
+        scale:1,
+        gameW:width,
+        gameH:height,
+        playerW:app.classList.contains('c2')?width:width/2,
+        playerH:height/2
+      },
       update:syncViewport
     };
-    syncSafeDebug(width,height,safe);
+    syncSafeDebug(width,viewportHeight,safe,height);
     window.dispatchEvent(new CustomEvent('edh-v2-layout'));
   }
 
