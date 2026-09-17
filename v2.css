@@ -4,19 +4,25 @@
 @import url('./v2-responsive.css?v=4');
 @import url('./v2-owner-status.css?v=5');
 
-/* Full-screen invariant: the actual 100dvh stage is the board, including the
-   safe-area-covered edges provided by viewport-fit=cover. Never synthesize a
-   separate lower strip or shorten the bottom row. The center utility band sits
-   between two equal 1fr rows, so every player panel has exactly the same height. */
+/* Full-screen invariant: --vh100 is synchronized from window.visualViewport.height.
+   100dvh remains only as the pre-JS fallback. Every layout layer consumes the same
+   measured visible height, and the center band stays between two equal 1fr rows. */
 :root{
+  --vh100:100dvh;
   --safe-fill-gap:0px;
   --seat-edge-safe:max(var(--safe-top),var(--safe-bottom));
 }
+html.layout-vertical-v2,
+html.layout-vertical-v2 body{
+  height:var(--vh100)!important;
+  min-height:var(--vh100)!important;
+}
 html.layout-vertical-v2 #stage{
-  height:100dvh!important;
+  height:var(--vh100)!important;
 }
 html.layout-vertical-v2 #app,
 html.layout-vertical-v2 #app.c2{
+  height:100%!important;
   grid-template-rows:minmax(0,1fr) var(--center-band-h) minmax(0,1fr)!important;
 }
 html.layout-vertical-v2 body::after,
