@@ -2,13 +2,11 @@
   const head=document.head;
   if(!head)return;
 
-  /* Layout geometry is CSS-only in v2.
-     The board is always the real 100dvh viewport, with the utility band centered
-     on 50%. Safe areas are handled only as inner player-content padding. */
+  /* The board height is owned by layout.js. In standalone mode it can be larger
+     than 100dvh so the bottom safe area participates in the same 1:1 player grid.
+     This layer must not reset --stage-full-height. */
   function resetStageGeometry(){
-    const root=document.documentElement;
     const stage=document.getElementById('stage');
-    root?.style.removeProperty('--stage-full-height');
     if(stage){
       stage.style.removeProperty('top');
       delete stage.dataset.stageHeight;
@@ -88,7 +86,7 @@
   (async()=>{
     try{
       retireTableStateUi();
-      await loadScript('v2-fluid-scale.js',8);
+      await loadScript('v2-fluid-scale.js',9);
       await loadScript('v2-life-stability.js',1);
       await loadScript('v2-compact-interactions.js',4);
       await loadScript('v2-utility-behavior.js',5);
