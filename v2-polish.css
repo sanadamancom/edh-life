@@ -1,0 +1,169 @@
+/* EDH Life v2 — visual polish only.
+   Geometry/viewport rules intentionally live elsewhere. This layer must not change
+   stage size, player-panel size, grid rows/columns, safe-area math, or rotation. */
+:root{
+  --v2-control-bg:rgba(255,255,255,.065);
+  --v2-control-bg-strong:rgba(255,255,255,.095);
+  --v2-control-pressed:rgba(255,255,255,.15);
+  --v2-control-line:rgba(255,255,255,.14);
+  --v2-card-bg:rgba(6,9,14,.42);
+  --v2-card-line:rgba(255,255,255,.12);
+  --v2-soft-shadow:0 5px 14px rgba(0,0,0,.18);
+}
+
+/* Player presentation: preserve the existing four equal outer rectangles while
+   making their internal hierarchy clearer and more consistent. */
+html.layout-vertical-v2 #app .p{
+  border-color:rgba(0,0,0,.34);
+}
+html.layout-vertical-v2 #app .name{
+  max-width:78%;
+  min-height:1.08em;
+  letter-spacing:.012em;
+  text-shadow:0 2px 7px rgba(0,0,0,.48);
+}
+html.layout-vertical-v2 #app .lifeValue{
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:"tnum" 1;
+  letter-spacing:-.055em;
+  text-shadow:0 5px 17px rgba(0,0,0,.38);
+}
+
+/* Life controls: one shared visual language with stronger press feedback but no
+   transform/size change, so repeated taps never make the layout jump. */
+html.layout-vertical-v2 #app .lifeRow .delta{
+  border-color:var(--v2-control-line)!important;
+  background:linear-gradient(180deg,var(--v2-control-bg-strong),var(--v2-control-bg))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.045),
+    0 3px 10px rgba(0,0,0,.14)!important;
+  transition:background-color 70ms linear,filter 70ms linear,border-color 70ms linear!important;
+}
+html.layout-vertical-v2 #app .lifeRow .delta .mi{
+  opacity:.92;
+}
+html.layout-vertical-v2 #app .lifeRow .delta:active{
+  background:var(--v2-control-pressed)!important;
+  border-color:rgba(255,255,255,.21)!important;
+  filter:brightness(1.08);
+}
+
+/* Commander block: reduce nested-box noise while keeping each opponent clearly
+   separated. The outer frame is quiet; the tappable opponent cards carry focus. */
+html.layout-vertical-v2 #app .cmd{
+  border-color:rgba(255,255,255,.09)!important;
+  background:rgba(4,7,11,.28)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+}
+html.layout-vertical-v2 #app .cg{
+  gap:4px!important;
+}
+html.layout-vertical-v2 #app .cc{
+  border-color:color-mix(in srgb,var(--c) 40%,rgba(255,255,255,.14))!important;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--c) 12%,#161b24),rgba(9,12,18,.92))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.035),
+    0 2px 7px rgba(0,0,0,.13);
+}
+html.layout-vertical-v2 #app .cc.commanderQuick .cw,
+html.layout-vertical-v2 #app .partnerCc>.cw{
+  color:rgba(247,248,251,.9);
+  letter-spacing:.01em;
+}
+html.layout-vertical-v2 #app .cc.commanderQuick .cv,
+html.layout-vertical-v2 #app .partnerRow b{
+  font-variant-numeric:tabular-nums;
+  text-shadow:0 2px 7px rgba(0,0,0,.28);
+}
+html.layout-vertical-v2 #app .commanderTap:active,
+html.layout-vertical-v2 #app .commanderTapRow:active,
+html.layout-vertical-v2 #app .partnerRow:active{
+  background:rgba(255,255,255,.09)!important;
+  filter:brightness(1.1);
+}
+html.layout-vertical-v2 #app .partnerRow{
+  border-color:rgba(255,255,255,.095)!important;
+  background:rgba(255,255,255,.04)!important;
+}
+
+/* Counter badges should read as compact status chips instead of floating text. */
+html.layout-vertical-v2 #app .counterBadge{
+  border:1px solid rgba(255,255,255,.13)!important;
+  border-radius:999px!important;
+  background:rgba(5,8,13,.58)!important;
+  box-shadow:0 2px 8px rgba(0,0,0,.2);
+  backdrop-filter:blur(5px);
+}
+
+/* Center tools: keep the tray-free layout, but normalize every icon button to the
+   same surface and press state. */
+html.layout-vertical-v2 #tools{
+  gap:max(3px,var(--tool-gap))!important;
+}
+html.layout-vertical-v2 #tools>button,
+html.layout-vertical-v2 #tools>.dw>button{
+  border-color:var(--v2-control-line)!important;
+  background:linear-gradient(180deg,var(--v2-control-bg-strong),var(--v2-control-bg))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.045),
+    0 3px 10px rgba(0,0,0,.16)!important;
+  transition:background-color 70ms linear,filter 70ms linear,border-color 70ms linear!important;
+}
+html.layout-vertical-v2 #tools>button .mi,
+html.layout-vertical-v2 #tools>.dw>button .mi{
+  opacity:.9!important;
+}
+html.layout-vertical-v2 #tools>button:active,
+html.layout-vertical-v2 #tools>.dw>button:active{
+  background:var(--v2-control-pressed)!important;
+  border-color:rgba(255,255,255,.21)!important;
+  filter:brightness(1.08);
+}
+
+/* Menus launched from the center bar visually belong to the same control family. */
+html.layout-vertical-v2 #tools .dm{
+  padding:5px!important;
+  border:1px solid rgba(255,255,255,.14)!important;
+  border-radius:12px!important;
+  background:rgba(9,13,20,.94)!important;
+  box-shadow:0 10px 28px rgba(0,0,0,.42)!important;
+  backdrop-filter:blur(12px);
+}
+html.layout-vertical-v2 #tools .dm button{
+  border-color:rgba(255,255,255,.12)!important;
+  border-radius:8px!important;
+}
+
+/* Defeat state: keep underlying information readable, but make the state label
+   cleaner and easier to scan without enlarging its 90% safety box. */
+html.layout-vertical-v2 #app .p.defeated .pc::after{
+  color:rgba(255,255,255,.88)!important;
+  font-weight:950!important;
+  letter-spacing:.1em!important;
+  text-shadow:0 2px 12px rgba(0,0,0,.78)!important;
+}
+html.layout-vertical-v2 #app .p.defeated .pc>*:not(.dead){
+  opacity:.5;
+  filter:saturate(.5) brightness(.84);
+}
+
+/* Pointer devices get discoverable focus/hover without changing touch geometry. */
+@media (hover:hover) and (pointer:fine){
+  html.layout-vertical-v2 #app .lifeRow .delta:hover,
+  html.layout-vertical-v2 #tools>button:hover,
+  html.layout-vertical-v2 #tools>.dw>button:hover{
+    border-color:rgba(255,255,255,.22)!important;
+    filter:brightness(1.08);
+  }
+  html.layout-vertical-v2 #app .cc:hover{
+    border-color:color-mix(in srgb,var(--c) 52%,rgba(255,255,255,.2))!important;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  html.layout-vertical-v2 #app .lifeRow .delta,
+  html.layout-vertical-v2 #tools>button,
+  html.layout-vertical-v2 #tools>.dw>button{
+    transition:none!important;
+  }
+}
