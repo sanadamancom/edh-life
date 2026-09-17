@@ -21,10 +21,10 @@
     return {top:0,right:0,bottom:0,left:0};
   }
 
-  /* Use the rendered life slot as the final authority. The layout math below is
-     still useful for the base scale, but actual DOM geometry prevents large tablet
-     numerals from visually crowding the +/- row or Commander Damage. Multi-digit
-     values keep the same height and are compressed only on the X axis when needed. */
+  /* Use the rendered life slot as the final authority. The life glyph is pinned to
+     the exact center of that slot, then compressed only on X when necessary. This
+     avoids the previous behavior where the unscaled text box stayed left-anchored
+     and the visually scaled digits drifted toward / beyond the right edge. */
   function syncRenderedLifeFit(){
     if(lifeFitFrame)cancelAnimationFrame(lifeFitFrame);
     lifeFitFrame=requestAnimationFrame(()=>{
@@ -34,8 +34,11 @@
 
       let fittedFont=lifeBaseFont;
       for(const life of lives){
-        /* line-height is .88; .96 leaves visible breathing room around the glyphs. */
-        fittedFont=Math.min(fittedFont,life.clientHeight/.96);
+        /* Keep a small real rendered inset on both sides of the glyph. The parent
+           clips as a hard boundary, so life can never paint into +/- or Commander
+           Damage even when very large fonts have unusual glyph metrics. */
+        const verticalInset=clamp(life.clientHeight*.045,4,12);
+        fittedFont=Math.min(fittedFont,Math.max(1,life.clientHeight-verticalInset)/.96);
       }
       fittedFont=clamp(fittedFont,64,320);
       root.style.setProperty('--fluid-life-font',px(fittedFont));
@@ -44,18 +47,28 @@
         for(const life of lives){
           const value=life.querySelector('.lifeValue');
           if(!value)continue;
-          value.style.display='inline-block';
+
+          life.style.position='relative';
+          life.style.overflow='hidden';
+
+          value.style.position='absolute';
+          value.style.left='50%';
+          value.style.top='50%';
+          value.style.display='block';
           value.style.width='max-content';
           value.style.maxWidth='none';
+          value.style.margin='0';
+          value.style.padding='0';
           value.style.whiteSpace='nowrap';
+          value.style.lineHeight='.88';
           value.style.transformOrigin='center center';
 
-          /* offsetWidth/scrollWidth are layout widths and are not changed by a
-             previous scaleX transform, so repeated fitting remains stable. */
+          /* Layout width is measured before transform, so the fit is stable even
+             after repeated rerenders. Keep vertical size untouched; only X shrinks. */
           const naturalWidth=Math.max(value.scrollWidth||0,value.offsetWidth||0,1);
           const availableWidth=Math.max(1,life.clientWidth-12);
           const xScale=clamp(availableWidth/naturalWidth,.42,1);
-          value.style.transform=`scaleX(${xScale.toFixed(3)})`;
+          value.style.transform=`translate(-50%,-50%) scaleX(${xScale.toFixed(3)})`;
           value.dataset.lifeXScale=xScale.toFixed(3);
         }
       });
