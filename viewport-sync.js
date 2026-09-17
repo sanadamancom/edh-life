@@ -4,7 +4,11 @@
   const app=document.getElementById('app');
   if(!root||!stage||!app)return;
 
-  let applying=false;
+  let lastSignature='';
+  let frame=0;
+
+  const standalone=()=>
+    matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
 
   function readSafeArea(){
     const probe=document.createElement('div');
@@ -21,72 +25,126 @@
     return safe;
   }
 
-  function measuredViewport(){
+  function visibleViewport(){
     const vv=window.visualViewport;
-    return {
-      width:Math.max(1,Number(vv?.width)||window.innerWidth||document.documentElement.clientWidth||1),
-      height:Math.max(1,Number(vv?.height)||window.innerHeight||document.documentElement.clientHeight||1)
+    const width=Math.max(
+      1,
+      Number(vv?.width)||0,
+      Number(window.innerWidth)||0,
+      Number(document.documentElement.clientWidth)||0
+    );
+    const height=Math.max(
+      1,
+      Number(vv?.height)||0,
+      Number(window.innerHeight)||0,
+      Number(document.documentElement.clientHeight)||0
+    );
+    return {width,height};
+  }
+
+  function fullBoardHeight(width,visibleHeight,safe){
+    const isFullScreen=Boolean(document.fullscreenElement||document.webkitFullscreenElement);
+    if(!standalone()&&!isFullScreen)return visibleHeight;
+
+    const sw=Number(window.screen?.width)||0;
+    const sh=Number(window.screen?.height)||0;
+    const screenMatchesWidth=sw>0&&Math.abs(sw-width)<=4;
+    const missing=sh-visibleHeight;
+    const recoverLimit=Math.max(96,(safe.top||0)+(safe.bottom||0)+48);
+
+    /* iPad/iPhone standalone WebKit can report visualViewport/innerHeight without
+       the home-indicator strip even with viewport-fit=cover. screen.height is used
+       only when it clearly describes this same full-screen surface; it is never
+       used for ordinary Safari or a differently sized Stage Manager window. */
+    if(screenMatchesWidth&&missing>0&&missing<=recoverLimit)return sh;
+
+    /* Some WebKit builds expose the safe inset but not a matching screen delta.
+       Recover only that small edge strip, bounded by screen.height when available. */
+    const edge=Math.max(0,safe.bottom||0);
+    const candidate=visibleHeight+edge;
+    if(edge>0&&edge<=recoverLimit&&(!sh||candidate<=sh+2))return candidate;
+
+    return visibleHeight;
+  }
+
+  function playerCount(){
+    if(app.classList.contains('c2'))return 2;
+    if(app.classList.contains('c3'))return 3;
+    return 4;
+  }
+
+  function apply(){
+    frame=0;
+    const safe=readSafeArea();
+    const visible=visibleViewport();
+    const boardHeight=fullBoardHeight(visible.width,visible.height,safe);
+    const hiddenTail=Math.max(0,boardHeight-visible.height);
+    const style=getComputedStyle(root);
+    const centerBand=Math.max(0,parseFloat(style.getPropertyValue('--center-band-h'))||60);
+    const count=playerCount();
+    const columns=count===2?1:2;
+    const playerWidth=visible.width/columns;
+    const playerHeight=Math.max(0,(boardHeight-centerBand)/2);
+    const edgeInset=Math.max(safe.top||0,safe.bottom||0,hiddenTail);
+    const signature=[
+      visible.width,visible.height,boardHeight,hiddenTail,
+      safe.top,safe.right,safe.bottom,safe.left,centerBand,count
+    ].map(value=>Math.round(Number(value)*100)/100).join('|');
+
+    if(signature===lastSignature)return;
+    lastSignature=signature;
+
+    root.style.setProperty('--vh100',`${boardHeight}px`);
+    root.style.setProperty('--viewport-visible-h',`${visible.height}px`);
+    root.style.setProperty('--viewport-tail',`${hiddenTail}px`);
+    root.style.setProperty('--player-panel-h',`${playerHeight}px`);
+    root.style.setProperty('--player-panel-w',`${playerWidth}px`);
+    root.style.setProperty('--seat-edge-safe',`${edgeInset}px`);
+    root.classList.toggle('has-viewport-tail',hiddenTail>.5);
+    root.classList.toggle('layout-short',boardHeight<700);
+    root.classList.toggle('layout-tablet',Math.min(visible.width,boardHeight)>=600);
+
+    const state={
+      w:visible.width,
+      h:boardHeight,
+      viewportH:visible.height,
+      omittedBottomSafe:hiddenTail,
+      x:0,
+      y:0,
+      safe,
+      rotated:false,
+      portraitV2:true,
+      portraitOnly:true,
+      boardW:visible.width,
+      boardH:boardHeight,
+      scale:1,
+      gameW:visible.width,
+      gameH:boardHeight,
+      playerW:playerWidth,
+      playerH:playerHeight,
+      centerBandH:centerBand,
+      standalone:standalone()
     };
+
+    window.EDHStage={state,update:schedule};
+    window.dispatchEvent(new CustomEvent('edh-v2-layout',{detail:state}));
   }
 
-  function sync(){
-    if(applying)return;
-    applying=true;
-    try{
-      const {width,height}=measuredViewport();
-      const safe=readSafeArea();
-      const style=getComputedStyle(root);
-      const centerBand=Math.max(0,parseFloat(style.getPropertyValue('--center-band-h'))||60);
-      const playerHeight=Math.max(0,(height-centerBand)/2);
-      const playerWidth=app.classList.contains('c2')?width:width/2;
-
-      /* visualViewport is the single source of truth for the visible board.
-         The board itself uses every visible pixel. Safe areas only reduce the
-         inner content area; they never change player-panel geometry. */
-      root.style.setProperty('--vh100',`${height}px`);
-      root.style.setProperty('--stage-full-height',`${height}px`);
-      root.style.setProperty('--safe-fill-gap','0px');
-      root.classList.remove('has-omitted-bottom-safe');
-
-      if(window.EDHStage?.state){
-        Object.assign(window.EDHStage.state,{
-          w:width,
-          h:height,
-          viewportH:height,
-          omittedBottomSafe:0,
-          safe,
-          boardW:width,
-          boardH:height,
-          gameW:width,
-          gameH:height,
-          playerW:playerWidth,
-          playerH:playerHeight
-        });
-      }else{
-        window.EDHStage={state:{
-          w:width,h:height,viewportH:height,omittedBottomSafe:0,
-          x:0,y:0,safe,rotated:false,portraitV2:true,portraitOnly:true,
-          boardW:width,boardH:height,scale:1,gameW:width,gameH:height,
-          playerW:playerWidth,playerH:playerHeight
-        },update:sync};
-      }
-    }finally{
-      applying=false;
-    }
+  function schedule(){
+    if(frame)cancelAnimationFrame(frame);
+    frame=requestAnimationFrame(apply);
   }
 
-  /* layout.js still owns help/setup code and emits edh-v2-layout after its legacy
-     viewport pass. Correct geometry immediately afterwards, before the fluid-scale
-     listener (loaded later) reads EDHStage. */
-  window.addEventListener('edh-v2-layout',sync);
-  window.addEventListener('resize',sync,{passive:true});
-  window.visualViewport?.addEventListener('resize',sync,{passive:true});
-  window.visualViewport?.addEventListener('scroll',sync,{passive:true});
-  window.addEventListener('orientationchange',sync,{passive:true});
-  window.addEventListener('pageshow',sync,{passive:true});
-  document.addEventListener('fullscreenchange',sync);
-  new MutationObserver(sync).observe(app,{attributes:true,attributeFilter:['class']});
+  window.EDHViewportSync=schedule;
 
-  window.EDHViewportSync=sync;
-  sync();
+  window.addEventListener('resize',schedule,{passive:true});
+  window.visualViewport?.addEventListener('resize',schedule,{passive:true});
+  window.visualViewport?.addEventListener('scroll',schedule,{passive:true});
+  window.addEventListener('orientationchange',schedule,{passive:true});
+  window.addEventListener('pageshow',schedule,{passive:true});
+  document.addEventListener('fullscreenchange',schedule);
+  document.addEventListener('webkitfullscreenchange',schedule);
+  new MutationObserver(schedule).observe(app,{attributes:true,attributeFilter:['class']});
+
+  apply();
 })();
