@@ -1,28 +1,29 @@
-const CACHE_NAME='edh-life-v98-stable-life-fit';
+const CACHE_NAME='edh-life-v99-no-life-rerender-wide-seats';
 const APP_SHELL=[
   './',
   './index.html',
   './styles.css?v=33',
   './counters.css?v=34',
-  './v2.css?v=1',
+  './v2.css?v=2',
   './v2-base.css?v=1',
   './v2-compact.css?v=13',
   './v2-utility.css?v=4',
-  './v2-responsive.css?v=3',
+  './v2-responsive.css?v=4',
   './v2-owner-status.css?v=5',
   './layout.js?v=30',
   './app.js?v=33',
   './edh-features.js?v=2',
-  './multitouch.js?v=4',
+  './multitouch.js?v=5',
   './dice-extra.js?v=1',
-  './v2-fluid-scale.js?v=7',
+  './v2-fluid-scale.js?v=8',
+  './v2-life-stability.js?v=1',
   './v2-compact-interactions.js?v=4',
   './v2-utility-behavior.js?v=5',
   './v2-quick-dice-coin.js?v=5',
   './v2-coin-overlay-fix.js?v=3',
   './v2-commander-owner-settings.js?v=4',
   './v2-counter-sticky-header.js?v=1',
-  './v2-layout.js?v=1',
+  './v2-layout.js?v=2',
   './manifest.webmanifest',
   './icon.svg'
 ];
@@ -53,7 +54,7 @@ self.addEventListener('fetch',event=>{
 
   if(event.request.mode==='navigate'){
     event.respondWith(
-      fetch(event.request)
+      fetch(event.request,{cache:'reload'})
         .then(response=>{
           const copy=response.clone();
           caches.open(CACHE_NAME).then(cache=>cache.put('./index.html',copy));
