@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v112-full-screen-equal-player-panels';
+const CACHE_NAME='edh-life-v113-true-full-screen-equal-seats';
 const APP_SHELL=[
   './',
   './index.html',
