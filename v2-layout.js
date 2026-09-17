@@ -2,9 +2,9 @@
   const head=document.head;
   if(!head)return;
 
-  /* The board height is owned by layout.js. In standalone mode it can be larger
-     than 100dvh so the bottom safe area participates in the same 1:1 player grid.
-     This layer must not reset --stage-full-height. */
+  /* The board height is owned by layout.js. It represents the full visible table,
+     including any bottom safe-area strip omitted from 100dvh. v2.css keeps the
+     renderable stage at 100dvh and accounts for that strip in the bottom row. */
   function resetStageGeometry(){
     const stage=document.getElementById('stage');
     if(stage){
@@ -17,6 +17,7 @@
   }
 
   function syncBottomBackdrop(){
+    const root=document.documentElement;
     const app=document.getElementById('app');
     const stage=document.getElementById('stage');
     if(!app)return;
@@ -27,21 +28,37 @@
     else if(app.classList.contains('c3'))bottom=[players[1],players[2]];
     else if(app.classList.contains('c2'))bottom=[players[1]];
 
-    const colorOf=player=>{
-      if(!player)return '';
-      return player.style.getPropertyValue('--pc').trim()||
-        getComputedStyle(player).getPropertyValue('--pc').trim();
+    const backgroundImageOf=player=>{
+      if(!player)return 'linear-gradient(var(--bg),var(--bg))';
+      const style=getComputedStyle(player);
+      const image=(style.backgroundImage||'').trim();
+      if(image&&image!=='none')return image;
+      const color=(style.backgroundColor||'').trim()||
+        player.style.getPropertyValue('--pc').trim()||'#0d0f14';
+      return `linear-gradient(${color},${color})`;
     };
 
-    const colors=bottom.map(colorOf).filter(Boolean);
-    if(!colors.length)return;
-    const background=colors.length===1
-      ?colors[0]
-      :`linear-gradient(90deg,${colors[0]} 0 50%,${colors[1]} 50% 100%)`;
+    const left=backgroundImageOf(bottom[0]);
+    const right=backgroundImageOf(bottom[1]||bottom[0]);
+    root.style.setProperty('--safe-fill-left-bg',left);
+    root.style.setProperty('--safe-fill-right-bg',right);
 
-    document.documentElement.style.background=background;
-    document.body.style.background=background;
-    if(stage)stage.style.background=background;
+    /* iPad standalone can expose the omitted home-indicator strip using the page
+       canvas rather than a DOM box. Give html/body the same two lower-seat halves
+       so that canvas is painted too, while the pseudo-element handles engines that
+       allow drawing into the omitted safe-area strip directly. */
+    const pageBackground=`${left}, ${right}`;
+    const applyPageBackdrop=element=>{
+      if(!element)return;
+      element.style.backgroundColor=getComputedStyle(root).getPropertyValue('--bg').trim()||'#0d0f14';
+      element.style.backgroundImage=pageBackground;
+      element.style.backgroundSize='50% 100%,50% 100%';
+      element.style.backgroundPosition='left top,right top';
+      element.style.backgroundRepeat='no-repeat';
+    };
+    applyPageBackdrop(root);
+    applyPageBackdrop(document.body);
+    if(stage)stage.style.background='var(--bg)';
   }
 
   function retireTableStateUi(){
