@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v105-defeated-banner-90';
+const CACHE_NAME='edh-life-v106-defeated-dim-full-width';
 const APP_SHELL=[
   './',
   './index.html',
