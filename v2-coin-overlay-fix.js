@@ -147,10 +147,11 @@
     return `<div class="coinOverlayFace ${side}">${art(side)}<span class="coinOverlayWord">${label}</span></div>`;
   };
   const clearCoin=()=>{overlay.replaceChildren()};
+  const clearDiceResults=()=>document.querySelectorAll('.die').forEach(node=>node.remove());
 
   function toss(){
     clearCoin();
-    document.querySelectorAll('.coinTossResult').forEach(node=>node.remove());
+    clearDiceResults();
 
     const side=randomInt(2)===0?'heads':'tails';
     const label=side==='heads'?'表':'裏';

@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v94-coin-center-label';
+const CACHE_NAME='edh-life-v95-result-exclusivity-tablet-spacing';
 const APP_SHELL=[
   './',
   './index.html',
@@ -15,11 +15,11 @@ const APP_SHELL=[
   './edh-features.js?v=2',
   './multitouch.js?v=4',
   './dice-extra.js?v=1',
-  './v2-fluid-scale.js?v=3',
+  './v2-fluid-scale.js?v=4',
   './v2-compact-interactions.js?v=4',
   './v2-utility-behavior.js?v=5',
   './v2-quick-dice-coin.js?v=5',
-  './v2-coin-overlay-fix.js?v=2',
+  './v2-coin-overlay-fix.js?v=3',
   './v2-commander-owner-settings.js?v=4',
   './v2-counter-sticky-header.js?v=1',
   './v2-layout.js?v=1',
