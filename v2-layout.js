@@ -92,6 +92,7 @@
       await loadScript('v2-compact-interactions.js',4);
       await loadScript('v2-utility-behavior.js',5);
       await loadScript('v2-quick-dice-coin.js',5);
+      await loadScript('v2-coin-overlay-fix.js',1);
       await loadScript('v2-commander-owner-settings.js',4);
       await loadScript('v2-counter-sticky-header.js',1);
       syncBottomBackdrop();
