@@ -122,10 +122,12 @@
       :0;
     const height=viewportHeight+omittedBottomSafe;
 
-    /* Only the safe-area strip omitted by the standalone CSS viewport is added to
-       the board. This keeps the center on the true visible screen center without
-       treating browser chrome or multitasking space as part of the game board. */
+    /* The game geometry uses the full visible screen. When iOS omits the lower
+       safe-area strip from the CSS viewport, CSS paints that strip as the clipped
+       continuation of the two lower player panels. */
     root.style.setProperty('--stage-full-height',`${height}px`);
+    root.style.setProperty('--safe-fill-gap',`${omittedBottomSafe}px`);
+    root.classList.toggle('has-omitted-bottom-safe',omittedBottomSafe>.5);
 
     root.classList.toggle('layout-short',height<700);
     root.classList.toggle('layout-tablet',Math.min(width,height)>=600);
