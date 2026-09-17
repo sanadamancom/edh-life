@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v115-viewport-grid-geometry';
+const CACHE_NAME='edh-life-v116-viewport-geometry-refactor';
 const APP_SHELL=[
   './',
   './index.html',
@@ -15,7 +15,7 @@ const APP_SHELL=[
   './edh-features.js?v=2',
   './multitouch.js?v=5',
   './dice-extra.js?v=1',
-  './viewport-sync.js?v=1',
+  './viewport-sync.js?v=2',
   './v2-fluid-scale.js?v=9',
   './v2-life-stability.js?v=1',
   './v2-compact-interactions.js?v=4',
