@@ -35,3 +35,19 @@ html.layout-vertical-v2 #app .pc>.cmd .cc{
   width:100%!important;
   max-width:none!important;
 }
+
+/* Keep the defeat banner inside each player's panel instead of letting the word
+   extend into the neighboring seat. */
+html.layout-vertical-v2 #app .p.defeated .pc::after{
+  left:5%!important;
+  right:auto!important;
+  top:0!important;
+  bottom:0!important;
+  width:90%!important;
+  max-width:90%!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  text-align:center!important;
+  font-size:clamp(24px,7.2vw,32px)!important;
+  letter-spacing:.08em!important;
+}
