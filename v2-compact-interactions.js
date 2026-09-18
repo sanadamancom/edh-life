@@ -166,17 +166,5 @@
     openSelfSettings(self);
   });
 
-  const helpCards=[...document.querySelectorAll('#helpOverlay .helpCard')];
-  const lifeHelp=helpCards.find(card=>card.querySelector('h3')?.textContent==='ライフ');
-  if(lifeHelp){
-    const paragraphs=lifeHelp.querySelectorAll('p');
-    if(paragraphs[1])paragraphs[1].innerHTML='ライフ数字の<b>左半分で−、右半分で＋</b>。長押しは×1→×5→×10に加速します。プレイヤー設定は座席マップの<b>ME</b>をタップします。';
-  }
-  const commanderHelp=helpCards.find(card=>card.querySelector('h3')?.textContent==='統率者ダメージ');
-  if(commanderHelp){
-    const paragraphs=commanderHelp.querySelectorAll('p');
-    if(paragraphs[1])paragraphs[1].innerHTML='卓上の<b>座席配置どおり</b>に表示します。相手の席をタップで+1、減算は長押し詳細から編集します。';
-  }
-
   render();
 })();
