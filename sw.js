@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v128-multiple-commander-modal-layout';
+const CACHE_NAME='edh-life-v129-current-help';
 const APP_SHELL=[
   './',
   './index.html',
@@ -15,7 +15,7 @@ const APP_SHELL=[
   './v2-seatmap.css?v=2',
   './v2-life-surface.css?v=5',
   './v2-results.css?v=1',
-  './layout.js?v=30',
+  './layout.js?v=31',
   './app.js?v=34',
   './edh-features.js?v=2',
   './multitouch.js?v=6',
@@ -23,7 +23,7 @@ const APP_SHELL=[
   './viewport-sync.js?v=2',
   './v2-fluid-scale.js?v=13',
   './v2-life-stability.js?v=1',
-  './v2-compact-interactions.js?v=7',
+  './v2-compact-interactions.js?v=8',
   './v2-utility-behavior.js?v=5',
   './v2-quick-dice-coin.js?v=5',
   './v2-coin-overlay-fix.js?v=3',
