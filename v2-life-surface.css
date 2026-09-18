@@ -1,0 +1,106 @@
+/* Life is the primary control surface.
+   The visible total stays centered while transparent left/right halves handle
+   decrement/increment. This removes the dedicated +/- row without shrinking the
+   touch targets. */
+html.layout-vertical-v2 #app .lifeRow{
+  position:relative!important;
+  display:block!important;
+  width:86%!important;
+  min-width:0;
+  min-height:72px;
+  overflow:hidden!important;
+}
+
+html.layout-vertical-v2 #app .lifeRow .life{
+  position:absolute!important;
+  inset:0!important;
+  z-index:1;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  display:grid!important;
+  place-items:center!important;
+  pointer-events:none!important;
+  background:transparent!important;
+  border:0!important;
+}
+
+html.layout-vertical-v2 #app .lifeRow .lifeHit{
+  position:absolute!important;
+  top:0!important;
+  bottom:0!important;
+  z-index:2;
+  width:50%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  outline:0;
+  background:transparent!important;
+  box-shadow:none!important;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+
+html.layout-vertical-v2 #app .lifeRow .lifeHitMinus{left:0!important;right:auto!important}
+html.layout-vertical-v2 #app .lifeRow .lifeHitPlus{left:auto!important;right:0!important}
+
+html.layout-vertical-v2 #app .lifeRow .lifeHit .lifeControlGlyph{
+  position:absolute;
+  top:50%;
+  z-index:3;
+  transform:translateY(-50%);
+  color:rgba(247,248,251,.62);
+  font-size:clamp(25px,6.4vw,38px);
+  font-weight:500;
+  line-height:1;
+  text-shadow:0 2px 8px rgba(0,0,0,.34);
+  pointer-events:none;
+}
+html.layout-vertical-v2 #app .lifeRow .lifeHitMinus .lifeControlGlyph{left:7px}
+html.layout-vertical-v2 #app .lifeRow .lifeHitPlus .lifeControlGlyph{right:7px}
+
+html.layout-vertical-v2 #app .lifeRow .lifeHit:active,
+html.layout-vertical-v2 #app .lifeRow .lifeHit.repeat-held{
+  border:0!important;
+  box-shadow:none!important;
+  filter:none!important;
+}
+html.layout-vertical-v2 #app .lifeRow .lifeHitMinus:active,
+html.layout-vertical-v2 #app .lifeRow .lifeHitMinus.repeat-held{
+  background:linear-gradient(90deg,rgba(255,255,255,.055),transparent 80%)!important;
+}
+html.layout-vertical-v2 #app .lifeRow .lifeHitPlus:active,
+html.layout-vertical-v2 #app .lifeRow .lifeHitPlus.repeat-held{
+  background:linear-gradient(270deg,rgba(255,255,255,.055),transparent 80%)!important;
+}
+
+/* Keep the acceleration badge visible without turning the half-screen hit target
+   into a visible button. */
+html.layout-vertical-v2 #app .lifeRow .lifeHit.repeat-held[data-repeat-label]::after{
+  top:7px!important;
+  right:7px!important;
+}
+html.layout-vertical-v2 #app .lifeRow .lifeHitMinus.repeat-held[data-repeat-label]::after{
+  left:7px!important;
+  right:auto!important;
+}
+
+/* The ME seat is now the player-settings affordance. */
+html.layout-vertical-v2 #app .cmd .seatSelf{
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+html.layout-vertical-v2 #app .cmd .seatSelf:active{
+  border-color:color-mix(in srgb,var(--c) 52%,rgba(255,255,255,.20));
+  background:linear-gradient(180deg,color-mix(in srgb,var(--c) 13%,rgba(24,29,39,.78)),rgba(10,14,20,.66));
+}
+html.layout-vertical-v2 #app .cmd .seatSelf:focus-visible{
+  outline:2px solid rgba(255,255,255,.72);
+  outline-offset:-3px;
+}
