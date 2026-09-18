@@ -143,8 +143,8 @@
       <div class="playerCoreRow">
         <span class="playerCoreLabel">統率者</span>
         <div class="playerPartnerMode">
-          <button type="button" data-player-mode="single" class="${partner?'':'active'}">単一統率者</button>
-          <button type="button" data-player-mode="partner" class="${partner?'active':''}">Partner</button>
+          <button type="button" data-player-mode="single" class="${partner?'':'active'}">単一</button>
+          <button type="button" data-player-mode="partner" class="${partner?'active':''}">複数</button>
         </div>
       </div>`;
   }
