@@ -1,4 +1,4 @@
-const CACHE_NAME='edh-life-v120-life-hold-acceleration';
+const CACHE_NAME='edh-life-v121-commander-seat-map';
 const APP_SHELL=[
   './',
   './index.html',
@@ -12,6 +12,7 @@ const APP_SHELL=[
   './v2-responsive.css?v=4',
   './v2-owner-status.css?v=5',
   './v2-polish.css?v=2',
+  './v2-seatmap.css?v=1',
   './v2-results.css?v=1',
   './layout.js?v=30',
   './app.js?v=33',
@@ -19,9 +20,9 @@ const APP_SHELL=[
   './multitouch.js?v=5',
   './dice-extra.js?v=1',
   './viewport-sync.js?v=2',
-  './v2-fluid-scale.js?v=9',
+  './v2-fluid-scale.js?v=10',
   './v2-life-stability.js?v=1',
-  './v2-compact-interactions.js?v=4',
+  './v2-compact-interactions.js?v=5',
   './v2-utility-behavior.js?v=5',
   './v2-quick-dice-coin.js?v=5',
   './v2-coin-overlay-fix.js?v=3',
