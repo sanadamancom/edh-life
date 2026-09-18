@@ -165,10 +165,10 @@
   const baseRender=render;
   render=function(){
     baseRender();
-    app.querySelectorAll('.life[data-life]').forEach(button=>{
-      const index=Number(button.dataset.life);
+    app.querySelectorAll('.life[data-life]').forEach(life=>{
+      const index=Number(life.dataset.life);
       const player=state.players[index];
-      if(player)button.setAttribute('aria-label',`${player.name}のプレイヤー設定を長押しして開く`);
+      if(player)life.setAttribute('aria-label',`${player.name}の現在ライフ ${player.life}`);
     });
     app.querySelectorAll('.counterBadges,.ownerStatusBadges').forEach(element=>element.remove());
   };
