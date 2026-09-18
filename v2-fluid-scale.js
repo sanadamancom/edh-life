@@ -113,12 +113,12 @@
     const panelPad=fit(3,5*chromeScale,10);
     const panelGap=fit(3,4*chromeScale,8);
     const controlHeight=fit(40,46*controlScale,72);
-    const commanderCardHeight=fit(44,50*commanderScale,74);
+    const commanderCardHeight=fit(50,56*commanderScale,82);
     const nameFont=fit(15,19*nameScale,29);
-    const commanderNameFont=fit(10,13*nameScale,19);
-    const commanderValueFont=fit(20,27*nameScale,40);
-    const partnerNameFont=fit(9,11*nameScale,16);
-    const partnerValueFont=fit(17,21*nameScale,32);
+    const commanderNameFont=fit(10,14*nameScale,20);
+    const commanderValueFont=fit(22,29*nameScale,42);
+    const partnerNameFont=fit(10,12*nameScale,17);
+    const partnerValueFont=fit(19,23*nameScale,34);
     const partnerMarkFont=fit(9,9*nameScale,13);
 
     /* Commander damage is a spatial seat map. Every supported table shape uses
