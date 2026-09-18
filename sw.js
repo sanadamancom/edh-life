@@ -1,10 +1,10 @@
-const CACHE_NAME='edh-life-v122-life-surface-me-settings';
+const CACHE_NAME='edh-life-v123-edge-life-controls-larger-seat-map';
 const APP_SHELL=[
   './',
   './index.html',
   './styles.css?v=33',
   './counters.css?v=34',
-  './v2.css?v=3',
+  './v2.css?v=4',
   './boot-splash.css?v=1',
   './v2-base.css?v=1',
   './v2-compact.css?v=13',
@@ -12,8 +12,8 @@ const APP_SHELL=[
   './v2-responsive.css?v=4',
   './v2-owner-status.css?v=5',
   './v2-polish.css?v=2',
-  './v2-seatmap.css?v=1',
-  './v2-life-surface.css?v=1',
+  './v2-seatmap.css?v=2',
+  './v2-life-surface.css?v=2',
   './v2-results.css?v=1',
   './layout.js?v=30',
   './app.js?v=34',
@@ -21,7 +21,7 @@ const APP_SHELL=[
   './multitouch.js?v=6',
   './dice-extra.js?v=1',
   './viewport-sync.js?v=2',
-  './v2-fluid-scale.js?v=11',
+  './v2-fluid-scale.js?v=12',
   './v2-life-stability.js?v=1',
   './v2-compact-interactions.js?v=6',
   './v2-utility-behavior.js?v=5',
