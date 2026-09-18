@@ -27,3 +27,12 @@ html.layout-vertical-v2 .diceLayer .die.center:not(.coinTossResult){
 html.layout-vertical-v2 .diceLayer .d20Die .face{
   font-size:42px!important;
 }
+
+
+/* Player-local dice are appended as siblings of .pc. Lower seats do not have the
+   rotated stacking context used by upper seats, so without an explicit z-index
+   their life layer can paint over the die. Keep all per-player results above the
+   player content on every seat. */
+html.layout-vertical-v2 #app .p>.die.player{
+  z-index:20!important;
+}
