@@ -129,7 +129,9 @@
     const commanderBlock=commanderRows*commanderCardHeight+
       (commanderRows-1)*commanderGap+commanderPadding;
     const innerHeight=Math.max(1,seatHeight-safeEdge-panelPad*2);
-    const fixedHeight=commanderBlock+(nameFont*1.05)+(panelGap*3)+controlHeight;
+    /* +/- now occupies transparent halves of the life surface, so it consumes
+       no additional vertical row. */
+    const fixedHeight=commanderBlock+(nameFont*1.05)+(panelGap*2);
     const lifeSlot=Math.max(64,innerHeight-fixedHeight);
     const largeSeatProgress=clamp((density-1)/.75,0,1);
     const lifeGlyphRatio=.76+(.06*largeSeatProgress);
