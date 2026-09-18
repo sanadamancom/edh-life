@@ -119,10 +119,10 @@ html.layout-vertical-v2 #app .p.random-selected::after{
 }
 
 html.layout-vertical-v2 #app .p.defeated .pc::after{
-  color:rgba(255,255,255,.88)!important;
+  color:var(--danger)!important;
   font-weight:950!important;
   letter-spacing:.1em!important;
-  text-shadow:0 2px 12px rgba(0,0,0,.78)!important;
+  text-shadow:0 0 12px rgba(255,101,109,.35),0 3px 14px rgba(0,0,0,.78)!important;
 }
 html.layout-vertical-v2 #app .p.defeated .pc>*:not(.dead){
   opacity:.5;
