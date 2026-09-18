@@ -5,7 +5,7 @@
 html.layout-vertical-v2 #app .lifeRow{
   position:relative!important;
   display:block!important;
-  width:100%!important;
+  width:94%!important;
   min-width:0;
   min-height:72px;
   overflow:hidden!important;
@@ -15,10 +15,10 @@ html.layout-vertical-v2 #app .lifeRow .life{
   position:absolute!important;
   top:0!important;
   bottom:0!important;
-  left:7%!important;
+  left:9%!important;
   right:auto!important;
   z-index:1;
-  width:86%!important;
+  width:82%!important;
   height:100%!important;
   min-width:0!important;
   min-height:0!important;
@@ -64,10 +64,10 @@ html.layout-vertical-v2 #app .lifeRow .lifeHit .lifeControlGlyph{
   text-shadow:0 2px 8px rgba(0,0,0,.34);
   pointer-events:none;
 }
-/* Keep the life number at its previous 86% width. The remaining 7% gutters on
-   each side are reserved for the +/- hints. */
-html.layout-vertical-v2 #app .lifeRow .lifeHitMinus .lifeControlGlyph{left:calc(3.5% - .45em)}
-html.layout-vertical-v2 #app .lifeRow .lifeHitPlus .lifeControlGlyph{right:calc(3.5% - .45em)}
+/* The life total is slightly narrower than before, leaving dedicated visible
+   gutters for the +/- hints while keeping both controls inside the player panel. */
+html.layout-vertical-v2 #app .lifeRow .lifeHitMinus .lifeControlGlyph{left:5px}
+html.layout-vertical-v2 #app .lifeRow .lifeHitPlus .lifeControlGlyph{right:5px}
 
 html.layout-vertical-v2 #app .lifeRow .lifeHit:active,
 html.layout-vertical-v2 #app .lifeRow .lifeHit.repeat-held{
