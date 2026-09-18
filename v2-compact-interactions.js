@@ -35,7 +35,7 @@
       }
 
       cells.push(`
-        <div class="cc seatCell partnerCc ${(first>=18||second>=18)?'hot':''}" data-seat="${source}" data-cmd-card data-t="${playerIndex}" data-s="${source}" style="--c:${sourcePlayer.color}" title="A/Bをタップで+1 / 長押しでPartner詳細">
+        <div class="cc seatCell partnerCc ${(first>=18||second>=18)?'hot':''}" data-seat="${source}" data-cmd-card data-t="${playerIndex}" data-s="${source}" style="--c:${sourcePlayer.color}" title="A/Bをタップで+1 / 長押しで複数統率者詳細">
           <div class="cw">${escapeHtml(sourcePlayer.name)}</div>
           <div class="partnerRows">
             <div class="partnerRow commanderTapRow ${first>=18?'hot':''}" data-cmd-slot="0" role="button" tabindex="0" aria-label="Commander A Damageを1増やす">
