@@ -14,7 +14,7 @@
          rotate their whole content, so the map automatically faces the seated user. */
       if(source===playerIndex){
         cells.push(`
-          <div class="seatCell seatSelf" data-seat="${source}" style="--c:${sourcePlayer.color}" aria-label="自分の席">
+          <div class="seatCell seatSelf" data-seat="${source}" data-self-index="${playerIndex}" role="button" tabindex="0" style="--c:${sourcePlayer.color}" aria-label="${escapeHtml(sourcePlayer.name)}のプレイヤー設定を開く" title="プレイヤー設定">
             <span>ME</span>
           </div>`);
         continue;
@@ -36,7 +36,7 @@
 
       cells.push(`
         <div class="cc seatCell partnerCc ${(first>=18||second>=18)?'hot':''}" data-seat="${source}" data-cmd-card data-t="${playerIndex}" data-s="${source}" style="--c:${sourcePlayer.color}" title="A/Bをタップで+1 / 長押しでPartner詳細">
-          <div class="cw">${escapeHtml(sourcePlayer.name)} · Partner</div>
+          <div class="cw">${escapeHtml(sourcePlayer.name)}</div>
           <div class="partnerRows">
             <div class="partnerRow commanderTapRow ${first>=18?'hot':''}" data-cmd-slot="0" role="button" tabindex="0" aria-label="Commander A Damageを1増やす">
               <span class="partnerMark">A</span><b>${first}</b>
@@ -143,11 +143,34 @@
     addDamage(Number(card.dataset.t),Number(card.dataset.s),Number(target.dataset.cmdSlot));
   });
 
+  function openSelfSettings(self){
+    const index=Number(self?.dataset.selfIndex);
+    if(!Number.isInteger(index)||!state.players[index]||typeof openCounters!=='function')return;
+    openCounters(index);
+    navigator.vibrate?.(10);
+  }
+
+  app.addEventListener('click',event=>{
+    const self=event.target.closest('.seatSelf[data-self-index]');
+    if(!self)return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    openSelfSettings(self);
+  },true);
+
+  app.addEventListener('keydown',event=>{
+    if(event.key!=='Enter'&&event.key!==' ')return;
+    const self=event.target.closest('.seatSelf[data-self-index]');
+    if(!self)return;
+    event.preventDefault();
+    openSelfSettings(self);
+  });
+
   const helpCards=[...document.querySelectorAll('#helpOverlay .helpCard')];
   const lifeHelp=helpCards.find(card=>card.querySelector('h3')?.textContent==='ライフ');
   if(lifeHelp){
     const paragraphs=lifeHelp.querySelectorAll('p');
-    if(paragraphs[1])paragraphs[1].innerHTML='<b>−1 / +1</b>で増減。長押しでプレイヤー設定を開きます。';
+    if(paragraphs[1])paragraphs[1].innerHTML='ライフ数字の<b>左半分で−、右半分で＋</b>。長押しは×1→×5→×10に加速します。プレイヤー設定は座席マップの<b>ME</b>をタップします。';
   }
   const commanderHelp=helpCards.find(card=>card.querySelector('h3')?.textContent==='統率者ダメージ');
   if(commanderHelp){
