@@ -1,10 +1,10 @@
-const CACHE_NAME='edh-life-v123-edge-life-controls-larger-seat-map';
+const CACHE_NAME='edh-life-v124-life-width-side-gutters';
 const APP_SHELL=[
   './',
   './index.html',
   './styles.css?v=33',
   './counters.css?v=34',
-  './v2.css?v=4',
+  './v2.css?v=5',
   './boot-splash.css?v=1',
   './v2-base.css?v=1',
   './v2-compact.css?v=13',
@@ -13,7 +13,7 @@ const APP_SHELL=[
   './v2-owner-status.css?v=5',
   './v2-polish.css?v=2',
   './v2-seatmap.css?v=2',
-  './v2-life-surface.css?v=2',
+  './v2-life-surface.css?v=3',
   './v2-results.css?v=1',
   './layout.js?v=30',
   './app.js?v=34',
