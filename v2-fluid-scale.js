@@ -113,7 +113,7 @@
     const panelPad=fit(3,5*chromeScale,10);
     const panelGap=fit(3,4*chromeScale,8);
     const controlHeight=fit(40,46*controlScale,72);
-    const commanderCardHeight=fit(50,56*commanderScale,82);
+    const commanderCardHeight=fit(54,61*commanderScale,88);
     const nameFont=fit(15,19*nameScale,29);
     const commanderNameFont=fit(10,14*nameScale,20);
     const commanderValueFont=fit(22,29*nameScale,42);
@@ -136,7 +136,7 @@
     const largeSeatProgress=clamp((density-1)/.75,0,1);
     const lifeGlyphRatio=.76+(.06*largeSeatProgress);
     const lifeByHeight=lifeSlot/lifeGlyphRatio;
-    const lifeByWidth=seatWidth*(count===2?.82:.80);
+    const lifeByWidth=seatWidth*(count===2?.80:.76);
     const lifeFont=clamp(Math.min(lifeByHeight,lifeByWidth),64,320);
     lifeBaseFont=lifeFont;
 
