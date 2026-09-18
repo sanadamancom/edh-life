@@ -144,12 +144,12 @@
       window.EDHViewportSync?.();
       await loadScript('v2-fluid-scale.js',13);
       await loadScript('v2-life-stability.js',1);
-      await loadScript('v2-compact-interactions.js',6);
+      await loadScript('v2-compact-interactions.js',7);
       await loadScript('v2-utility-behavior.js',5);
       await loadScript('v2-quick-dice-coin.js',5);
       await loadScript('v2-coin-overlay-fix.js',3);
-      await loadScript('v2-commander-owner-settings.js',5);
-      await loadScript('v2-counter-sticky-header.js',1);
+      await loadScript('v2-commander-owner-settings.js',6);
+      await loadScript('v2-counter-sticky-header.js',2);
       syncPageBackdrop();
       revealWhenStable();
     }catch(error){
