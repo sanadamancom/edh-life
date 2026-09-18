@@ -1,10 +1,10 @@
-const CACHE_NAME='edh-life-v129-current-help';
+const CACHE_NAME='edh-life-v130-player-dice-layering';
 const APP_SHELL=[
   './',
   './index.html',
   './styles.css?v=33',
   './counters.css?v=34',
-  './v2.css?v=8',
+  './v2.css?v=9',
   './boot-splash.css?v=1',
   './v2-base.css?v=1',
   './v2-compact.css?v=13',
@@ -14,7 +14,7 @@ const APP_SHELL=[
   './v2-polish.css?v=3',
   './v2-seatmap.css?v=2',
   './v2-life-surface.css?v=5',
-  './v2-results.css?v=1',
+  './v2-results.css?v=2',
   './layout.js?v=31',
   './app.js?v=34',
   './edh-features.js?v=2',
