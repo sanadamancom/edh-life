@@ -144,7 +144,7 @@
       window.EDHViewportSync?.();
       await loadScript('v2-fluid-scale.js',13);
       await loadScript('v2-life-stability.js',1);
-      await loadScript('v2-compact-interactions.js',7);
+      await loadScript('v2-compact-interactions.js',8);
       await loadScript('v2-utility-behavior.js',5);
       await loadScript('v2-quick-dice-coin.js',5);
       await loadScript('v2-coin-overlay-fix.js',3);
