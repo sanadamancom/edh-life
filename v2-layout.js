@@ -142,7 +142,7 @@
          consumes EDHStage and CSS variables produced by it. */
       await loadScript('viewport-sync.js',2);
       window.EDHViewportSync?.();
-      await loadScript('v2-fluid-scale.js',11);
+      await loadScript('v2-fluid-scale.js',12);
       await loadScript('v2-life-stability.js',1);
       await loadScript('v2-compact-interactions.js',6);
       await loadScript('v2-utility-behavior.js',5);
