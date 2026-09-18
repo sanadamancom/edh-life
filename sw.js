@@ -1,17 +1,17 @@
-const CACHE_NAME='edh-life-v126-life-clearance-seatmap-scale';
+const CACHE_NAME='edh-life-v127-red-defeated';
 const APP_SHELL=[
   './',
   './index.html',
   './styles.css?v=33',
   './counters.css?v=34',
-  './v2.css?v=7',
+  './v2.css?v=8',
   './boot-splash.css?v=1',
   './v2-base.css?v=1',
   './v2-compact.css?v=13',
   './v2-utility.css?v=4',
   './v2-responsive.css?v=4',
   './v2-owner-status.css?v=5',
-  './v2-polish.css?v=2',
+  './v2-polish.css?v=3',
   './v2-seatmap.css?v=2',
   './v2-life-surface.css?v=5',
   './v2-results.css?v=1',
