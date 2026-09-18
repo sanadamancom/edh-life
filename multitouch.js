@@ -23,7 +23,6 @@
       -webkit-touch-callout:none;
     }
     #app button.repeat-held{
-      position:relative;
       filter:brightness(1.16);
       box-shadow:inset 0 0 0 2px rgba(255,255,255,.22);
     }
