@@ -6,16 +6,26 @@
   if(!app)return;
 
   commanderCards=function(playerIndex){
-    const cards=[];
+    const cells=[];
     for(let source=0;source<state.count;source++){
-      if(source===playerIndex)continue;
       const sourcePlayer=state.players[source];
+
+      /* Keep every source in its physical table position. The upper player panels
+         rotate their whole content, so the map automatically faces the seated user. */
+      if(source===playerIndex){
+        cells.push(`
+          <div class="seatCell seatSelf" data-seat="${source}" style="--c:${sourcePlayer.color}" aria-label="自分の席">
+            <span>ME</span>
+          </div>`);
+        continue;
+      }
+
       const first=state.players[playerIndex].cmd[source]||0;
       const second=state.players[playerIndex].cmdB?.[source]||0;
 
       if(!sourcePlayer.partner){
-        cards.push(`
-          <div class="cc commanderQuick commanderTap ${first>=18?'hot':''}" data-cmd-card data-cmd-slot="0" data-t="${playerIndex}" data-s="${source}" role="button" tabindex="0" style="--c:${sourcePlayer.color}" title="タップで+1 / 長押しで統率者詳細">
+        cells.push(`
+          <div class="cc seatCell commanderQuick commanderTap ${first>=18?'hot':''}" data-seat="${source}" data-cmd-card data-cmd-slot="0" data-t="${playerIndex}" data-s="${source}" role="button" tabindex="0" style="--c:${sourcePlayer.color}" title="タップで+1 / 長押しで統率者詳細">
             <div class="cw">${escapeHtml(sourcePlayer.name)}</div>
             <div class="commanderQuickRow">
               <div class="cv">${first}</div>
@@ -24,8 +34,8 @@
         continue;
       }
 
-      cards.push(`
-        <div class="cc partnerCc ${(first>=18||second>=18)?'hot':''}" data-cmd-card data-t="${playerIndex}" data-s="${source}" style="--c:${sourcePlayer.color}" title="A/Bをタップで+1 / 長押しでPartner詳細">
+      cells.push(`
+        <div class="cc seatCell partnerCc ${(first>=18||second>=18)?'hot':''}" data-seat="${source}" data-cmd-card data-t="${playerIndex}" data-s="${source}" style="--c:${sourcePlayer.color}" title="A/Bをタップで+1 / 長押しでPartner詳細">
           <div class="cw">${escapeHtml(sourcePlayer.name)} · Partner</div>
           <div class="partnerRows">
             <div class="partnerRow commanderTapRow ${first>=18?'hot':''}" data-cmd-slot="0" role="button" tabindex="0" aria-label="Commander A Damageを1増やす">
@@ -37,7 +47,7 @@
           </div>
         </div>`);
     }
-    return cards.join('');
+    return cells.join('');
   };
 
   function addDamage(target,source,slot){
@@ -142,7 +152,7 @@
   const commanderHelp=helpCards.find(card=>card.querySelector('h3')?.textContent==='統率者ダメージ');
   if(commanderHelp){
     const paragraphs=commanderHelp.querySelectorAll('p');
-    if(paragraphs[1])paragraphs[1].innerHTML='カードを<b>タップで+1</b>。減算は長押し詳細から編集します。';
+    if(paragraphs[1])paragraphs[1].innerHTML='卓上の<b>座席配置どおり</b>に表示します。相手の席をタップで+1、減算は長押し詳細から編集します。';
   }
 
   render();
