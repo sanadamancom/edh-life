@@ -95,9 +95,16 @@ html.layout-vertical-v2 #app .pc{
   padding-left:4px!important;
   padding-right:4px!important;
 }
-html.layout-vertical-v2 #app .pc>.lifeRow,
+html.layout-vertical-v2 #app .pc>.lifeRow{
+  width:100%!important;
+  max-width:none!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  justify-self:center!important;
+  align-self:stretch!important;
+}
 html.layout-vertical-v2 #app .pc>.cmd{
-  width:86%!important;
+  width:94%!important;
   max-width:none!important;
   margin-left:auto!important;
   margin-right:auto!important;
