@@ -168,11 +168,15 @@ function renderPlayers(){
         <div class="name">${escapeHtml(player.name)}</div>
         ${counterBadges(player)}
         <div class="lifeRow">
-          <button type="button" class="quick5" aria-label="${escapeHtml(player.name)}のライフを5減らす" data-life="${index}" data-d="-5">−5</button>
-          <button type="button" class="delta" aria-label="${escapeHtml(player.name)}のライフを1減らす" data-life="${index}" data-d="-1">${icon('remove')}</button>
-          <button type="button" class="life" aria-label="${escapeHtml(player.name)}の特殊カウンターを長押しして開く" data-life="${index}" data-d="0"><span class="lifeValue">${player.life}</span></button>
-          <button type="button" class="delta" aria-label="${escapeHtml(player.name)}のライフを1増やす" data-life="${index}" data-d="1">${icon('add')}</button>
-          <button type="button" class="quick5" aria-label="${escapeHtml(player.name)}のライフを5増やす" data-life="${index}" data-d="5">＋5</button>
+          <div class="life" data-life="${index}" role="status" aria-label="${escapeHtml(player.name)}の現在ライフ ${player.life}">
+            <span class="lifeValue">${player.life}</span>
+          </div>
+          <button type="button" class="delta lifeHit lifeHitMinus" aria-label="${escapeHtml(player.name)}のライフを減らす" data-life="${index}" data-d="-1">
+            <span class="lifeControlGlyph" aria-hidden="true">−</span>
+          </button>
+          <button type="button" class="delta lifeHit lifeHitPlus" aria-label="${escapeHtml(player.name)}のライフを増やす" data-life="${index}" data-d="1">
+            <span class="lifeControlGlyph" aria-hidden="true">＋</span>
+          </button>
         </div>
         <div class="cmd"><div class="cg">${commanderCards(index)}</div></div>
         <div class="dead">${escapeHtml(defeat.reason)}</div>
@@ -296,46 +300,8 @@ counterOverlay.addEventListener('click',event=>{
   if(event.target===counterOverlay)closeCounters();
 });
 
-let holdTarget=null;
-let holdTimer=null;
-
-function clearHold(){
-  if(holdTimer){
-    clearTimeout(holdTimer);
-    holdTimer=null;
-  }
-  if(holdTarget)holdTarget.classList.remove('holding');
-  holdTarget=null;
-}
-
-app.addEventListener('pointerdown',event=>{
-  const life=event.target.closest('.life[data-life]');
-  if(!life)return;
-  if(event.pointerType==='mouse'&&event.button!==0)return;
-
-  clearHold();
-  holdTarget=life;
-  life.classList.remove('holding');
-  void life.offsetWidth;
-  life.classList.add('holding');
-  try{life.setPointerCapture?.(event.pointerId)}catch{}
-
-  holdTimer=setTimeout(()=>{
-    const index=Number(life.dataset.life);
-    clearHold();
-    openCounters(index);
-  },300);
-});
-
-document.addEventListener('pointerup',clearHold,true);
-document.addEventListener('pointercancel',clearHold,true);
-window.addEventListener('blur',clearHold);
-document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState!=='visible')clearHold();
-});
-app.addEventListener('contextmenu',event=>{
-  if(event.target.closest('.life'))event.preventDefault();
-});
+/* Player settings are opened from the ME cell in the commander seat map.
+   Life itself is reserved exclusively for fast +/- interaction. */
 
 settingsPlayers.addEventListener('change',event=>{
   const nameInput=event.target.closest('[data-n]');
