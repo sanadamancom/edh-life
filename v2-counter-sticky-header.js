@@ -6,6 +6,10 @@
   const close=document.getElementById('counterClose');
   if(!overlay||!panel||!title||!player||!close)return;
 
+  /* Player settings intentionally follows the standard modal layout: title at the
+     top, content in the middle, and Close in the bottom action row. */
+  if(panel.querySelector('.playerCoreSettings'))return;
+
   if(!panel.querySelector('.counterStickyHeader')){
     const header=document.createElement('div');
     header.className='counterStickyHeader';
