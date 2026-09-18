@@ -27,16 +27,29 @@
       <div class="modal helpPanel" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
         <div class="helpHead"><h2 id="helpTitle">使い方</h2><span>EDH LIFE v2</span></div>
         <div class="helpGrid">
-          <section class="helpCard"><h3>ライフ</h3><p><b>大きな数字</b>が現在ライフです。</p><p><b>− / ＋</b>で1点ずつ増減。長押しで連続入力できます。</p><p>ライフ数字を長押しすると、毒・経験・速度を編集できます。</p></section>
-          <section class="helpCard"><h3>統率者ダメージ</h3><p>各カードは、そのプレイヤーが相手の統率者から受けたダメージです。</p><p>カードをタップで+1。長押しすると減算・Partner・Commander Taxを編集できます。</p></section>
-          <section class="helpCard"><h3>特殊カウンター</h3><p>毒・経験・速度は、値がある時だけプレイヤー名付近に表示します。</p><p>毒10、ライフ0、同一統率者から21点で敗北表示になります。</p></section>
+          <section class="helpCard">
+            <h3>ライフ</h3>
+            <p><b>大きな数字</b>が現在ライフです。</p>
+            <p>数字の<b>左半分で−1、右半分で＋1</b>。長押しすると <b>×1 → ×5 → ×10</b> に加速します。</p>
+          </section>
+          <section class="helpCard">
+            <h3>統率者ダメージ</h3>
+            <p>卓上の<b>座席配置どおり</b>に表示します。相手の席の数字が、その統率者から受けたダメージです。</p>
+            <p>相手の席をタップで<b>ダメージ＋1・ライフ−1</b>。長押しで詳細を開き、減算もできます。</p>
+            <p>相手が<b>複数統率者</b>なら A / B を別々に管理します。</p>
+          </section>
+          <section class="helpCard">
+            <h3>プレイヤー設定・敗北</h3>
+            <p>座席マップの<b>ME</b>をタップすると、名前・カラー・統率者の<b>単一 / 複数</b>を変更できます。</p>
+            <p><b>ライフ0</b>、または同一の統率者から<b>21点</b>で DEFEATED 表示になります。</p>
+          </section>
           <section class="helpCard helpTools"><h3>操作ボタン</h3><div class="helpToolsGrid">
             <div class="helpTool"><b>Undo</b>直前の変更を戻す</div>
-            <div class="helpTool"><b>ダイス</b>タップでD6、長押しでその他</div>
+            <div class="helpTool"><b>ダイス</b>タップでD6。長押しで全員D6・D20・プレイヤー抽選</div>
             <div class="helpTool"><b>コイン</b>コイントス</div>
-            <div class="helpTool"><b>リセット</b>長押しでゲーム値を初期化</div>
+            <div class="helpTool"><b>リセット</b>長押しでゲーム値を初期化（設定は保持）</div>
             <div class="helpTool"><b>フルスクリーン</b>対応環境で切替</div>
-            <div class="helpTool"><b>設定</b>人数・名前・色を変更</div>
+            <div class="helpTool"><b>設定</b>人数変更・設定を含む全リセット</div>
           </div></section>
         </div>
         <div class="acts"><button type="button" id="helpClose">閉じる</button></div>
