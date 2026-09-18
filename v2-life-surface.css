@@ -5,7 +5,7 @@
 html.layout-vertical-v2 #app .lifeRow{
   position:relative!important;
   display:block!important;
-  width:86%!important;
+  width:100%!important;
   min-width:0;
   min-height:72px;
   overflow:hidden!important;
@@ -54,15 +54,15 @@ html.layout-vertical-v2 #app .lifeRow .lifeHit .lifeControlGlyph{
   top:50%;
   z-index:3;
   transform:translateY(-50%);
-  color:rgba(247,248,251,.62);
-  font-size:clamp(25px,6.4vw,38px);
+  color:rgba(247,248,251,.48);
+  font-size:clamp(23px,5.8vw,34px);
   font-weight:500;
   line-height:1;
   text-shadow:0 2px 8px rgba(0,0,0,.34);
   pointer-events:none;
 }
-html.layout-vertical-v2 #app .lifeRow .lifeHitMinus .lifeControlGlyph{left:7px}
-html.layout-vertical-v2 #app .lifeRow .lifeHitPlus .lifeControlGlyph{right:7px}
+html.layout-vertical-v2 #app .lifeRow .lifeHitMinus .lifeControlGlyph{left:10px}
+html.layout-vertical-v2 #app .lifeRow .lifeHitPlus .lifeControlGlyph{right:10px}
 
 html.layout-vertical-v2 #app .lifeRow .lifeHit:active,
 html.layout-vertical-v2 #app .lifeRow .lifeHit.repeat-held{
