@@ -7,7 +7,7 @@
 @import url('./v2-polish.css?v=3');
 @import url('./v2-seatmap.css?v=2');
 @import url('./v2-life-surface.css?v=5');
-@import url('./v2-results.css?v=1');
+@import url('./v2-results.css?v=2');
 
 /* Geometry contract
    1. viewport-sync.js owns --vh100 and --seat-edge-safe.
