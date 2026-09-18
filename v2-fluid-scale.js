@@ -121,11 +121,13 @@
     const partnerValueFont=fit(17,21*nameScale,32);
     const partnerMarkFont=fit(9,9*nameScale,13);
 
-    const opponents=Math.max(1,count-1);
+    /* Commander damage is a spatial seat map. Every supported table shape uses
+       two map rows, so reserve those rows rather than one vertical card per opponent. */
+    const commanderRows=2;
     const commanderGap=fit(3,3*commanderScale,5);
     const commanderPadding=fit(4,6*commanderScale,9);
-    const commanderBlock=opponents*commanderCardHeight+
-      Math.max(0,opponents-1)*commanderGap+commanderPadding;
+    const commanderBlock=commanderRows*commanderCardHeight+
+      (commanderRows-1)*commanderGap+commanderPadding;
     const innerHeight=Math.max(1,seatHeight-safeEdge-panelPad*2);
     const fixedHeight=commanderBlock+(nameFont*1.05)+(panelGap*3)+controlHeight;
     const lifeSlot=Math.max(64,innerHeight-fixedHeight);
