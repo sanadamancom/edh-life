@@ -13,9 +13,12 @@ html.layout-vertical-v2 #app .lifeRow{
 
 html.layout-vertical-v2 #app .lifeRow .life{
   position:absolute!important;
-  inset:0!important;
+  top:0!important;
+  bottom:0!important;
+  left:7%!important;
+  right:auto!important;
   z-index:1;
-  width:100%!important;
+  width:86%!important;
   height:100%!important;
   min-width:0!important;
   min-height:0!important;
@@ -61,8 +64,10 @@ html.layout-vertical-v2 #app .lifeRow .lifeHit .lifeControlGlyph{
   text-shadow:0 2px 8px rgba(0,0,0,.34);
   pointer-events:none;
 }
-html.layout-vertical-v2 #app .lifeRow .lifeHitMinus .lifeControlGlyph{left:10px}
-html.layout-vertical-v2 #app .lifeRow .lifeHitPlus .lifeControlGlyph{right:10px}
+/* Keep the life number at its previous 86% width. The remaining 7% gutters on
+   each side are reserved for the +/- hints. */
+html.layout-vertical-v2 #app .lifeRow .lifeHitMinus .lifeControlGlyph{left:calc(3.5% - .45em)}
+html.layout-vertical-v2 #app .lifeRow .lifeHitPlus .lifeControlGlyph{right:calc(3.5% - .45em)}
 
 html.layout-vertical-v2 #app .lifeRow .lifeHit:active,
 html.layout-vertical-v2 #app .lifeRow .lifeHit.repeat-held{
