@@ -1,0 +1,129 @@
+/* Commander damage seat map.
+   The map mirrors the physical player layout. Upper player panels already rotate
+   their whole .pc 180deg, so the same absolute seat coordinates remain correct
+   from every player's side of the table. */
+
+html.layout-vertical-v2 #app .cmd{
+  padding:3px!important;
+}
+
+html.layout-vertical-v2 #app .cmd .cg{
+  display:grid!important;
+  gap:3px!important;
+  width:100%!important;
+}
+
+/* Four-player table: exactly the same 2x2 geometry as the outer board. */
+html.layout-vertical-v2 #app.c4 .cmd .cg{
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  grid-template-rows:var(--commander-card-h) var(--commander-card-h)!important;
+}
+html.layout-vertical-v2 #app.c4 .cmd [data-seat="0"]{grid-column:1;grid-row:1}
+html.layout-vertical-v2 #app.c4 .cmd [data-seat="1"]{grid-column:2;grid-row:1}
+html.layout-vertical-v2 #app.c4 .cmd [data-seat="2"]{grid-column:1;grid-row:2}
+html.layout-vertical-v2 #app.c4 .cmd [data-seat="3"]{grid-column:2;grid-row:2}
+
+/* Three players keep the same physical arrangement as the main board:
+   one player across the top, two across the bottom. */
+html.layout-vertical-v2 #app.c3 .cmd .cg{
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  grid-template-rows:var(--commander-card-h) var(--commander-card-h)!important;
+}
+html.layout-vertical-v2 #app.c3 .cmd [data-seat="0"]{grid-column:1/3;grid-row:1}
+html.layout-vertical-v2 #app.c3 .cmd [data-seat="1"]{grid-column:1;grid-row:2}
+html.layout-vertical-v2 #app.c3 .cmd [data-seat="2"]{grid-column:2;grid-row:2}
+
+/* Two-player mode is a vertical head-to-head map. */
+html.layout-vertical-v2 #app.c2 .cmd .cg{
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:var(--commander-card-h) var(--commander-card-h)!important;
+}
+html.layout-vertical-v2 #app.c2 .cmd [data-seat="0"]{grid-column:1;grid-row:1}
+html.layout-vertical-v2 #app.c2 .cmd [data-seat="1"]{grid-column:1;grid-row:2}
+
+/* Every map cell has identical outer geometry. */
+html.layout-vertical-v2 #app .cmd .seatCell{
+  min-width:0;
+  width:100%!important;
+  height:var(--commander-card-h)!important;
+  min-height:var(--commander-card-h)!important;
+  max-height:var(--commander-card-h)!important;
+  box-sizing:border-box;
+  overflow:hidden;
+}
+
+/* Opponent cells put identity above damage so half-width phone cells remain clear. */
+html.layout-vertical-v2 #app .cmd .cc.commanderQuick.seatCell{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:auto minmax(0,1fr)!important;
+  align-items:center!important;
+  gap:1px!important;
+  padding:3px 5px!important;
+}
+html.layout-vertical-v2 #app .cmd .cc.commanderQuick.seatCell .cw{
+  width:100%;
+  padding:0!important;
+  text-align:center!important;
+  font-size:var(--fluid-partner-name-font)!important;
+  line-height:1!important;
+}
+html.layout-vertical-v2 #app .cmd .cc.commanderQuick.seatCell .commanderQuickRow{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:0;
+  gap:0!important;
+}
+html.layout-vertical-v2 #app .cmd .cc.commanderQuick.seatCell .cv{
+  min-width:0!important;
+  margin:0!important;
+  text-align:center!important;
+  line-height:1!important;
+}
+
+/* The player's own square is a quiet landmark, not an interaction target. */
+html.layout-vertical-v2 #app .cmd .seatSelf{
+  display:grid;
+  place-items:center;
+  border:1px solid color-mix(in srgb,var(--c) 30%,rgba(255,255,255,.10));
+  border-radius:9px;
+  background:
+    linear-gradient(180deg,color-mix(in srgb,var(--c) 7%,rgba(19,23,31,.72)),rgba(7,10,15,.52));
+  color:rgba(235,239,247,.44);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+}
+html.layout-vertical-v2 #app .cmd .seatSelf span{
+  padding:2px 7px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:999px;
+  background:rgba(255,255,255,.035);
+  font-size:clamp(9px,2.5vw,11px);
+  font-weight:900;
+  line-height:1;
+  letter-spacing:.08em;
+}
+
+/* Partner cells keep A/B side-by-side inside their physical seat. */
+html.layout-vertical-v2 #app .cmd .partnerCc.seatCell{
+  padding:2px 3px 3px!important;
+}
+html.layout-vertical-v2 #app .cmd .partnerCc.seatCell>.cw{
+  max-width:100%;
+  margin-bottom:2px!important;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+html.layout-vertical-v2 #app .cmd .partnerCc.seatCell .partnerRows{
+  gap:2px!important;
+}
+html.layout-vertical-v2 #app .cmd .partnerCc.seatCell .partnerRow{
+  padding:1px 3px!important;
+}
+
+/* The seat map is intentionally quieter than life and +/- controls. */
+html.layout-vertical-v2 #app .cmd{
+  border-color:rgba(255,255,255,.075)!important;
+  background:rgba(4,7,11,.20)!important;
+}
