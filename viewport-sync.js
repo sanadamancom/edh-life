@@ -179,7 +179,7 @@
   window.visualViewport?.addEventListener('scroll',startupResize,{passive:true});
   window.addEventListener('pageshow',schedule,{passive:true});
 
-  document.addEventListener('edh-app-ready',()=>{
+  window.addEventListener('edh-app-ready',()=>{
     if(portraitMetrics)geometryFrozen=true;
   },{once:true});
 
