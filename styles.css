@@ -456,3 +456,47 @@ button{color:inherit;touch-action:manipulation}
 .acts{display:flex;justify-content:flex-end;gap:8px;margin-top:10px}
 
 @media(display-mode:standalone){#fs{display:none}}
+
+
+/* Portrait-only guard.
+   This app is intentionally designed only for portrait use. In landscape, cover
+   the whole visual viewport (including safe-area edges), hide the board, and
+   intercept all interaction until the device returns to portrait. */
+#portraitOnlyGuard{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:2147483647;
+  width:100vw;
+  height:100dvh;
+  min-height:100%;
+  padding:
+    max(24px,env(safe-area-inset-top))
+    max(24px,env(safe-area-inset-right))
+    max(24px,env(safe-area-inset-bottom))
+    max(24px,env(safe-area-inset-left));
+  place-items:center;
+  background:#686d75;
+  color:#fff;
+  text-align:center;
+  font-size:clamp(24px,4.5vw,42px);
+  font-weight:900;
+  line-height:1.35;
+  letter-spacing:.01em;
+  pointer-events:auto;
+  -webkit-user-select:none;
+  user-select:none;
+  touch-action:none;
+}
+@media (orientation:landscape){
+  html,body{
+    background:#686d75!important;
+  }
+  #stage{
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+  #portraitOnlyGuard{
+    display:grid!important;
+  }
+}
