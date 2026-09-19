@@ -1,49 +1,6 @@
 (()=>{
-  const root=document.documentElement;
-
-  /* iOS/PWA fullscreen height source of truth.
-     100dvh can lag or resolve against a different viewport while browser chrome,
-     fullscreen mode, and the home-indicator safe area are changing. Mirror the
-     currently visible viewport into one CSS variable and make every layout layer
-     consume that same number. */
-  let viewportSyncTimer=0;
-  function syncVisualViewportHeight(){
-    const vv=window.visualViewport;
-    const height=Math.max(1,Number(vv?.height)||window.innerHeight||document.documentElement.clientHeight||1);
-    const width=Math.max(1,Number(vv?.width)||document.documentElement.clientWidth||window.innerWidth||1);
-    const h=Math.round(height*100)/100;
-    const w=Math.round(width*100)/100;
-
-    root.style.setProperty('--vh100',`${h}px`);
-    root.style.setProperty('--stage-full-height',`${h}px`);
-    root.style.setProperty('--safe-fill-gap','0px');
-    root.classList.remove('has-omitted-bottom-safe');
-    root.classList.toggle('layout-short',h<700);
-    root.classList.toggle('layout-tablet',Math.min(w,h)>=600);
-
-    if(window.EDHStage?.state){
-      Object.assign(window.EDHStage.state,{
-        w,
-        h,
-        viewportH:h,
-        omittedBottomSafe:0,
-        boardW:w,
-        boardH:h,
-        gameW:w,
-        gameH:h,
-        playerW:app?.classList.contains('c2')?w:w/2,
-        playerH:h/2
-      });
-    }
-
-    window.dispatchEvent(new CustomEvent('edh-v2-layout'));
-  }
-  function scheduleVisualViewportSync(){
-    cancelAnimationFrame(scheduleVisualViewportSync.raf||0);
-    scheduleVisualViewportSync.raf=requestAnimationFrame(syncVisualViewportHeight);
-    clearTimeout(viewportSyncTimer);
-    viewportSyncTimer=setTimeout(syncVisualViewportHeight,120);
-  }
+  /* Board geometry is owned exclusively by viewport-sync.js. Orientation is a
+     presentation-only guard and must never rewrite the portrait dimensions. */
 
   const HOLD_DELAY_MS=200;
   const HOLD_PROGRESS_MS=300;
