@@ -14,15 +14,6 @@
   const randomPlayer=document.getElementById('randomPlayer');
   const app=document.getElementById('app');
 
-  syncVisualViewportHeight();
-  window.addEventListener('resize',scheduleVisualViewportSync,{passive:true});
-  window.visualViewport?.addEventListener('resize',scheduleVisualViewportSync,{passive:true});
-  window.visualViewport?.addEventListener('scroll',scheduleVisualViewportSync,{passive:true});
-  window.addEventListener('orientationchange',scheduleVisualViewportSync,{passive:true});
-  window.addEventListener('pageshow',scheduleVisualViewportSync,{passive:true});
-  document.addEventListener('fullscreenchange',scheduleVisualViewportSync,{passive:true});
-  document.addEventListener('webkitfullscreenchange',scheduleVisualViewportSync,{passive:true});
-
   let randomDismissArmed=false;
   let lifeHold=null;
   let commanderHold=null;
