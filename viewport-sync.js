@@ -6,9 +6,14 @@
 
   let lastSignature='';
   let frame=0;
+  let portraitMetrics=null;
+  let geometryFrozen=false;
+  let forceMeasure=false;
 
   const standalone=()=>
     matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+
+  const isLandscape=()=>matchMedia('(orientation: landscape)').matches;
 
   function readSafeArea(){
     const probe=document.createElement('div');
@@ -52,14 +57,8 @@
     const missing=sh-visibleHeight;
     const recoverLimit=Math.max(96,(safe.top||0)+(safe.bottom||0)+48);
 
-    /* iPad/iPhone standalone WebKit can report visualViewport/innerHeight without
-       the home-indicator strip even with viewport-fit=cover. screen.height is used
-       only when it clearly describes this same full-screen surface; it is never
-       used for ordinary Safari or a differently sized Stage Manager window. */
     if(screenMatchesWidth&&missing>0&&missing<=recoverLimit)return sh;
 
-    /* Some WebKit builds expose the safe inset but not a matching screen delta.
-       Recover only that small edge strip, bounded by screen.height when available. */
     const edge=Math.max(0,safe.bottom||0);
     const candidate=visibleHeight+edge;
     if(edge>0&&edge<=recoverLimit&&(!sh||candidate<=sh+2))return candidate;
@@ -73,12 +72,34 @@
     return 4;
   }
 
-  function apply(){
-    frame=0;
+  function measurePortrait(){
     const safe=readSafeArea();
     const visible=visibleViewport();
     const boardHeight=fullBoardHeight(visible.width,visible.height,safe);
-    const hiddenTail=Math.max(0,boardHeight-visible.height);
+    return {
+      safe,
+      visible,
+      boardHeight,
+      hiddenTail:Math.max(0,boardHeight-visible.height)
+    };
+  }
+
+  function apply(){
+    frame=0;
+
+    /* Landscape is only a blocking warning screen. Never let its swapped or
+       transitional visualViewport dimensions overwrite the portrait board. */
+    const landscape=isLandscape();
+    if(!landscape&&(!geometryFrozen||forceMeasure||!portraitMetrics)){
+      portraitMetrics=measurePortrait();
+    }
+    forceMeasure=false;
+
+    /* If the app was launched in landscape, wait for the first portrait frame
+       before creating board geometry. */
+    if(!portraitMetrics)return;
+
+    const {safe,visible,boardHeight,hiddenTail}=portraitMetrics;
     const style=getComputedStyle(root);
     const centerBand=Math.max(0,parseFloat(style.getPropertyValue('--center-band-h'))||60);
     const count=playerCount();
@@ -135,15 +156,37 @@
     frame=requestAnimationFrame(apply);
   }
 
+  function refreshMeasurement(){
+    /* Fullscreen is an intentional portrait viewport change, unlike rotation. */
+    if(isLandscape())return;
+    geometryFrozen=false;
+    forceMeasure=true;
+    lastSignature='';
+    schedule();
+    requestAnimationFrame(()=>{
+      geometryFrozen=true;
+    });
+  }
+
   window.EDHViewportSync=schedule;
 
-  window.addEventListener('resize',schedule,{passive:true});
-  window.visualViewport?.addEventListener('resize',schedule,{passive:true});
-  window.visualViewport?.addEventListener('scroll',schedule,{passive:true});
-  window.addEventListener('orientationchange',schedule,{passive:true});
+  /* During startup WebKit may settle visualViewport/safe-area over a few frames.
+     Keep measuring only until the splash declares the board stable. Afterwards,
+     resize/orientation events reuse the frozen portrait geometry. */
+  const startupResize=()=>schedule();
+  window.addEventListener('resize',startupResize,{passive:true});
+  window.visualViewport?.addEventListener('resize',startupResize,{passive:true});
+  window.visualViewport?.addEventListener('scroll',startupResize,{passive:true});
   window.addEventListener('pageshow',schedule,{passive:true});
-  document.addEventListener('fullscreenchange',schedule);
-  document.addEventListener('webkitfullscreenchange',schedule);
+
+  document.addEventListener('edh-app-ready',()=>{
+    if(portraitMetrics)geometryFrozen=true;
+  },{once:true});
+
+  document.addEventListener('fullscreenchange',refreshMeasurement);
+  document.addEventListener('webkitfullscreenchange',refreshMeasurement);
+
+  /* Count changes still recompute player widths from the frozen portrait frame. */
   new MutationObserver(schedule).observe(app,{attributes:true,attributeFilter:['class']});
 
   apply();
