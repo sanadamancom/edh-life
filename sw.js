@@ -1,8 +1,8 @@
-const CACHE_NAME='edh-life-v130-player-dice-layering';
+const CACHE_NAME='edh-life-v131-portrait-only-guard';
 const APP_SHELL=[
   './',
   './index.html',
-  './styles.css?v=33',
+  './styles.css?v=34',
   './counters.css?v=34',
   './v2.css?v=9',
   './boot-splash.css?v=1',
